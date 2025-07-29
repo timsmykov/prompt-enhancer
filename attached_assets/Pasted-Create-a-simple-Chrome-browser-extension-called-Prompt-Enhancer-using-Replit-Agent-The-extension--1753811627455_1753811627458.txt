@@ -1,0 +1,51 @@
+Create a simple Chrome browser extension called "Prompt Enhancer" using Replit Agent. The extension improves user prompts in popular AI chatbots (like ChatGPT or Grok) with one click. Keep it primitive and minimalistic, focusing on core functionality without unnecessary features.
+
+### Tech Stack:
+- Frontend: React (with JavaScript and hooks for state management).
+- Styling: Tailwind CSS (for quick, responsive designs).
+- Build Tool: Vite (for fast development and bundling of the React app).
+- Backend: Node.js with Express.js (for a simple server handling prompt enhancement requests).
+- Additional Tools: Axios (for HTTP requests from frontend to backend), ESLint + Prettier (for code linting and formatting, integrate into the project setup).
+- Storage: Use browser localStorage for saving settings.
+- Extension Structure: Include manifest.json for Chrome extension compatibility, with content scripts, popup for settings, and background if needed.
+
+### Project Structure:
+- /src: React components and frontend code.
+- /public: Assets like manifest.json, icons.
+- /server: Node.js backend (server.js with Express).
+- /dist: Built output for the extension.
+- Root files: vite.config.js, tailwind.config.js, package.json, .eslintrc, .prettierrc.
+
+### Main Functionality:
+1. **Content Script (Injection)**:
+   - Use content.js to detect prompt input fields on chatbot sites (e.g., match URLs like "*://chat.openai.com/*" or "*://grok.x.ai/*" in manifest).
+   - Find the textarea or input field (by common classes like ".prompt-input").
+   - Inject a simple "Enhance" button next to it (Tailwind styled: blue button with hover effect).
+
+2. **Prompt Enhancement**:
+   - On button click: Extract the current prompt text from the input field.
+   - Send a POST request (via Axios) to the local backend (/enhance endpoint) with the prompt.
+   - Backend: Use a placeholder function to "enhance" the prompt (e.g., return "Make this prompt more detailed and structured: " + originalPrompt). For now, use this simple string concatenation as a stub – no real LLM API integration yet. Later, it can be replaced with a real API call (e.g., to OpenAI), but keep it as a dummy for this version.
+
+3. **Modal Window**:
+   - Show a modal popup (React component) under the input field (Tailwind: semi-transparent overlay, centered white box, responsive).
+   - Display the enhanced prompt in a readonly textarea.
+   - Include three buttons:
+     - "Insert": Replace the original input field with the enhanced prompt and close modal.
+     - "Regenerate": Re-send request to backend and update the modal with new enhanced prompt.
+     - "Cancel": Close modal without changes.
+   - No animations; keep it basic with CSS visibility toggles.
+
+4. **Settings Popup**:
+   - Accessible via extension icon (popup.html with React rendered).
+   - Simple form: Inputs for API Key (text) and Model URL (text, e.g., "https://api.example.com").
+   - "Save" button: Store values in localStorage.
+   - Load and display current values on open.
+   - Tailwind styling: Flex layout, bordered inputs.
+
+### Additional Instructions:
+- Make the app runnable in Replit: Set up Vite dev server for frontend, Node for backend (run concurrently if needed).
+- Use placeholders for any API: In backend, hardcode the stub enhancement logic; in settings, save but don't use the API key/URL yet (for future integration).
+- Add comments in code for clarity.
+- Test locally: Simulate a chatbot page in index.html with a textarea, and load the extension in a browser from Replit.
+- Keep code under 300 lines total for simplicity. Install dependencies via npm in Replit.
