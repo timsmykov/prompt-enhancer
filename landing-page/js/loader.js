@@ -12,9 +12,7 @@ class ComponentLoader {
             { id: 'waitlist-section', file: 'components/waitlist.html' },
             { id: 'faq-section', file: 'components/faq.html' },
             { id: 'footer-section', file: 'components/footer.html' },
-            { id: 'scripts-section', file: 'components/scripts.html' },
-            { id: 'scripts-new-section', file: 'components/scripts-new.html' },
-            { id: 'scripts-old-section', file: 'components/scripts-old.html' }
+            { id: 'scripts-section', file: 'components/scripts.html' }
         ];
         this.loaded = 0;
         this.total = this.components.length;
@@ -81,8 +79,25 @@ class ComponentLoader {
         
         console.log('✨ All components loaded!');
         
+        // Dispatch event for component initialization
         document.dispatchEvent(new CustomEvent('componentsReady'));
+        
+        // Initialize global functions that might be needed immediately
+        this.initializeGlobalFunctions();
     }
+
+    initializeGlobalFunctions() {
+        // Ensure scroll functions are available globally
+        if (!window.scrollToWaitlist) {
+            window.scrollToWaitlist = function() {
+                const waitlistSection = document.getElementById('waitlist-section') || document.getElementById('waitlist');
+                if (waitlistSection) {
+                    waitlistSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+        }
+    }
+}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
