@@ -1,12 +1,14 @@
 // Core utilities and shared functions
-export const Config = {
+
+// Attach Config and Utils to the window object to make them globally accessible
+window.Config = {
     FORMSPREE_ENDPOINT: 'https://formspree.io/f/xpznvqko',
     SUPPORT_EMAIL: 'timofeysmykov@gmail.com',
     ANIMATION_DURATION: 300,
     SCROLL_DEBOUNCE: 100
 };
 
-export const Utils = {
+window.Utils = {
     // Email validation
     isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,5 +60,6 @@ export const Utils = {
 
 // Global scroll to waitlist function (legacy support)
 window.scrollToWaitlist = function() {
-    Utils.scrollToElement('#waitlist-section');
+    // Now references window.Utils
+    window.Utils.scrollToElement('#waitlist-section');
 };
