@@ -37,7 +37,7 @@
         "*://*.perplexity.ai/*"
       ],
       "js": ["content.js"],
-      "css": [],
+      "css": ["content.css"],
       "run_at": "document_end"
     }
   ],

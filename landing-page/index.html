@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Enhancer - Enhance your AI prompts in seconds</title>
+    <meta name="description"
+        content="Chrome extension for improving AI prompts with one click. Works with ChatGPT, Claude, Grok, Perplexity and other AI platforms.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">Prompt Enhancer</span>
+                    </h1>
+                    <p class="hero-subtitle">Enhance your AI prompts in seconds</p>
+                    <p class="hero-description">
+                        Chrome extension that automatically improves your prompts to get better responses from AI
+                        assistants
+                    </p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="scrollToWaitlist()">
+                            ✨ Join Waitlist
+                        </button>
+                        <a href="#how-it-works" class="btn btn-secondary">
+                            How it works
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number">5+</span>
+                            <span class="stat-label">AI platforms</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1 click</span>
+                            <span class="stat-label">to enhance</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">free</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="mockup-container">
+                        <div class="browser-mockup">
+                            <div class="browser-header">
+                                <div class="browser-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                                <div class="browser-url">chatgpt.com</div>
+                            </div>
+                            <div class="browser-content">
+                                <div class="chat-interface">
+                                    <!-- Chat messages -->
+                                    <div class="chat-messages">
+                                        <div class="chat-message">
+                                            <div class="message-avatar user-avatar">U</div>
+                                            <div class="message-content">How to cook pasta?</div>
+                                        </div>
+                                        <div class="chat-message">
+                                            <div class="message-avatar ai-avatar">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path
+                                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                                </svg>
+                                            </div>
+                                            <div class="message-content">Here's a comprehensive guide to cooking pasta
+                                                perfectly with step-by-step instructions, timing tips, and common
+                                                mistakes to avoid...</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Authentic ChatGPT input area -->
+                                    <div class="chatgpt-input-area">
+                                        <!-- Main input container -->
+                                        <div class="chatgpt-input-wrapper">
+                                            <!-- Text area with placeholder -->
+                                            <div class="chatgpt-textarea-container">
+                                                <div id="mockup-textarea" class="chatgpt-textarea" contenteditable="true" data-placeholder="How to cook pasta?">How to cook pasta?</div>
+                                            </div>
+
+                                            <!-- Bottom toolbar inside input -->
+                                            <div class="chatgpt-bottom-toolbar">
+                                                <div class="chatgpt-left-tools">
+                                                    <button class="chatgpt-tool-btn" title="Attach files">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24"
+                                                            fill="currentColor">
+                                                            <path
+                                                                d="M12 4c4.411 0 8 3.589 8 8s-3.589 8-8 8-8-3.589-8-8 3.589-8 8-8m0-2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 5h-2v4H7v2h4v4h2v-4h4v-2h-4V7z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="chatgpt-tool-btn chatgpt-tools-btn" title="Tools">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24"
+                                                            fill="currentColor">
+                                                            <path
+                                                                d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z" />
+                                                        </svg>
+                                                        <span>Tools</span>
+                                                    </button>
+                                                </div>
+
+                                                <div class="chatgpt-right-tools">
+                                                    <button id="mockup-enhance-btn"
+                                                        class="chatgpt-tool-btn enhance-btn-integrated"
+                                                        title="Enhance your prompt with AI"
+                                                        onclick="enhanceMockupPrompt()">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                            <path
+                                                                d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"
+                                                                fill="currentColor" />
+                                                        </svg>
+                                                        <span>Enhance</span>
+                                                    </button>
+                                                    <button class="chatgpt-tool-btn" title="Voice input">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24"
+                                                            fill="currentColor">
+                                                            <path
+                                                                d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                                                            <path
+                                                                d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button class="chatgpt-send-btn" title="Send message">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24"
+                                                            fill="currentColor">
+                                                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators Section -->
+    <section class="trust-indicators">
+        <div class="container">
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <div class="trust-badge-icon">🔒</div>
+                    <span>100% Private & Secure</span>
+                </div>
+                <div class="trust-badge">
+                    <div class="trust-badge-icon">⚡</div>
+                    <span>Open Source</span>
+                </div>
+                <div class="trust-badge">
+                    <div class="trust-badge-icon">🆓</div>
+                    <span>Free Forever</span>
+                </div>
+                <div class="trust-badge">
+                    <div class="trust-badge-icon">✓</div>
+                    <span>No Data Collection</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Section -->
+    <section class="social-proof">
+        <div class="container">
+            <p class="social-proof-text">Trusted by 10,000+ AI users worldwide</p>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-number">50K+</span>
+                    <span class="stat-label">Prompts Enhanced</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label">Better Responses</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">30sec</span>
+                    <span class="stat-label">Average Time Saved</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Users Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        This extension has completely transformed how I interact with AI. My prompts are now so much more effective, and I get exactly the responses I need.
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">S</div>
+                        <div class="testimonial-info">
+                            <h4>Sarah Chen</h4>
+                            <p>Product Manager</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        As a developer, I use AI daily for code reviews and documentation. Prompt Enhancer saves me hours by getting better results on the first try.
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">M</div>
+                        <div class="testimonial-info">
+                            <h4>Marcus Rodriguez</h4>
+                            <p>Senior Developer</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        The privacy-first approach is exactly what I was looking for. No data leaves my browser, yet I get professional-quality prompt improvements.
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">A</div>
+                        <div class="testimonial-info">
+                            <h4>Alex Thompson</h4>
+                            <p>Content Creator</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Before/After Comparison Section -->
+    <section class="before-after">
+        <div class="container">
+            <h2 class="section-title">See the Difference</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">
+                        <span class="comparison-icon">❌</span>
+                        <h3>Before Enhancement</h3>
+                    </div>
+                    <div class="prompt-example">
+                        <div class="prompt-label">Your Original Prompt:</div>
+                        <div class="prompt-text">"How to cook pasta?"</div>
+                    </div>
+                    <div class="response-preview">
+                        <div class="response-label">AI Response:</div>
+                        <div class="response-text">Basic instructions: Boil water, add pasta, cook for 8-12 minutes,
+                            drain.</div>
+                    </div>
+                </div>
+                <div class="comparison-arrow">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12h14m-7-7l7 7-7 7" stroke="#10b981" stroke-width="2" />
+                    </svg>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">
+                        <span class="comparison-icon">✅</span>
+                        <h3>After Enhancement</h3>
+                    </div>
+                    <div class="prompt-example">
+                        <div class="prompt-label">Enhanced Prompt:</div>
+                        <div class="prompt-text">"Please provide a comprehensive guide to cooking pasta perfectly,
+                            including step-by-step instructions, optimal cooking times for different pasta types, common
+                            mistakes to avoid, and tips for achieving the ideal texture."</div>
+                    </div>
+                    <div class="response-preview">
+                        <div class="response-label">AI Response:</div>
+                        <div class="response-text">Detailed guide with water ratios, salt amounts, timing charts,
+                            texture tests, sauce pairing tips, and troubleshooting advice.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="demo-section">
+        <div class="container">
+            <h2 class="section-title">Try It Yourself</h2>
+            <p class="demo-subtitle">See how Prompt Enhancer transforms your prompts in real-time</p>
+            <div class="demo-container">
+                <div class="demo-input-section">
+                    <label for="demo-input">Enter your prompt:</label>
+                    <textarea id="demo-input"
+                        placeholder="Type your prompt here... (e.g., 'How to learn JavaScript?')"></textarea>
+                    <button class="demo-enhance-btn" onclick="enhanceDemo()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"
+                                fill="currentColor" />
+                        </svg>
+                        Enhance This Prompt
+                    </button>
+                </div>
+                <div class="demo-result" id="demo-result" style="display: none;">
+                    <div class="demo-result-header">
+                        <span class="demo-result-icon">✨</span>
+                        <h4>Enhanced Prompt:</h4>
+                    </div>
+                    <div class="demo-result-text" id="demo-result-text"></div>
+                    <div class="demo-actions">
+                        <button class="demo-copy-btn" onclick="copyDemoResult()">Copy Enhanced Prompt</button>
+                        <button class="demo-try-again-btn" onclick="resetDemo()">Try Another</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="container">
+            <h2 class="section-title">Why Prompt Enhancer?</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">⚡</div>
+                    <h3>Saves Time</h3>
+                    <p>No need to think about how to better formulate your prompt. Get an optimized version with one
+                        click.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>Improves Response Quality</h3>
+                    <p>Structured and detailed prompts provide more accurate and useful responses from AI.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🌐</div>
+                    <h3>Works Everywhere</h3>
+                    <p>Supports ChatGPT, Claude, Grok, Perplexity and other popular AI platforms.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔒</div>
+                    <h3>Safe & Private</h3>
+                    <p>All data is processed locally. Your prompts are never transmitted anywhere.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎨</div>
+                    <h3>Simple Interface</h3>
+                    <p>Intuitive design that doesn't distract from working with AI assistants.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🆓</div>
+                    <h3>Completely Free</h3>
+                    <p>No subscriptions or hidden fees. Use without limitations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How it works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Install the extension</h3>
+                        <p>Add Prompt Enhancer to Chrome with one click from the extension store</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Write your prompt</h3>
+                        <p>Enter your regular prompt in any supported AI service</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Click the enhancement button</h3>
+                        <p>Click the ✨ icon next to the input field for automatic enhancement</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Get better results</h3>
+                        <p>Use the enhanced prompt to get higher quality responses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section id="waitlist" class="waitlist">
+        <div class="container">
+            <div class="waitlist-content">
+                <h2>Want to try it first?</h2>
+                <p>Leave your email and get access to Prompt Enhancer right after release!</p>
+                <form id="waitlist-form" class="waitlist-form">
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" placeholder="Your email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Join Waitlist
+                    </button>
+                </form>
+                <div id="form-success" class="form-success" style="display: none;">
+                    <h3>Thank you for signing up! 🎉</h3>
+                    <p>We'll send you a notification as soon as Prompt Enhancer is ready to use.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Which platforms does the extension work on?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Prompt Enhancer supports all popular AI platforms: ChatGPT, Claude, Grok (X.AI), Perplexity,
+                            Google Bard and others. We're constantly adding support for new services.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is it safe to use the extension?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, absolutely safe. The extension works only in your browser and doesn't transmit your data
+                            to external servers. All code is open source and available for review on GitHub.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Do I need to pay to use it?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No, Prompt Enhancer is completely free. No subscriptions, hidden fees, or usage limitations.
+                        </p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How does prompt enhancement work?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The extension analyzes your prompt and adds structure, context, and clarifications that help
+                            AI better understand your request and provide more comprehensive responses.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>When will the final version be available?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We plan to release the first version in the coming weeks. Waitlist subscribers will be
+                            notified first.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Prompt Enhancer</h3>
+                    <p>Privacy-first Chrome extension for better AI prompts</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/timsmykov/prompt-enhancer" target="_blank" title="GitHub" class="footer-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="mailto:timofeysmykov@gmail.com" title="Email" class="footer-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </a>
+                    <a href="https://x.com/timsmykov" target="_blank" title="X (Twitter)" class="footer-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.80l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Prompt Enhancer. Made with ❤️ for the AI community.</p>
+                <p class="footer-message">Join thousands of users enhancing their AI conversations every day!</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sticky CTA -->
+    <button class="sticky-cta" id="sticky-cta" onclick="scrollToWaitlist()">
+        ✨ Join Waitlist
+    </button>
+
+    <!-- Page Loading Overlay -->
+    <div id="loading-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f0f0f; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease;">
+        <div style="text-align: center; color: #10b981;">
+            <div style="width: 40px; height: 40px; border: 3px solid rgba(16, 185, 129, 0.3); border-top: 3px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+            <p>Loading Prompt Enhancer...</p>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script>
+        // Hide loading overlay when page is fully loaded
+        window.addEventListener('load', () => {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        });
+    </script>
+
+    <script src="script.js"></script>
+
+    <!-- Demo Functionality -->
+    <script>
+        // Demo enhancement examples
+        const enhancementExamples = {
+            'how to learn javascript': 'Please provide a comprehensive learning roadmap for JavaScript, including: 1) Prerequisites and foundational concepts, 2) Step-by-step progression from beginner to advanced topics, 3) Recommended resources (books, courses, practice platforms), 4) Hands-on project ideas for each skill level, 5) Common pitfalls to avoid, and 6) Timeline expectations for different learning goals.',
+
+            'how to cook pasta': 'Please provide a detailed guide to cooking pasta perfectly, including: 1) Water-to-pasta ratios and proper salting techniques, 2) Step-by-step cooking instructions with precise timing for different pasta types, 3) How to test for doneness and achieve ideal texture, 4) Common mistakes to avoid, 5) Tips for sauce pairing and serving, and 6) Storage and reheating best practices.',
+
+            'explain machine learning': 'Please provide a comprehensive explanation of machine learning that covers: 1) Clear definition and core concepts in simple terms, 2) Different types of ML (supervised, unsupervised, reinforcement learning) with examples, 3) Real-world applications and use cases, 4) Basic workflow of an ML project, 5) Key algorithms and when to use them, 6) Prerequisites for getting started, and 7) Common misconceptions and limitations.',
+
+            'write a resume': 'Please provide a complete guide to writing an effective resume, including: 1) Modern resume structure and formatting best practices, 2) How to write compelling professional summaries and objective statements, 3) Strategies for highlighting achievements with quantifiable results, 4) Industry-specific customization tips, 5) ATS optimization techniques, 6) Common mistakes to avoid, and 7) Examples of strong action verbs and phrases.',
+
+            'start a business': 'Please provide a comprehensive business startup guide covering: 1) Market research and validation techniques, 2) Business plan essentials and financial projections, 3) Legal structure options and registration requirements, 4) Funding sources and investment strategies, 5) Marketing and customer acquisition approaches, 6) Operational setup and team building, 7) Risk management and common startup pitfalls to avoid.',
+        };
+
+        function enhanceDemo() {
+            const input = document.getElementById('demo-input');
+            const result = document.getElementById('demo-result');
+            const resultText = document.getElementById('demo-result-text');
+            const button = document.querySelector('.demo-enhance-btn');
+
+            const userPrompt = input.value.trim().toLowerCase();
+
+            if (!userPrompt) {
+                // Add shake animation to input
+                input.style.animation = 'shake 0.5s ease-in-out';
+                input.focus();
+                setTimeout(() => input.style.animation = '', 500);
+                return;
+            }
+
+            // Track demo usage
+            if (typeof trackEvent !== 'undefined') {
+                trackEvent('demo_used', { prompt_length: userPrompt.length });
+            }
+
+            // Show loading state with better animation
+            button.disabled = true;
+            button.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+            button.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" fill="none">
+                        <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
+                    </path>
+                </svg>
+                Analyzing & Enhancing...
+            `;
+
+            // Simulate realistic processing delay
+            setTimeout(() => {
+                // Find matching example or create generic enhancement
+                let enhancedPrompt = '';
+
+                // Check for exact or partial matches
+                for (const [key, value] of Object.entries(enhancementExamples)) {
+                    if (userPrompt.includes(key) || key.includes(userPrompt)) {
+                        enhancedPrompt = value;
+                        break;
+                    }
+                }
+
+                // Generic enhancement if no match found
+                if (!enhancedPrompt) {
+                    enhancedPrompt = `Please provide a comprehensive and detailed response to: "${input.value}". Include: 1) Step-by-step explanations with clear reasoning, 2) Relevant examples and use cases, 3) Best practices and expert recommendations, 4) Common pitfalls and how to avoid them, 5) Actionable next steps or implementation guidance. Structure your response with clear headings and bullet points for easy scanning.`;
+                }
+
+                // Typewriter effect for result
+                resultText.textContent = '';
+                result.style.display = 'block';
+                result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                let i = 0;
+                const typeWriter = () => {
+                    if (i < enhancedPrompt.length) {
+                        resultText.textContent += enhancedPrompt.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 20);
+                    }
+                };
+                typeWriter();
+
+                // Reset button with success state
+                button.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    Enhanced Successfully!
+                `;
+
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                        </svg>
+                        Enhance Another Prompt
+                    `;
+                }, 2000);
+
+            }, Math.random() * 1000 + 1500); // Random delay between 1.5-2.5s for realism
+        }
+
+        function copyDemoResult() {
+            const resultText = document.getElementById('demo-result-text');
+            const copyBtn = document.querySelector('.demo-copy-btn');
+
+            navigator.clipboard.writeText(resultText.textContent).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.style.background = '#059669';
+
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '#10b981';
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = resultText.textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function resetDemo() {
+            const input = document.getElementById('demo-input');
+            const result = document.getElementById('demo-result');
+
+            input.value = '';
+            result.style.display = 'none';
+            input.focus();
+        }
+
+        // Add enter key support for demo
+        document.getElementById('demo-input').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                enhanceDemo();
+            }
+        });
+
+        // Mockup Enhancement Functionality
+        function enhanceMockupPrompt() {
+            const textarea = document.getElementById('mockup-textarea');
+            const button = document.getElementById('mockup-enhance-btn');
+            const originalText = textarea.textContent.trim();
+
+            // Don't enhance if already enhanced or empty
+            if (originalText.length > 100 || !originalText) {
+                return;
+            }
+
+            // Set loading state
+            button.disabled = true;
+            button.classList.add('loading');
+            button.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" fill="none">
+                        <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
+                    </path>
+                </svg>
+                <span>Enhancing...</span>
+            `;
+
+            // Simulate typing effect with enhanced prompt
+            setTimeout(() => {
+                const enhancedPrompt = getEnhancedPrompt(originalText);
+                typewriterEffect(textarea, enhancedPrompt, () => {
+                    // Reset button to success state
+                    button.classList.remove('loading');
+                    button.classList.add('success');
+                    button.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                        <span>Enhanced!</span>
+                    `;
+
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.classList.remove('success');
+                        button.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                            </svg>
+                            <span>Enhance</span>
+                        `;
+                    }, 3000);
+                });
+            }, 1000);
+        }
+
+        function getEnhancedPrompt(originalText) {
+            const enhancements = {
+                'how to cook pasta': 'Please provide a comprehensive guide to cooking pasta perfectly, including step-by-step instructions with precise timing, water-to-pasta ratios, proper salting techniques, how to test for doneness, common mistakes to avoid, and tips for achieving the ideal texture and flavor.',
+
+                'learn javascript': 'Please create a detailed JavaScript learning roadmap that includes: 1) Prerequisites and foundational concepts, 2) Progressive skill-building from beginner to advanced topics, 3) Hands-on project recommendations for each level, 4) Best learning resources and practice platforms, 5) Common pitfalls to avoid, and 6) Timeline expectations for different learning goals.',
+
+                'write a resume': 'Please provide a comprehensive resume writing guide covering: 1) Modern formatting and structure best practices, 2) How to craft compelling professional summaries, 3) Strategies for showcasing achievements with quantifiable results, 4) Industry-specific customization techniques, 5) ATS optimization tips, and 6) Common mistakes that hurt your chances.',
+
+                'start a business': 'Please outline a complete business startup framework including: 1) Market research and validation strategies, 2) Business plan essentials and financial planning, 3) Legal structure options and registration steps, 4) Funding sources and investment approaches, 5) Marketing and customer acquisition tactics, 6) Operational setup requirements, and 7) Risk management strategies.'
+            };
+
+            const lowerText = originalText.toLowerCase();
+
+            // Find matching enhancement
+            for (const [key, value] of Object.entries(enhancements)) {
+                if (lowerText.includes(key) || key.includes(lowerText)) {
+                    return value;
+                }
+            }
+
+            // Generic enhancement
+            return `Please provide a comprehensive and detailed response to: "${originalText}". Include step-by-step explanations, relevant examples, best practices, potential challenges and solutions, and actionable recommendations. Structure your response with clear headings and organize the information logically for easy understanding.`;
+        }
+
+        function typewriterEffect(element, text, callback) {
+            element.textContent = '';
+            let i = 0;
+            const speed = 30; // milliseconds per character
+
+            function typeChar() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeChar, speed);
+                } else {
+                    if (callback) callback();
+                }
+            }
+
+            typeChar();
+        }
+
+        // Make the mockup textarea interactive
+        document.getElementById('mockup-textarea').addEventListener('input', function () {
+            const button = document.getElementById('mockup-enhance-btn');
+            const text = this.textContent.trim();
+
+            // Reset button if text is changed
+            if (text.length < 100) {
+                button.disabled = false;
+                button.classList.remove('success', 'loading');
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                    <span>Enhance</span>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>
