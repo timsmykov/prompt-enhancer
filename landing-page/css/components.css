@@ -110,7 +110,43 @@
 
 .enhance-btn-integrated:hover {
     background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-    transform: scale(1.05) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Enhanced button states for beautiful animations */
+.enhance-btn-integrated.loading {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+    pointer-events: none;
+}
+
+.enhance-btn-integrated.loading svg {
+    animation: spin 1s linear infinite;
+}
+
+.enhance-btn-integrated.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+}
+
+.enhance-btn-integrated.success svg {
+    animation: checkmark 0.5s ease-in-out;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes checkmark {
+    0% { transform: scale(0) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
 }
 
 /* Form Elements */

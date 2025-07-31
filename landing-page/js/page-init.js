@@ -1,15 +1,7 @@
 // Loading overlay and page initialization
 function initializePageLoading() {
-    // Hide loading overlay when page is fully loaded
-    window.addEventListener('load', () => {
-        const overlay = document.getElementById('loading-overlay');
-        if (overlay) {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 500);
-        }
-    });
+    // Loading overlay is now handled by loader.js
+    console.log('Page loading initialized - overlay handled by loader.js');
 }
 
 // Sticky CTA visibility control

@@ -1,0 +1,116 @@
+/* Loading Overlay Styles */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#loading-overlay.hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(-100vw) !important;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loading-title {
+    margin: 0;
+    color: #333;
+    font-family: Inter, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.loading-subtitle {
+    margin: 10px 0 0 0;
+    color: #666;
+    font-family: Inter, sans-serif;
+    font-size: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error state styles */
+.loading-error {
+    text-align: center;
+    color: red;
+    padding: 40px;
+}
+
+.loading-error h2 {
+    margin-bottom: 15px;
+    color: #dc3545;
+}
+
+.loading-error p {
+    margin-bottom: 20px;
+    color: #6c757d;
+}
+
+.loading-error button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.loading-error button:hover {
+    background: #0056b3;
+}
+
+/* Main content visibility */
+#main-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#main-content.visible {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* Force override any conflicting styles */
+body.content-loaded #loading-overlay {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    z-index: -1 !important;
+}
+
+body.content-loaded #main-content {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}

@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/landing-page/">
     <title>Prompt Enhancer - Enhance your AI prompts in seconds</title>
     <meta name="description"
         content="Chrome extension for improving AI prompts with one click. Works with ChatGPT, Claude, Grok, Perplexity and other AI platforms.">
@@ -32,21 +31,39 @@
 </head>
 
 <body>
-    <!-- Component placeholders that will be loaded -->
-    <div id="hero-section">Loading...</div>
-    <div id="social-proof-section">Loading...</div>
-    <div id="testimonials-section">Loading...</div>
-    <div id="before-after-section">Loading...</div>
-    <div id="benefits-section">Loading...</div>
-    <div id="pricing-section">Loading...</div>
-    <div id="how-it-works-section">Loading...</div>
-    <div id="waitlist-section">Loading...</div>
-    <div id="faq-section">Loading...</div>
-    <div id="footer-section">Loading...</div>
-    <div id="scripts-section">Loading...</div>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2 class="loading-title">Loading Prompt Enhancer...</h2>
+            <p class="loading-subtitle">Please wait while we load the page</p>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div id="main-content">
+        <!-- Component placeholders that will be loaded -->
+        <div id="hero-section">Loading...</div>
+        <div id="social-proof-section">Loading...</div>
+        <div id="testimonials-section">Loading...</div>
+        <div id="before-after-section">Loading...</div>
+        <div id="benefits-section">Loading...</div>
+        <div id="pricing-section">Loading...</div>
+        <div id="how-it-works-section">Loading...</div>
+        <div id="waitlist-section">Loading...</div>
+        <div id="faq-section">Loading...</div>
+        <div id="footer-section">Loading...</div>
+        <div id="scripts-section">Loading...</div>
+    </div>
 
     <!-- Component Loading System -->
     <script src="js/loader.js"></script>
+    
+    <!-- Debug and Error Handling -->
+    <script src="js/debug.js"></script>
+    
+    <!-- Emergency Hero Debug -->
+    <script src="js/emergency-hero-debug.js"></script>
 </body>
 
 </html>

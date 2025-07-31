@@ -3,6 +3,9 @@
 /* Base styles - reset, typography, layout */
 @import url('./base.css');
 
+/* Loading overlay styles */
+@import url('./loading-overlay.css');
+
 /* Reusable components - buttons, forms, sticky CTA */
 @import url('./components.css');
 
@@ -24,14 +27,8 @@
 /* Animations and keyframes */
 @import url('./animations.css');
 
-/* Loading overlay styles */
-@import url('./loading.css');
-
 /* Waitlist-specific styles */
 @import url('./waitlist.css');
-
-/* Loading overlay styles */
-@import url('./loading.css');
 
 /* Responsive design - mobile and tablet breakpoints */
 @import url('./responsive.css');
