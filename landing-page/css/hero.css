@@ -1,0 +1,378 @@
+/* Hero Section Styles */
+
+/* Hero Section */
+.hero {
+    padding: 120px 0 80px; /* Adjusted padding */
+    background: linear-gradient(180deg, #1a1a1a 0%, #171717 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="%23333333" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(40px);
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: #9ca3af;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    color: #d1d5db;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.hero-buttons .btn-primary {
+    font-size: 18px;
+    padding: 16px 32px;
+    font-weight: 700;
+    animation: heroCtaPulse 3s infinite;
+}
+
+@keyframes heroCtaPulse {
+    0%, 100% {
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        transform: scale(1.02);
+    }
+}
+
+/* Hero Enhanced Elements */
+.value-proposition {
+    margin-bottom: 2rem;
+}
+
+.typing-container {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    margin-bottom: 0.5rem;
+    min-height: 1.6rem;
+}
+
+.typing-prefix {
+    color: #d1d5db;
+}
+
+.typing-text {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.typing-cursor {
+    color: #10b981;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.value-subtitle {
+    font-size: 1rem;
+    color: #9ca3af;
+    line-height: 1.5;
+}
+
+.hero-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    min-height: 80px;
+}
+
+.benefit-item:hover {
+    transform: translateX(8px);
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+}
+
+.benefit-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.benefit-content h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.35rem;
+    line-height: 1.2;
+}
+
+.benefit-content p {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.trust-icons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.trust-item:hover {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.trust-icon {
+    font-size: 1rem;
+}
+
+.trust-text {
+    font-weight: 500;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.stat:hover {
+    transform: translateY(-4px);
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+/* Hero Platforms Section */
+.hero-platforms {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.platforms-text {
+    font-size: 1.1rem;
+    color: #9ca3af;
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.platforms-scroll-container {
+    overflow: hidden;
+    width: 100%;
+    padding: 1rem 0;
+    mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+    -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.platforms-scroll {
+    display: flex;
+    gap: 2rem;
+    animation: scroll 80s linear infinite;
+    width: max-content;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: none;
+    will-change: transform;
+    /* Ensure smooth rendering */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.platforms-scroll:active {
+    cursor: grabbing;
+}
+
+.platforms-scroll.dragging {
+    cursor: grabbing;
+    /* Don't disable animation completely, just pause it */
+}
+
+.platform-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.platform-logo:hover {
+    transform: translateY(-4px);
+    border-color: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.03);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.1);
+}
+
+.platform-logo img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    transition: all 0.3s ease;
+    /* Default state: all logos appear bright/white for visibility on dark background */
+    filter: brightness(0) invert(1) opacity(0.8);
+}
+
+.platform-logo:hover img {
+    /* On hover: show original colors for colored logos, and scale all */
+    filter: brightness(1) invert(0) opacity(1);
+    transform: scale(1.1);
+}
+
+/* Special handling for naturally black/dark logos - keep them white even on hover */
+.platform-logo:hover img[src*="runway.svg"],
+.platform-logo:hover img[src*="pika.svg"],
+.platform-logo:hover img[src*="openai.svg"],
+.platform-logo:hover img[src*="midjourney.svg"],
+.platform-logo:hover img[src*="ideogram.svg"],
+.platform-logo:hover img[src*="recraft.svg"],
+.platform-logo:hover img[src*="flux.svg"],
+.platform-logo:hover img[src*="grok.svg"] {
+    /* Keep black logos white on hover for better visibility */
+    filter: brightness(0) invert(1) opacity(1);
+}
+
+/* Special handling for Hugging Face - use a different approach to preserve shapes */
+.platform-logo img[src*="huggingface-color.svg"] {
+    /* Use grayscale and brightness to make it visible but preserve shapes */
+    filter: grayscale(100%) brightness(3) contrast(0.8) opacity(0.9);
+}
+
+.platform-logo:hover img[src*="huggingface-color.svg"] {
+    /* Show original colors on hover */
+    filter: brightness(1) invert(0) opacity(1) contrast(1) grayscale(0%);
+}
+
+.platform-logo span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #e5e7eb;
+    text-align: center;
+}

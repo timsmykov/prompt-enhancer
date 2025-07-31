@@ -227,6 +227,58 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Hero Typing Animation
+        const typingText = document.getElementById('typingText');
+        if (!typingText) return; // Safety check
+        
+        const phrases = [
+            '"help me code"',
+            '"write an email"',
+            '"explain this concept"',
+            '"create content"',
+            '"solve this problem"',
+            '"analyze data"'
+        ];
+        
+        let currentPhrase = 0;
+        let currentChar = 0;
+        let isDeleting = false;
+        let isWaiting = false;
+        
+        function typeEffect() {
+            const current = phrases[currentPhrase];
+            
+            if (isWaiting) {
+                setTimeout(typeEffect, 1500); // Wait before starting to delete
+                isWaiting = false;
+                isDeleting = true;
+                return;
+            }
+            
+            if (isDeleting) {
+                typingText.textContent = current.substring(0, currentChar - 1);
+                currentChar--;
+                
+                if (currentChar === 0) {
+                    isDeleting = false;
+                    currentPhrase = (currentPhrase + 1) % phrases.length;
+                }
+            } else {
+                typingText.textContent = current.substring(0, currentChar + 1);
+                currentChar++;
+                
+                if (currentChar === current.length) {
+                    isWaiting = true;
+                }
+            }
+            
+            const speed = isDeleting ? 50 : 100;
+            setTimeout(typeEffect, speed);
+        }
+        
+        // Start the typing effect
+        typeEffect();
     });
 
     // Simple analytics tracking
@@ -276,8 +328,9 @@
     window.addEventListener('scroll', () => {
         const heroSection = document.querySelector('.hero');
         const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-        const scrollPosition = window.scrollY + window.innerHeight;
+        const scrollPosition = window.scrollY;
 
+        // Only show sticky CTA when user has scrolled past the entire hero section
         if (scrollPosition > heroBottom && !hasScrolledPastHero) {
             hasScrolledPastHero = true;
             stickyCta.classList.add('visible');
@@ -290,12 +343,12 @@
         // Hide sticky CTA when near waitlist section
         const waitlistSection = document.getElementById('waitlist');
         const waitlistTop = waitlistSection.offsetTop;
-        const distanceToWaitlist = waitlistTop - window.scrollY;
+        const distanceToWaitlist = waitlistTop - scrollPosition;
 
         if (distanceToWaitlist < window.innerHeight) {
             stickyCta.style.opacity = '0';
             stickyCta.style.pointerEvents = 'none';
-        } else {
+        } else if (hasScrolledPastHero) {
             stickyCta.style.opacity = '1';
             stickyCta.style.pointerEvents = 'auto';
         }
@@ -330,5 +383,118 @@
             error_line: e.lineno
         });
     });
+
+    // Manual drag functionality for platforms scroll
+    const platformsScroll = document.querySelector('.platforms-scroll');
+    const platformsContainer = document.querySelector('.platforms-scroll-container');
+    
+    if (platformsScroll && platformsContainer) {
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let transformValue = 0;
+
+        // Prevent any interference from child elements
+        platformsScroll.style.pointerEvents = 'auto';
+        
+        // Mouse down - start dragging
+        const startDrag = (clientX) => {
+            isDragging = true;
+            startX = clientX;
+            
+            // Get current transform position
+            const computedStyle = window.getComputedStyle(platformsScroll);
+            const matrix = computedStyle.transform;
+            if (matrix !== 'none') {
+                const matrixArray = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
+                transformValue = parseFloat(matrixArray[4]) || 0;
+            } else {
+                transformValue = 0;
+            }
+            
+            // Stop CSS animation during drag
+            platformsScroll.style.animationPlayState = 'paused';
+            platformsScroll.style.cursor = 'grabbing';
+            platformsContainer.style.cursor = 'grabbing';
+            platformsScroll.classList.add('dragging');
+            
+            console.log('Drag started at:', clientX);
+        };
+
+        // Mouse move - drag element
+        const doDrag = (clientX) => {
+            if (!isDragging) return;
+            
+            const deltaX = clientX - startX;
+            const newTransform = transformValue + deltaX;
+            
+            // Apply transform immediately for instant feedback
+            platformsScroll.style.transform = `translateX(${newTransform}px)`;
+            
+            console.log('Dragging to:', newTransform);
+        };
+
+        // Mouse up - stop dragging
+        const stopDrag = () => {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            platformsScroll.style.cursor = 'grab';
+            platformsContainer.style.cursor = 'grab';
+            platformsScroll.classList.remove('dragging');
+            
+            // Resume animation after a delay
+            setTimeout(() => {
+                platformsScroll.style.animationPlayState = 'running';
+                // Clear manual transform to let animation take over
+                setTimeout(() => {
+                    platformsScroll.style.transform = '';
+                }, 200);
+            }, 1000);
+            
+            console.log('Drag stopped');
+        };
+
+        // Mouse events on the container (larger hit area)
+        platformsContainer.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startDrag(e.clientX);
+        });
+
+        // Global mouse events for smooth tracking
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                doDrag(e.clientX);
+            }
+        });
+
+        document.addEventListener('mouseup', stopDrag);
+        
+        // Touch events for mobile
+        platformsContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrag(e.touches[0].clientX);
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                doDrag(e.touches[0].clientX);
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', stopDrag);
+
+        // Set initial cursor
+        platformsScroll.style.cursor = 'grab';
+        platformsContainer.style.cursor = 'grab';
+        
+        // Prevent text selection
+        platformsScroll.style.userSelect = 'none';
+        platformsContainer.style.userSelect = 'none';
+        
+        console.log('Drag functionality initialized');
+    }
 
 })();

@@ -1,0 +1,34 @@
+/* Main CSS Index - Imports all modular stylesheets */
+
+/* Base styles - reset, typography, layout */
+@import url('./base.css');
+
+/* Reusable components - buttons, forms, sticky CTA */
+@import url('./components.css');
+
+/* Hero section styles */
+@import url('./hero.css');
+
+/* Browser mockup and chat interface */
+@import url('./mockup.css');
+
+/* Page sections - benefits, how it works, waitlist, FAQ, pricing */
+@import url('./sections.css');
+
+/* Social proof, stats, testimonials, before/after, demo */
+@import url('./social-proof.css');
+
+/* Footer styles */
+@import url('./footer.css');
+
+/* Animations and keyframes */
+@import url('./animations.css');
+
+/* Waitlist-specific styles */
+@import url('./waitlist.css');
+
+/* Loading overlay styles */
+@import url('./loading.css');
+
+/* Responsive design - mobile and tablet breakpoints */
+@import url('./responsive.css');
