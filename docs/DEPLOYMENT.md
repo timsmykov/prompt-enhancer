@@ -140,7 +140,7 @@ All prompt enhancement happens locally in your browser.
 - storage: To save user preferences locally
 
 ## Contact
-For questions: support@promptenhancer.com
+For questions: timofeysmykov@gmail.com
 ```
 
 #### 7. Submission Process

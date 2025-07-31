@@ -137,9 +137,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Email**: support@promptenhancer.com
-- **GitHub Issues**: [Create an issue](https://github.com/yourusername/prompt-enhancer/issues)
-- **Twitter**: [@promptenhancer](https://twitter.com/promptenhancer)
+- **Email**: timofeysmykov@gmail.com
+- **GitHub Issues**: [Create an issue](https://github.com/timsmykov/prompt-enhancer/issues)
+- **X (Twitter)**: [@timsmykov](https://x.com/timsmykov)
 
 ## 🙏 Acknowledgments
 

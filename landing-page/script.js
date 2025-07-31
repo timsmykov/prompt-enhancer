@@ -97,7 +97,7 @@
             // Fallback: try to open email client
             const subject = encodeURIComponent('Prompt Enhancer Waitlist Request');
             const body = encodeURIComponent(`Hello!\n\nMy name is ${name}, and I want to join the waitlist for Prompt Enhancer.\n\nMy email: ${email}\n\nThank you!`);
-            const mailtoLink = `mailto:support@promptenhancer.com?subject=${subject}&body=${body}`;
+            const mailtoLink = `mailto:timofeysmykov@gmail.com?subject=${subject}&body=${body}`;
             
             if (confirm('Could not submit form automatically. Open email client to send request?')) {
                 window.location.href = mailtoLink;
@@ -105,7 +105,7 @@
                 waitlistForm.style.display = 'none';
                 formSuccess.style.display = 'block';
             } else {
-                alert('Please try again or email us at support@promptenhancer.com');
+                alert('Please try again or email us at timofeysmykov@gmail.com');
             }
         } finally {
             // Restore button state
