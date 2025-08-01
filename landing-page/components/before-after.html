@@ -1,43 +1,148 @@
-<!-- Before/After Comparison Section -->
+<!-- Before/After Comparison Section - Refined Design -->
 <section class="before-after">
     <div class="container">
-        <h2 class="section-title">See the Difference</h2>
-        <div class="comparison-grid">
-            <div class="comparison-card before">
-                <div class="comparison-header">
-                    <span class="comparison-icon">❌</span>
-                    <h3>Before Enhancement</h3>
-                </div>
-                <div class="prompt-example">
-                    <div class="prompt-label">Your Original Prompt:</div>
-                    <div class="prompt-text">"How to cook pasta?"</div>
-                </div>
-                <div class="response-preview">
-                    <div class="response-label">AI Response:</div>
-                    <div class="response-text">Basic instructions: Boil water, add pasta, cook for 8-12 minutes,
-                        drain.</div>
-                </div>
-            </div>
-            <div class="comparison-arrow">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12h14m-7-7l7 7-7 7" stroke="#10b981" stroke-width="2" />
+        <!-- Section Header -->
+        <div class="before-after-header">
+            <div class="header-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
+                <span>Real Results</span>
             </div>
-            <div class="comparison-card after">
-                <div class="comparison-header">
-                    <span class="comparison-icon">✅</span>
-                    <h3>After Enhancement</h3>
+            <h2 class="section-title">See the Difference</h2>
+            <p class="section-subtitle">
+                Watch how Prompt Enhancer transforms simple questions into detailed, professional requests that get
+                better AI responses
+            </p>
+        </div>
+
+        <!-- Comparison Container -->
+        <div class="comparison-container">
+            <!-- Before Card -->
+            <div class="comparison-card before-card">
+                <div class="card-header">
+                    <div class="status-indicator before-indicator">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                    </div>
+                    <div class="card-title">
+                        <h3>Before Enhancement</h3>
+                        <p>Your Original Prompt</p>
+                    </div>
                 </div>
-                <div class="prompt-example">
-                    <div class="prompt-label">Enhanced Prompt:</div>
-                    <div class="prompt-text">"Please provide a comprehensive guide to cooking pasta perfectly,
-                        including step-by-step instructions, optimal cooking times for different pasta types, common
-                        mistakes to avoid, and tips for achieving the ideal texture."</div>
+
+                <div class="prompt-container">
+                    <div class="prompt-input">
+                        <div class="input-label">Input</div>
+                        <div class="prompt-content">
+                            "How to cook pasta?"
+                        </div>
+                    </div>
+
+                    <div class="response-preview">
+                        <div class="response-label">AI Response</div>
+                        <div class="response-content">
+                            Basic instructions: Boil water, add pasta, cook for 8-12 minutes, drain.
+                        </div>
+                        <div class="response-quality poor">
+                            <span class="quality-indicator"></span>
+                            <span>Basic response</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="response-preview">
-                    <div class="response-label">AI Response:</div>
-                    <div class="response-text">Detailed guide with water ratios, salt amounts, timing charts,
-                        texture tests, sauce pairing tips, and troubleshooting advice.</div>
+            </div>
+
+            <!-- Enhancement Arrow -->
+            <div class="enhancement-arrow">
+                <div class="arrow-container">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <div class="arrow-label">Enhanced</div>
+                </div>
+            </div>
+
+            <!-- After Card -->
+            <div class="comparison-card after-card">
+                <div class="card-header">
+                    <div class="status-indicator after-indicator">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
+                        </svg>
+                    </div>
+                    <div class="card-title">
+                        <h3>After Enhancement</h3>
+                        <p>Enhanced Prompt</p>
+                    </div>
+                </div>
+
+                <div class="prompt-container">
+                    <div class="prompt-input">
+                        <div class="input-label">Enhanced Input</div>
+                        <div class="prompt-content enhanced">
+                            "Please provide a comprehensive guide to cooking pasta perfectly, including step-by-step
+                            instructions, optimal cooking times for different pasta types, common mistakes to avoid, and
+                            tips for achieving the ideal texture."
+                        </div>
+                    </div>
+
+                    <div class="response-preview">
+                        <div class="response-label">AI Response</div>
+                        <div class="response-content enhanced">
+                            Detailed guide with water ratios, salt amounts, timing charts, texture tests, sauce pairing
+                            tips, and troubleshooting advice.
+                        </div>
+                        <div class="response-quality excellent">
+                            <span class="quality-indicator"></span>
+                            <span>Comprehensive response</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Summary -->
+        <div class="results-summary">
+            <div class="summary-item">
+                <div class="summary-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-number">5x</span>
+                    <span class="summary-label">More Detailed</span>
+                </div>
+            </div>
+
+            <div class="summary-item">
+                <div class="summary-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                    </svg>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-number">2s</span>
+                    <span class="summary-label">Enhancement Time</span>
+                </div>
+            </div>
+
+            <div class="summary-item">
+                <div class="summary-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-number">92%</span>
+                    <span class="summary-label">Better Results</span>
                 </div>
             </div>
         </div>

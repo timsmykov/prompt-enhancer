@@ -26,10 +26,14 @@ function initializeStickyCTA() {
         observer.observe(waitlistSection);
     }
     
-    // Show sticky CTA after scrolling down
+    // Show sticky CTA after scrolling past hero section
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 800) {
-            stickyCta.classList.add('visible');
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+            const heroHeight = heroSection.offsetHeight;
+            if (window.scrollY > heroHeight * 0.9) { // Show when 90% past hero
+                stickyCta.classList.add('visible');
+            }
         }
     });
 }

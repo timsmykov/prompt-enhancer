@@ -6,6 +6,16 @@
         padding: 0 16px;
     }
     
+    /* Hero Section Tablet */
+    .hero {
+        min-height: 100vh; /* Maintain full viewport height on tablet */
+        min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+        height: auto; /* Allow content to determine height on tablet */
+        padding: 4rem 0 2.5rem; /* Adjusted padding for tablet */
+        justify-content: flex-start; /* Start from top on tablet */
+        overflow: visible; /* Ensure platform logos visible on tablet */
+    }
+    
     .hero-content {
         gap: 40px;
     }
@@ -37,13 +47,21 @@
     
     /* Hero Section Mobile */
     .hero {
-        padding: 60px 0 30px;
+        min-height: 100vh; /* Maintain full viewport height on mobile */
+        min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+        height: auto; /* Allow content to determine height on mobile */
+        padding: 3rem 0 2rem; /* Adjusted padding for mobile */
+        justify-content: flex-start; /* Start from top on mobile too */
+        overflow: visible; /* Ensure platform logos visible on mobile */
     }
     
     .hero-content {
         grid-template-columns: 1fr;
         gap: 30px;
         text-align: center;
+        padding: 0 1rem; /* Add horizontal padding for mobile */
+        max-width: 100%; /* Ensure content fits on mobile */
+        margin-bottom: 1rem; /* Reduced margin for mobile to show platforms */
     }
     
     .hero-title {
@@ -86,8 +104,14 @@
     }
     
     /* Platforms Mobile */
+    .hero-platforms {
+        margin: 1.5rem auto 0 auto; /* Reduced margin for mobile */
+        padding: 0 1rem; /* Reduced padding for mobile */
+    }
+    
     .platforms-scroll {
         gap: 1.5rem;
+        justify-content: flex-start; /* Allow natural scroll on mobile */
     }
     
     .platform-logo {
@@ -293,6 +317,29 @@
     }
 }
 
+/* Mobile Landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: auto; /* Allow content to determine height in landscape */
+        padding: 2rem 0; /* Add some padding for landscape */
+    }
+    
+    .hero-content {
+        gap: 20px; /* Reduce gap for landscape */
+    }
+    
+    .hero-title {
+        font-size: 2rem; /* Smaller title for landscape */
+    }
+    
+    .hero-buttons {
+        flex-direction: row; /* Row layout for landscape */
+        gap: 1rem;
+    }
+}
+
 /* Small Mobile Styles */
 @media (max-width: 480px) {
     .hero-title {
@@ -452,5 +499,58 @@
     
     .platform-logo {
         border-color: #ffffff;
+    }
+}
+
+/* Large Desktop Styles */
+@media (min-width: 1440px) {
+    .hero-content {
+        max-width: 1400px; /* Prevent content from getting too wide on large screens */
+        gap: 80px; /* Increase gap for larger screens */
+    }
+    
+    .hero-title {
+        font-size: 4rem; /* Slightly larger title for big screens */
+    }
+    
+    .hero-subtitle {
+        font-size: 1.75rem;
+    }
+}
+
+/* Ultra-wide Desktop Styles */
+@media (min-width: 1920px) {
+    .hero-content {
+        max-width: 1600px; /* Cap width for ultra-wide screens */
+        gap: 100px;
+    }
+    
+    .hero-title {
+        font-size: 4.5rem;
+    }
+}
+
+/* MacBook optimizations */
+@media screen and (min-width: 1280px) and (max-width: 1440px) and (min-height: 800px) {
+    .hero {
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+    
+    .hero-content {
+        max-width: 1200px;
+        gap: 60px;
+    }
+    
+    .hero-title {
+        font-size: 3.75rem; /* Optimized for MacBook screens */
+    }
+}
+
+/* MacBook Pro 16" optimizations */
+@media screen and (width: 1728px) and (height: 1117px) {
+    .hero-content {
+        max-width: 1400px;
+        gap: 80px;
     }
 }

@@ -94,12 +94,13 @@ export class ScrollEffects {
 
     initScrollAnimations() {
         // Intersection Observer for entrance animations
-        const observeElements = document.querySelectorAll('.benefit-card, .step, .testimonial-card, .faq-item');
+        const observeElements = document.querySelectorAll('.benefit-card, .step, .testimonial-card, .faq-item, .stat-card');
         
         const animationObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
                     setTimeout(() => {
+                        entry.target.classList.add('animate-in');
                         entry.target.style.animation = 'slideInFromBottom 0.6s ease forwards';
                         entry.target.style.opacity = '1';
                         entry.target.style.transform = 'translateY(0)';

@@ -84,6 +84,7 @@
     box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
     transform: translateY(100px);
     opacity: 0;
+    visibility: hidden; /* Ensure it's completely hidden initially */
     transition: all 0.3s ease;
     border: none;
     cursor: pointer;
@@ -93,6 +94,7 @@
 .sticky-cta.visible {
     transform: translateY(0);
     opacity: 1;
+    visibility: visible; /* Make it visible when shown */
 }
 
 .sticky-cta:hover {

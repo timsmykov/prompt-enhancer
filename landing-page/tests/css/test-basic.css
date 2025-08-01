@@ -1,0 +1,28 @@
+/* Basic test page styles */
+body { 
+    font-family: Arial, sans-serif; 
+    background: #0f0f0f; 
+    color: white; 
+    padding: 20px;
+}
+
+.test-section {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+.test-success {
+    color: #10b981;
+}
+
+.test-error {
+    color: #ef4444;
+}
+
+.test-link {
+    color: #10b981; 
+    text-decoration: none; 
+    font-weight: bold;
+}

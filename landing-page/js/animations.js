@@ -62,11 +62,12 @@ function initializeSmoothScrolling() {
 }
 
 function initializeScrollAnimations() {
-    const animatedElements = document.querySelectorAll('.benefit-card, .testimonial-card, .step, .pricing-card');
+    const animatedElements = document.querySelectorAll('.benefit-card, .testimonial-card, .step, .pricing-card, .stat-card');
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
                 entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateY(0)';
             }

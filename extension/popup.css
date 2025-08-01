@@ -172,3 +172,23 @@ body {
 .tab-content.active {
   display: block;
 }
+
+/* History tab specific styles */
+.history-empty-message {
+  text-align: center; 
+  color: #6b7280; 
+  margin: 20px 0;
+}
+
+.clear-history-btn {
+  background: #ef4444;
+}
+
+/* Additional popup styles */
+.enhanced-result-hidden {
+  display: none;
+}
+
+.stats-hidden {
+  display: none;
+}

@@ -191,11 +191,72 @@
 }
 
 @keyframes blink {
-    0%, 50% { 
+    0%, 49% { 
         opacity: 1; 
     }
-    51%, 100% { 
+    50%, 100% { 
         opacity: 0; 
+    }
+}
+
+/* New animation for the beautiful typewriter effect */
+@keyframes char-in {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Button transformation animations */
+@keyframes buttonEnhancing {
+    0% {
+        transform: scale(1);
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    50% {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+}
+
+@keyframes buttonSuccess {
+    0% {
+        transform: scale(1);
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+    50% {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    }
+}
+
+@keyframes textareaEnhancing {
+    0% {
+        background: transparent;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        background: rgba(59, 130, 246, 0.05);
+        border-color: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    }
+    100% {
+        background: rgba(59, 130, 246, 0.05);
+        border-color: rgba(59, 130, 246, 0.3);
     }
 }
 

@@ -2,13 +2,26 @@
 
 /* Hero Section */
 .hero {
-    padding: 120px 0 80px; /* Adjusted padding */
+    height: 100vh;
+    /* Exact viewport height */
+    height: 100dvh;
+    /* Dynamic viewport height for mobile browsers */
+    min-height: 100vh;
+    /* Fallback for older browsers */
+    padding: 0;
+    /* Remove padding to allow true centering */
     background: linear-gradient(180deg, #1a1a1a 0%, #171717 100%);
     position: relative;
     overflow: hidden;
+    /* Prevent content from spilling out */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center content vertically */
+    justify-content: center;
+    /* Center content vertically */
+    align-items: center;
+    /* Center content horizontally */
+    box-sizing: border-box;
+    /* Include padding in height calculation */
 }
 
 .hero::before {
@@ -39,36 +52,45 @@
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: center;
+    justify-items: center;
     position: relative;
     z-index: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 6em auto 0; /* Add top margin to offset header, center horizontally */
+    padding: 0 2rem;
+    flex: 1;
+    align-content: center;
+    min-height: 0; /* Allow content to shrink if needed */
 }
 
 .hero-title {
-    font-size: 3.5rem;
+    font-size: 3rem;
     font-weight: 800;
     line-height: 1.1;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
 }
 
 .hero-subtitle {
     font-size: 1.5rem;
     color: #9ca3af;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     font-weight: 500;
 }
 
 .hero-description {
     font-size: 1.1rem;
     color: #d1d5db;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     line-height: 1.7;
 }
 
 .hero-buttons {
     display: flex;
     gap: 1rem;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
 }
 
 .hero-buttons .btn-primary {
@@ -79,10 +101,13 @@
 }
 
 @keyframes heroCtaPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
         transform: scale(1);
     }
+
     50% {
         box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         transform: scale(1.02);
@@ -91,7 +116,7 @@
 
 /* Hero Enhanced Elements */
 .value-proposition {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .typing-container {
@@ -100,25 +125,58 @@
     color: #e5e7eb;
     margin-bottom: 0.5rem;
     min-height: 1.6rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    /* Add space between elements */
+    flex-wrap: wrap;
+    /* Allow wrapping if needed */
 }
 
 .typing-prefix {
     color: #d1d5db;
+    flex-shrink: 0;
+    margin-right: 0.25rem;
+    /* Extra space after "Transform" */
 }
 
 .typing-text {
     color: #10b981;
     font-weight: 700;
+    min-width: 0;
+    flex-shrink: 0;
+    /* Prevent any transitions or animations on text changes */
+    transition: none !important;
+    animation: none !important;
+    /* Ensure consistent rendering */
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    /* Add minimum width to prevent layout shifts */
+    min-width: 8rem;
+    display: inline-block;
 }
 
 .typing-cursor {
     color: #10b981;
     animation: blink 1s infinite;
+    flex-shrink: 0;
+    margin-left: 0.125rem;
+    /* Slight space before cursor */
+    font-weight: 400;
+    /* Make cursor slightly thinner */
 }
 
 @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
 }
 
 .value-subtitle {
@@ -263,26 +321,43 @@
 
 /* Hero Platforms Section */
 .hero-platforms {
-    margin-top: 3rem;
+    margin: 2rem auto 0;
     text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: inherit;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 .platforms-text {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #9ca3af;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     font-weight: 500;
 }
 
 .platforms-scroll-container {
     overflow: hidden;
     width: 100%;
+    max-width: 100%;
+    /* Ensure it doesn't exceed container */
     padding: 1rem 0;
     mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
     -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
     cursor: grab;
     user-select: none;
     -webkit-user-select: none;
+    display: flex;
+    justify-content: center;
+    /* Center the scroll container */
 }
 
 .platforms-scroll {
@@ -298,6 +373,9 @@
     /* Ensure smooth rendering */
     transform: translateZ(0);
     backface-visibility: hidden;
+    /* Center the scroll content */
+    justify-content: center;
+    align-items: center;
 }
 
 .platforms-scroll:active {
@@ -313,6 +391,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    /* Center content vertically */
     gap: 0.75rem;
     padding: 1.5rem 2rem;
     background: rgba(255, 255, 255, 0.02);
@@ -322,6 +402,8 @@
     backdrop-filter: blur(10px);
     min-width: 120px;
     flex-shrink: 0;
+    text-align: center;
+    /* Ensure text is centered */
 }
 
 .platform-logo:hover {
@@ -375,4 +457,344 @@
     font-weight: 500;
     color: #e5e7eb;
     text-align: center;
+}
+
+/* Fallback for browsers that don't support dvh */
+@supports not (height: 100dvh) {
+    .hero {
+        height: 100vh !important;
+        min-height: 100vh !important;
+    }
+}
+
+/* Ensure proper height on iOS Safari where viewport units can be tricky */
+@supports (-webkit-touch-callout: none) {
+    .hero {
+        height: -webkit-fill-available;
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-height: 800px) {
+    .hero-content {
+        gap: 40px;
+        margin-top: 30px; /* Smaller offset for shorter screens */
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .value-proposition {
+        margin-bottom: 1.2rem;
+    }
+
+    .hero-buttons {
+        margin-bottom: 1.2rem;
+    }
+
+    .hero-platforms {
+        margin-top: 1.5rem;
+    }
+
+    .platforms-text {
+        font-size: 0.95rem;
+        margin-bottom: 1.2rem;
+    }
+}
+
+@media (max-height: 700px) {
+    .hero-content {
+        gap: 30px;
+        margin-top: 20px; /* Even smaller offset for very short screens */
+    }
+
+    .hero-title {
+        font-size: 2.4rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .hero-description {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .value-proposition {
+        margin-bottom: 1rem;
+    }
+
+    .hero-buttons {
+        margin-bottom: 1rem;
+    }
+
+    .typing-container {
+        font-size: 1.1rem;
+    }
+
+    .platform-logo {
+        padding: 1rem 1.5rem;
+        min-width: 100px;
+    }
+
+    .platform-logo img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .hero-platforms {
+        margin-top: 1rem;
+    }
+
+    .platforms-text {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Tablet and mobile responsive */
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+        justify-items: center;
+        align-content: center;
+        margin-top: 35px; /* Mobile header offset */
+    }
+
+    .hero-text {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+        white-space: normal; /* Allow wrapping on mobile */
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+/* 
+Enhanced centering for all screen sizes */
+
+/* ChatGPT Bottom Toolbar Styles */
+.chatgpt-bottom-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12px 12px;
+    margin-top: 4px;
+}
+
+.chatgpt-left-tools,
+.chatgpt-right-tools {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chatgpt-tool-btn {
+    background: none;
+    border: none;
+    color: #8e8ea0;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.chatgpt-tool-btn:hover {
+    color: #ececf1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.chatgpt-tools-btn {
+    padding: 8px 12px;
+}
+
+.chatgpt-send-btn {
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    color: #ececf1;
+}
+
+/* SVG Icon Styling for ChatGPT Toolbar */
+.chatgpt-tool-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.chatgpt-send-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.chatgpt-tool-btn.enhance-btn-integrated svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* AI Avatar SVG Icon */
+.message-avatar svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}/* Ad
+ditional centering improvements */
+@media (max-width: 480px) {
+    .hero-content {
+        margin-top: 30px; /* Smaller mobile header offset */
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .hero-description {
+        font-size: 0.95rem;
+    }
+
+    .hero-buttons .btn {
+        padding: 14px 24px;
+        font-size: 16px;
+    }
+}
+
+/* Ensure perfect centering on very tall screens */
+@media (min-height: 900px) {
+    .hero {
+        padding-top: 80px;
+        padding-bottom: 3rem;
+    }
+
+    .hero-platforms {
+        margin-top: 3rem;
+    }
+}
+
+/* Ultra-wide screen adjustments */
+@media (min-width: 1400px) {
+    .hero-content {
+        max-width: 1400px;
+        gap: 80px;
+    }
+}
+
+/* Ensure content never gets cut off on very short screens */
+@media (max-height: 600px) {
+    .hero {
+        min-height: 600px;
+        height: auto;
+    }
+    
+    .hero-content {
+        margin-top: 10px; /* Minimal offset for very short screens */
+    }
+
+    .hero-title {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .hero-description {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .value-proposition {
+        margin-bottom: 1rem;
+    }
+
+    .hero-buttons {
+        margin-bottom: 1rem;
+    }
+
+    .hero-platforms {
+        margin-top: 1rem;
+    }
+
+    .platforms-text {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .platform-logo {
+        padding: 0.75rem 1rem;
+        min-width: 80px;
+    }
+
+    .platform-logo img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .platform-logo span {
+        font-size: 0.8rem;
+    }
+}/* 
+Hero Image Container - Prevent Expansion */
+.hero-image {
+    width: 100%;
+    max-width: 500px; /* Match mockup max-width */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Don't shrink in grid */
+}
+
+/* Additional text wrapping for any long content */
+.hero-text {
+    max-width: 100%;
+}
+
+.hero-text * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }

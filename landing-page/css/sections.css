@@ -2,19 +2,30 @@
 
 /* Benefits Section */
 .benefits {
-    padding: 80px 0;
+    min-height: 100vh;
+    max-height: 100vh;
+    padding: 3rem 0 2rem;
     background: linear-gradient(180deg, #111111 0%, #101010 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .benefits-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    flex: 1;
+    align-content: center;
+    justify-items: center;
+    width: 100%;
+    max-width: 1200px;
 }
 
 .benefit-card {
     background: rgba(255, 255, 255, 0.02);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -128,10 +139,16 @@
 
 /* Waitlist Section */
 .waitlist {
-    padding: 100px 0;
+    min-height: 100vh;
+    max-height: 100vh;
+    padding: 3rem 0 2rem;
     background: linear-gradient(180deg, #0f0f0f 0%, #0e0e0e 100%);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .waitlist::before {
@@ -149,12 +166,16 @@
     text-align: center;
     position: relative;
     z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .waitlist-subtitle {
     font-size: 1.2rem;
     color: #9ca3af;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -209,13 +230,23 @@
 
 /* FAQ Section */
 .faq {
-    padding: 80px 0;
+    min-height: 100vh;
+    max-height: 100vh;
+    padding: 3rem 0 2rem;
     background: linear-gradient(180deg, #0e0e0e 0%, #0d0d0d 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .faq-list {
     max-width: 800px;
     margin: 0 auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .faq-item {
@@ -283,9 +314,15 @@
 
 /* Pricing Section */
 .pricing {
-    padding: 80px 0;
+    min-height: 100vh;
+    max-height: 100vh;
+    padding: 3rem 0 2rem;
     background: linear-gradient(180deg, #151515 0%, #141414 100%);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .pricing::before {
@@ -308,24 +345,28 @@
     text-align: center;
     font-size: 1.2rem;
     color: #9ca3af;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     font-weight: 400;
 }
 
 .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2.5rem;
-    max-width: 900px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 800px;
     margin: 0 auto;
     align-items: stretch;
+    flex: 1;
+    align-content: center;
+    justify-items: center;
+    width: 100%;
 }
 
 .pricing-card {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    padding: 2.5rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
@@ -453,4 +494,99 @@
     font-size: 0.9rem;
     color: #9ca3af;
     margin: 0;
+}
+/* Height-specific responsive adjustments */
+@media (max-height: 800px) {
+    .benefits,
+    .waitlist,
+    .pricing,
+    .faq {
+        padding: 2rem 0 1rem;
+    }
+    
+    .benefits-grid,
+    .pricing-grid {
+        gap: 1rem;
+    }
+    
+    .benefit-card,
+    .pricing-card {
+        padding: 1rem;
+    }
+    
+    .waitlist-subtitle {
+        margin-bottom: 1.5rem;
+    }
+    
+    .faq-item {
+        margin-bottom: 0.5rem;
+    }
+    
+    .faq-question {
+        padding: 1rem 1.5rem;
+    }
+}
+
+@media (max-height: 700px) {
+    .benefits,
+    .waitlist,
+    .pricing,
+    .faq {
+        padding: 1.5rem 0 1rem;
+    }
+    
+    .section-title {
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+    }
+}/*
+ Enhanced centering for all sections */
+.benefits .container,
+.waitlist .container,
+.pricing .container,
+.faq .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Section titles centering */
+.section-title {
+    text-align: center;
+    width: 100%;
+}
+
+/* Responsive centering adjustments */
+@media (max-width: 1024px) {
+    .benefits-grid,
+    .pricing-grid {
+        justify-items: center;
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .benefits-grid,
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        justify-items: center;
+    }
+    
+    .benefit-card,
+    .pricing-card {
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .faq-list {
+        width: 100%;
+        max-width: 600px;
+    }
 }

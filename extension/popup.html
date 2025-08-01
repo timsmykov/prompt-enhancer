@@ -30,7 +30,7 @@
             
             <button id="enhanceBtn" class="button">✨ Enhance Prompt</button>
             
-            <div id="enhancedResult" style="display: none;">
+            <div id="enhancedResult" class="enhanced-result-hidden">
                 <div class="form-group">
                     <label class="label">Enhanced Prompt:</label>
                     <textarea id="enhancedOutput" class="textarea" readonly></textarea>
@@ -38,7 +38,7 @@
                 <button id="copyBtn" class="button">📋 Copy to Clipboard</button>
             </div>
 
-            <div id="stats" class="stats" style="display: none;">
+            <div id="stats" class="stats stats-hidden">
                 <h3>Enhancement Stats</h3>
                 <div class="stat-item">
                     <span class="stat-label">Words Added:</span>
@@ -73,9 +73,9 @@
         <!-- History Tab -->
         <div id="history-tab" class="tab-content">
             <div id="historyList">
-                <p style="text-align: center; color: #6b7280; margin: 20px 0;">No recent enhancements</p>
+                <p class="history-empty-message">No recent enhancements</p>
             </div>
-            <button id="clearHistoryBtn" class="button" style="background: #ef4444;">🗑️ Clear History</button>
+            <button id="clearHistoryBtn" class="button clear-history-btn">🗑️ Clear History</button>
         </div>
     </div>
 
