@@ -69,39 +69,6 @@
     transform: translateY(-2px);
 }
 
-/* Sticky CTA */
-.sticky-cta {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    padding: 16px 32px;
-    font-size: 18px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    border-radius: 50px;
-    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
-    transform: translateY(100px);
-    opacity: 0;
-    visibility: hidden; /* Ensure it's completely hidden initially */
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    animation: pulse 2s infinite;
-}
-
-.sticky-cta.visible {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible; /* Make it visible when shown */
-}
-
-.sticky-cta:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5);
-}
-
 /* Enhanced ChatGPT Input Styles */
 .enhance-btn-integrated {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;

@@ -321,38 +321,7 @@
         }
     });
 
-    // Sticky CTA functionality
-    const stickyCta = document.getElementById('sticky-cta');
-    let hasScrolledPastHero = false;
-
-    window.addEventListener('scroll', () => {
-        const heroSection = document.querySelector('.hero');
-        const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-        const scrollPosition = window.scrollY;
-
-        // Only show sticky CTA when user has scrolled past the entire hero section
-        if (scrollPosition > heroBottom && !hasScrolledPastHero) {
-            hasScrolledPastHero = true;
-            stickyCta.classList.add('visible');
-            trackEvent('sticky_cta_shown');
-        } else if (scrollPosition <= heroBottom && hasScrolledPastHero) {
-            hasScrolledPastHero = false;
-            stickyCta.classList.remove('visible');
-        }
-
-        // Hide sticky CTA when near waitlist section
-        const waitlistSection = document.getElementById('waitlist');
-        const waitlistTop = waitlistSection.offsetTop;
-        const distanceToWaitlist = waitlistTop - scrollPosition;
-
-        if (distanceToWaitlist < window.innerHeight) {
-            stickyCta.style.opacity = '0';
-            stickyCta.style.pointerEvents = 'none';
-        } else if (hasScrolledPastHero) {
-            stickyCta.style.opacity = '1';
-            stickyCta.style.pointerEvents = 'auto';
-        }
-    });
+    // Sticky CTA removed - using header CTA only
 
     // Track clicks on external links
     document.addEventListener('click', (e) => {

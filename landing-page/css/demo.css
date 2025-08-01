@@ -231,19 +231,30 @@
 
 .demo-note {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
     background: rgba(59, 130, 246, 0.05);
     border: 1px solid rgba(59, 130, 246, 0.1);
-    border-radius: 20px;
-    color: #9ca3af;
-    font-size: 0.85rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
 }
 
-.demo-note svg {
+.note-icon {
     color: #3b82f6;
     flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.demo-note p {
+    color: #d1d5db;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.demo-note strong {
+    color: #ffffff;
 }
 
 .demo-cta-btn {
@@ -358,6 +369,46 @@
     50% {
         box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
     }
+}
+
+/* SVG Styling - All SVG elements properly sized */
+.demo svg {
+    flex-shrink: 0;
+}
+
+.demo .header-badge svg {
+    width: 16px;
+    height: 16px;
+}
+
+.demo .enhance-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.demo .placeholder-message svg {
+    width: 20px;
+    height: 20px;
+}
+
+.demo .demo-note svg {
+    width: 16px;
+    height: 16px;
+}
+
+.demo .demo-cta-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Loading animation stroke styling */
+.btn-loading circle {
+    stroke-width: 2;
+}
+
+.btn-loading path {
+    stroke-width: 2;
+    stroke-linecap: round;
 }
 
 /* Responsive Design */
@@ -722,13 +773,28 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Focus states for accessibility */
-.demo-enhance-btn:focus-visible {
-    outline: 2px solid #10b981;
-    outline-offset: 2px;
+/* Scrollbar styling for result box */
+.result-box::-webkit-scrollbar {
+    width: 6px;
 }
 
-.demo-textarea:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+.result-box::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.result-box::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.3);
+    border-radius: 3px;
+}
+
+.result-box::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.5);
+}
+
+/* Focus states for accessibility */
+.demo-input:focus-visible,
+.enhance-btn:focus-visible {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
 }

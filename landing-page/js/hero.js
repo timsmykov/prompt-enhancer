@@ -4,9 +4,6 @@ console.log('🎯 Hero.js script loaded!');
 function initializeHero() {
     console.log('🎯 Initializing hero...');
 
-    // Initialize typing animation
-    initializeTypingAnimation();
-
     // Initialize scroll to waitlist button
     const joinWaitlistBtn = document.querySelector('.hero .btn-primary');
     if (joinWaitlistBtn) {
@@ -54,110 +51,31 @@ function scrollToWaitlist() {
     }
 }
 
-// Super simple typing animation - no complex state
-let typingTimer = null;
-
-function initializeTypingAnimation() {
-    console.log('🎯 Initializing simple typing animation...');
-
-    const element = document.getElementById('typingText');
-    if (!element) {
-        console.log('❌ typingText element not found');
-        return;
-    }
-
-    // Stop any existing animation
-    stopTypingAnimation();
-
-    const phrases = ['simple questions', 'basic requests', 'rough ideas', 'quick thoughts', 'unclear prompts'];
-    let currentPhrase = 0;
-    let currentChar = 0;
-    let isDeleting = false;
-
-    function updateText() {
-        const phrase = phrases[currentPhrase];
-
-        if (!isDeleting) {
-            // Typing - 2x faster (50ms instead of 100ms)
-            element.textContent = phrase.slice(0, currentChar);
-            currentChar++;
-
-            if (currentChar > phrase.length) {
-                // Finished typing, start deleting after pause - 2x faster (1000ms instead of 2000ms)
-                isDeleting = true;
-                typingTimer = setTimeout(updateText, 1000);
-                return;
-            }
-
-            typingTimer = setTimeout(updateText, 50);
-        } else {
-            // Deleting - 2x faster (25ms instead of 50ms)
-            element.textContent = phrase.slice(0, currentChar);
-            currentChar--;
-
-            if (currentChar < 0) {
-                // Finished deleting, move to next phrase - 2x faster (150ms instead of 300ms)
-                isDeleting = false;
-                currentChar = 0;
-                currentPhrase = (currentPhrase + 1) % phrases.length;
-                typingTimer = setTimeout(updateText, 150);
-                return;
-            }
-
-            typingTimer = setTimeout(updateText, 25);
-        }
-    }
-
-    // Start animation
+/**
+ * Types out the given text into an element with a blinking cursor effect.
+ * @param {HTMLElement} element The element to type into.
+ * @param {string} text The text to type.
+ * @param {function} callback Function to call when typing is complete.
+ */
+function typeText(element, text, callback) {
+    const typeSpeed = 20; // Speed of typing in milliseconds
+    let i = 0;
     element.textContent = '';
-    currentChar = 0;
-    isDeleting = false;
-    updateText();
+    element.classList.add('is-typing'); // Add for cursor
 
-    console.log('🎯 Simple typing animation started - 2x faster');
-}
-
-function stopTypingAnimation() {
-    if (typingTimer) {
-        clearTimeout(typingTimer);
-        typingTimer = null;
-        console.log('🎯 Typing animation stopped');
-    }
-}
-
-// Expose stop function globally for debugging
-window.stopTypingAnimation = stopTypingAnimation;
-
-// Cleanup on page unload to prevent memory leaks
-window.addEventListener('beforeunload', () => {
-    console.log('🎯 Page unloading - cleaning up typing animation');
-    stopTypingAnimation();
-});
-
-// Also cleanup if the hero component gets removed from DOM
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-            mutation.removedNodes.forEach((node) => {
-                if (node.nodeType === Node.ELEMENT_NODE) {
-                    const typingElementInNode = node.querySelector ? node.querySelector('#typingText') : null;
-                    if (typingElementInNode || node.id === 'typingText') {
-                        console.log('🎯 Typing element removed from DOM - stopping animation');
-                        stopTypingAnimation();
-                    }
-                }
-            });
+    function typing() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(typing, typeSpeed);
+        } else {
+            element.classList.remove('is-typing');
+            if (callback) {
+                callback();
+            }
         }
-    });
-});
-
-// Start observing when document is ready
-if (document.body) {
-    observer.observe(document.body, { childList: true, subtree: true });
-} else {
-    document.addEventListener('DOMContentLoaded', () => {
-        observer.observe(document.body, { childList: true, subtree: true });
-    });
+    }
+    typing();
 }
 
 function enhanceMockupPrompt() {
@@ -190,8 +108,9 @@ function enhanceMockupPrompt() {
     button.disabled = true;
     button.classList.add('loading');
     textarea.classList.add('enhancing');
+    textarea.textContent = ''; // Clear text area for typing
+    textarea.blur(); // Remove focus to avoid system cursor
 
-    // Beautiful loading button with pulsing animation
     button.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
@@ -199,71 +118,30 @@ function enhanceMockupPrompt() {
                 <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
             </path>
         </svg>
-        <span>Analyzing...</span>
+        <span>Enhancing...</span>
     `;
 
-    // Stage 2: Show "processing" after 1 second
+    // Stage 2: Simulate enhancement and start typing
     setTimeout(() => {
-        button.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" fill="none">
-                    <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="0.8s" repeatCount="indefinite"/>
-                </path>
-            </svg>
-            <span>Enhancing...</span>
-        `;
-    }, 1000);
+        const enhancedText = `Provide a comprehensive guide to cooking pasta for a beginner. Include water-to-pasta ratio, salting water, preventing sticking, checking for 'al dente', and using pasta water.`.trim();
 
-    // Stage 3: Show "writing" before typing starts
-    setTimeout(() => {
-        button.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor">
-                    <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/>
-                </path>
-            </svg>
-            <span>Writing...</span>
-        `;
-
-        // Remove enhancing class from textarea and start typing
         textarea.classList.remove('enhancing');
 
-        // Get enhanced prompt
-        const enhancedPrompt = getEnhancedPrompt(originalText);
-
-        console.log('🎯 Starting typewriter effect...');
-        typewriterEffect(textarea, enhancedPrompt, () => {
-            console.log('🎯 Typewriter effect completed');
-
-            // Stage 4: Success state
+        typeText(textarea, enhancedText, () => {
+            // Stage 3: Enhancement complete, update button to success state
             button.classList.remove('loading');
             button.classList.add('success');
             textarea.classList.add('enhanced');
-
             button.innerHTML = `
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>
                 </svg>
                 <span>Enhanced!</span>
             `;
-
-            // Stage 5: Reset after delay
-            setTimeout(() => {
-                button.disabled = false;
-                button.classList.remove('success');
-                textarea.classList.remove('enhanced');
-
-                button.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor"/>
-                    </svg>
-                    <span>Enhance</span>
-                `;
-                console.log('🎯 Button reset complete');
-            }, 4000);
+            // Keep the enhanced state, do not reset
         });
-    }, 2200);
+
+    }, 1500); // Start typing after 1.5s
 }
 
 // Enhanced prompt generator
@@ -296,95 +174,8 @@ function getEnhancedPrompt(originalPrompt) {
     return `Provide a comprehensive response about "${originalPrompt}". Include relevant context, specific examples, step-by-step guidance where applicable, practical tips, and ensure the information is accurate and actionable.`;
 }
 
-// Beautiful typewriter effect
-function typewriterEffect(element, text, callback) {
-    console.log('🎯 Starting typewriter effect for text length:', text.length);
-    console.log('🎯 Target element:', element);
-    console.log('🎯 Text to type:', text.substring(0, 50) + '...');
-
-    // Check if element is already being typed into
-    if (element.dataset.typing === 'true') {
-        console.log('❌ Element is already being typed into, skipping');
-        return;
-    }
-
-    // Mark element as being typed into
-    element.dataset.typing = 'true';
-
-    // Clear the element completely first
-    element.textContent = '';
-    element.innerHTML = '';
-
-    // Add typing-active class to stop cursor blinking
-    const cursorElement = element.classList.contains('typing') ? element : document.querySelector('.typing');
-    if (cursorElement) {
-        cursorElement.classList.add('typing-active');
-    }
-
-    // Add visual feedback to the textarea
-    element.style.transition = 'all 0.3s ease';
-    element.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-    element.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.2)';
-
-    let i = 0;
-    const baseSpeed = 25; // 2x faster base typing speed (was 50)
-
-    const typeChar = () => {
-        // Check if we should continue typing
-        if (element.dataset.typing !== 'true') {
-            console.log('❌ Typing was cancelled');
-            return;
-        }
-
-        if (i < text.length) {
-            const char = text.charAt(i);
-
-            // Clear and set the complete text up to current position
-            // This prevents any duplication issues
-            element.textContent = text.substring(0, i + 1);
-
-            // Variable typing speed for more natural effect (all 2x faster)
-            let speed = baseSpeed;
-            if (char === ' ') speed = baseSpeed * 0.4; // Faster for spaces
-            if (char === ',' || char === '.') speed = baseSpeed * 1.8; // Slower for punctuation
-            if (char === '\n') speed = baseSpeed * 2.5; // Much slower for line breaks
-
-            console.log('🎯 Typed char:', char, 'Position:', i + 1, '/', text.length);
-            i++;
-            setTimeout(typeChar, speed);
-        } else {
-            console.log('🎯 Typewriter effect finished successfully');
-
-            // Mark typing as complete
-            element.dataset.typing = 'false';
-
-            // Remove typing-active class to resume cursor blinking
-            if (cursorElement) {
-                cursorElement.classList.remove('typing-active');
-            }
-
-            // Remove border effects
-            setTimeout(() => {
-                element.style.borderColor = '';
-                element.style.boxShadow = '';
-            }, 500);
-
-            if (typeof callback === 'function') {
-                callback();
-            }
-        }
-    };
-
-    // Small delay before starting to type for anticipation
-    setTimeout(() => {
-        console.log('🎯 Starting to type...');
-        typeChar();
-    }, 200);
-}
-
 // Make functions available globally
 window.scrollToWaitlist = scrollToWaitlist;
-window.typewriterEffect = typewriterEffect;
 window.enhanceMockupPrompt = enhanceMockupPrompt;
 
 // Initialize multiple ways to ensure it works

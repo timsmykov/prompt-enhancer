@@ -4,38 +4,9 @@ function initializePageLoading() {
     console.log('Page loading initialized - overlay handled by loader.js');
 }
 
-// Sticky CTA visibility control
+// Sticky CTA removed - using header CTA only
 function initializeStickyCTA() {
-    const stickyCta = document.querySelector('.sticky-cta');
-    if (!stickyCta) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.target.id === 'waitlist') {
-                if (entry.isIntersecting) {
-                    stickyCta.classList.remove('visible');
-                } else {
-                    stickyCta.classList.add('visible');
-                }
-            }
-        });
-    });
-    
-    const waitlistSection = document.getElementById('waitlist');
-    if (waitlistSection) {
-        observer.observe(waitlistSection);
-    }
-    
-    // Show sticky CTA after scrolling past hero section
-    window.addEventListener('scroll', () => {
-        const heroSection = document.querySelector('.hero');
-        if (heroSection) {
-            const heroHeight = heroSection.offsetHeight;
-            if (window.scrollY > heroHeight * 0.9) { // Show when 90% past hero
-                stickyCta.classList.add('visible');
-            }
-        }
-    });
+    console.log('✨ Sticky CTA removed - using header CTA button only');
 }
 
 // Platform logos scrolling animation

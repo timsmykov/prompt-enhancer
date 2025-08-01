@@ -1,12 +1,5 @@
 function initializeFooter() {
-    const stickyCta = document.getElementById('sticky-cta');
-    if (stickyCta) {
-        // Check if the event listener is already attached to prevent duplicates
-        if (!stickyCta.dataset.footerInitialized) {
-            stickyCta.addEventListener('click', window.scrollToWaitlist);
-            stickyCta.dataset.footerInitialized = 'true';
-        }
-    }
+    // Footer initialization complete - no sticky CTA needed
 }
 
 // Initialize when components are ready

@@ -119,7 +119,8 @@
     margin-bottom: 1.5rem;
 }
 
-.typing-container {
+/* Typing animation styles - Fixed cursor positioning */
+.value-text {
     font-size: 1.3rem;
     font-weight: 600;
     color: #e5e7eb;
@@ -127,56 +128,21 @@
     min-height: 1.6rem;
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
-    /* Add space between elements */
+    gap: 0.25rem;
     flex-wrap: wrap;
-    /* Allow wrapping if needed */
 }
 
 .typing-prefix {
     color: #d1d5db;
     flex-shrink: 0;
-    margin-right: 0.25rem;
-    /* Extra space after "Transform" */
 }
 
 .typing-text {
     color: #10b981;
     font-weight: 700;
-    min-width: 0;
-    flex-shrink: 0;
-    /* Prevent any transitions or animations on text changes */
-    transition: none !important;
-    animation: none !important;
-    /* Ensure consistent rendering */
-    font-feature-settings: "tnum";
-    font-variant-numeric: tabular-nums;
-    /* Add minimum width to prevent layout shifts */
     min-width: 8rem;
     display: inline-block;
-}
-
-.typing-cursor {
-    color: #10b981;
-    animation: blink 1s infinite;
-    flex-shrink: 0;
-    margin-left: 0.125rem;
-    /* Slight space before cursor */
-    font-weight: 400;
-    /* Make cursor slightly thinner */
-}
-
-@keyframes blink {
-
-    0%,
-    50% {
-        opacity: 1;
-    }
-
-    51%,
-    100% {
-        opacity: 0;
-    }
+    position: relative;
 }
 
 .value-subtitle {

@@ -21,53 +21,19 @@ export class ScrollEffects {
     }
 
     initElements() {
-        this.stickyCta = document.getElementById('sticky-cta');
+        // Sticky CTA removed - using header CTA only
         this.heroSection = document.querySelector('.hero');
         this.heroImage = document.querySelector('.hero-image');
         this.waitlistSection = document.getElementById('waitlist');
     }
 
     initStickyCta() {
-        if (!this.stickyCta || !this.heroSection || !this.waitlistSection) {
-            console.warn('Sticky CTA elements not found');
-            return;
-        }
-
-        const debouncedStickyCta = Utils.debounce(() => {
-            this.handleStickyCta();
-        }, 50);
-
-        window.addEventListener('scroll', debouncedStickyCta);
+        // Sticky CTA removed - using header CTA only
+        console.log('Sticky CTA functionality removed');
     }
 
     handleStickyCta() {
-        const heroBottom = this.heroSection.offsetTop + this.heroSection.offsetHeight;
-        const scrollPosition = window.scrollY;
-
-        // Only show sticky CTA when user has scrolled past the entire hero section
-        if (scrollPosition > heroBottom && !this.hasScrolledPastHero) {
-            this.hasScrolledPastHero = true;
-            this.stickyCta.classList.add('visible');
-            Analytics.trackEvent('sticky_cta_shown', {
-                scroll_position: scrollPosition,
-                hero_height: this.heroSection.offsetHeight
-            });
-        } else if (scrollPosition <= heroBottom && this.hasScrolledPastHero) {
-            this.hasScrolledPastHero = false;
-            this.stickyCta.classList.remove('visible');
-        }
-
-        // Hide sticky CTA when near waitlist section
-        const waitlistTop = this.waitlistSection.offsetTop;
-        const distanceToWaitlist = waitlistTop - scrollPosition;
-
-        if (distanceToWaitlist < window.innerHeight) {
-            this.stickyCta.style.opacity = '0';
-            this.stickyCta.style.pointerEvents = 'none';
-        } else if (this.hasScrolledPastHero) {
-            this.stickyCta.style.opacity = '1';
-            this.stickyCta.style.pointerEvents = 'auto';
-        }
+        // Sticky CTA removed - using header CTA only
     }
 
     initParallaxEffects() {
