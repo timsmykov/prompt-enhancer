@@ -357,8 +357,11 @@
       if (data.frame) {
         updateFrameState(data.frame);
       }
-      if (!state.sessionToken && data.token) {
+      // Accept token from OVERLAY_INIT unconditionally (first handshake)
+      if (data.token) {
         state.sessionToken = data.token;
+      }
+      if (data.text) {
         setSelection(data.text);
       }
       return;
@@ -368,6 +371,7 @@
       updateFrameState(data.frame);
       return;
     }
+    // For all other messages, validate token
     if (!state.sessionToken || data.token !== state.sessionToken) return;
     if (data.type === 'SELECTION_TEXT') {
       setSelection(data.text);

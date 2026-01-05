@@ -10,6 +10,7 @@ All notable changes to the Prompt Improver extension.
 - Memory leak: Cleared typingTimer and toastTimer on close to prevent orphaned timeouts
 - Memory leak: Cleared pendingSelectionText on close to prevent stale state
 - Race condition: Always generate new session token on each overlay open for security
+- First-load bug: Fixed token validation in OVERLAY_INIT to prevent SELECTION_TEXT rejection
 
 ## [1.0.0] - 2026-01-06
 
