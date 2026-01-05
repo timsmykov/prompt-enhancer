@@ -5,7 +5,13 @@ All notable changes to the Prompt Improver extension.
 ## [Unreleased]
 
 ### Fixed
-- Fixed critical memory leaks and race conditions in overlay lifecycle
+- Fixed overlay scroll reset on text update (scrollTop = 0)
+- Original text panel now properly hidden by default (JS controls visibility)
+- Popup toast notification system with animated feedback
+- Loading spinner on save button with CSS animations
+
+### Fixed
+- Critical memory leaks and race conditions in overlay lifecycle
 - Memory leak: Removed resize listener on closeOverlay to prevent orphaned handlers
 - Memory leak: Cleared typingTimer and toastTimer on close to prevent orphaned timeouts
 - Memory leak: Cleared pendingSelectionText on close to prevent stale state

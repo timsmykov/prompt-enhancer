@@ -43,6 +43,7 @@
   const toggleKeyButton = document.querySelector('#toggleKey');
   const saveButton = document.querySelector('#saveButton');
   const statusMessage = document.querySelector('.status');
+  const toast = document.querySelector('.toast');
 
   if (!form || !apiKeyInput || !modelInput || !systemPromptInput || !typingSpeedInput) {
     return;
@@ -72,7 +73,22 @@
     saving = next;
     if (saveButton) {
       saveButton.disabled = saving;
-      saveButton.textContent = saving ? 'Saving...' : 'Save';
+      if (saving) {
+        saveButton.classList.add('loading');
+      } else {
+        saveButton.classList.remove('loading');
+      }
+    }
+  };
+
+  const showToast = (message, isError = false) => {
+    if (toast) {
+      toast.textContent = message;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
     }
   };
 

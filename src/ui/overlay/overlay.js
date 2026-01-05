@@ -95,6 +95,7 @@
       dom.resultTextarea.readOnly = state.status !== 'ready';
       if (dom.resultTextarea.value !== state.resultText) {
         dom.resultTextarea.value = state.resultText;
+        dom.resultTextarea.scrollTop = 0;
       }
     }
 
@@ -111,6 +112,7 @@
         dom.originalPanel.hidden = !state.showOriginal;
         if (dom.originalTextarea.value !== state.originalText) {
           dom.originalTextarea.value = state.originalText;
+          dom.originalTextarea.scrollTop = 0;
         }
       } else {
         dom.toggleOriginal.hidden = true;
