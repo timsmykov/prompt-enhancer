@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prompt Improver</title>
+    <link rel="stylesheet" href="overlay.css" />
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <div class="surface" :class="statusClass">
+        <header class="header">
+          <div class="title">
+            <span class="logo" aria-hidden="true"></span>
+            <span>Prompt Improver</span>
+          </div>
+          <div class="header-actions">
+            <div class="status-pill" :data-status="status">{{ statusLabel }}</div>
+            <button class="icon-button" @click="closeOverlay" aria-label="Close">
+              ×
+            </button>
+          </div>
+        </header>
+
+        <main class="content">
+          <p v-if="status === 'idle'" class="hint">
+            Select text on the page, then run Improve Prompt.
+          </p>
+
+          <div class="panel">
+            <label class="label" for="result">Improved text</label>
+            <textarea
+              id="result"
+              class="textarea"
+              v-model="resultText"
+              :readonly="status !== 'ready'"
+              placeholder="Improved prompt will appear here"
+            ></textarea>
+          </div>
+
+          <button
+            v-if="originalText"
+            class="toggle"
+            @click="showOriginal = !showOriginal"
+            :aria-expanded="showOriginal"
+          >
+            {{ showOriginal ? 'Hide original' : 'Show original' }}
+          </button>
+
+          <transition name="reveal">
+            <div v-if="showOriginal" class="panel muted">
+              <label class="label" for="original">Original text</label>
+              <textarea
+                id="original"
+                class="textarea"
+                :value="originalText"
+                readonly
+              ></textarea>
+            </div>
+          </transition>
+
+          <div v-if="status === 'loading'" class="loading" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            Improving your prompt...
+          </div>
+
+          <div v-if="status === 'error'" class="error" role="alert">
+            {{ error }}
+          </div>
+        </main>
+
+        <footer class="actions">
+          <button class="primary" @click="replaceSelection" :disabled="!canAct">
+            Replace
+          </button>
+          <button class="secondary" @click="copyResult" :disabled="!canAct">
+            Copy
+          </button>
+          <button
+            class="ghost"
+            @click="regenerate"
+            :disabled="status === 'loading' || !originalText"
+          >
+            Regenerate
+          </button>
+        </footer>
+
+        <transition name="toast">
+          <div v-if="toastVisible" class="toast" role="status" aria-live="polite">
+            {{ toastMessage }}
+          </div>
+        </transition>
+      </div>
+    </div>
+
+    <script src="../../../vendor/vue.global.prod.js"></script>
+    <script src="overlay.js"></script>
+  </body>
+</html>

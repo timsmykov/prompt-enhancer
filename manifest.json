@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Prompt Improver",
+  "version": "0.1.0",
+  "description": "Improve selected prompts via LLM in a quick overlay.",
+  "permissions": ["contextMenus", "storage", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background/background.js"
+  },
+  "options_ui": {
+    "page": "src/ui/options/options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/ui/overlay/overlay.html",
+        "src/ui/overlay/overlay.css",
+        "src/ui/overlay/overlay.js",
+        "vendor/vue.global.prod.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

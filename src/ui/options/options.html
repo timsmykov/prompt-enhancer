@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prompt Improver Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Prompt Improver</p>
+          <h1>Settings</h1>
+          <p class="subtitle">
+            Store your API key and configure the model and system prompt.
+          </p>
+        </div>
+        <div class="badge">MVP</div>
+      </header>
+
+      <main class="card">
+        <form @submit.prevent="save">
+          <div class="field">
+            <label for="apiKey">API key</label>
+            <div class="input-row">
+              <input
+                id="apiKey"
+                :type="showKey ? 'text' : 'password'"
+                v-model.trim="apiKey"
+                autocomplete="off"
+                placeholder="sk-..."
+                required
+              />
+              <button type="button" class="ghost" @click="toggleKey">
+                {{ showKey ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            <p v-if="!apiKey" class="note warn">API key is required.</p>
+          </div>
+
+          <div class="field">
+            <label for="model">Model</label>
+            <input
+              id="model"
+              v-model.trim="model"
+              placeholder="openrouter/auto"
+            />
+            <p class="note">Use a single provider for MVP.</p>
+          </div>
+
+          <div class="field">
+            <label for="systemPrompt">System prompt</label>
+            <textarea
+              id="systemPrompt"
+              v-model.trim="systemPrompt"
+              placeholder="You are a helpful prompt improver..."
+              rows="4"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="typingSpeed">Typing speed (ms per character)</label>
+            <input
+              id="typingSpeed"
+              type="number"
+              min="0"
+              step="5"
+              v-model.number="typingSpeed"
+              placeholder="25"
+            />
+            <p class="note">Set to 0 for instant output.</p>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit" :disabled="saving">
+              {{ saving ? 'Saving...' : 'Save settings' }}
+            </button>
+            <span class="status" role="status" aria-live="polite">
+              {{ statusMessage }}
+            </span>
+          </div>
+        </form>
+      </main>
+    </div>
+
+    <script src="../../../vendor/vue.global.prod.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
