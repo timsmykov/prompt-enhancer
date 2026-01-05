@@ -4,6 +4,13 @@ All notable changes to the Prompt Improver extension.
 
 ## [Unreleased]
 
+### Fixed
+- Fixed critical memory leaks and race conditions in overlay lifecycle
+- Memory leak: Removed resize listener on closeOverlay to prevent orphaned handlers
+- Memory leak: Cleared typingTimer and toastTimer on close to prevent orphaned timeouts
+- Memory leak: Cleared pendingSelectionText on close to prevent stale state
+- Race condition: Always generate new session token on each overlay open for security
+
 ## [1.0.0] - 2026-01-06
 
 ### Added
