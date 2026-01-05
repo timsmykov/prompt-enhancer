@@ -8,6 +8,7 @@
   let savedRange = null;
   let savedInput = null;
   let savedOffsets = null;
+  let resizeHandler = null;
 
   const createToken = () => {
     if (crypto?.getRandomValues) {
@@ -171,6 +172,12 @@
   };
 
   const closeOverlay = () => {
+    // Remove resize listener to prevent memory leak
+    if (resizeHandler) {
+      window.removeEventListener('resize', resizeHandler);
+      resizeHandler = null;
+    }
+
     overlayFrame?.remove();
     overlayStyle?.remove();
     overlayFrame = null;
@@ -181,6 +188,7 @@
     savedRange = null;
     savedInput = null;
     savedOffsets = null;
+    pendingSelectionText = '';
   };
 
   chrome.runtime.onMessage.addListener((message) => {
@@ -189,7 +197,8 @@
     captureSelection();
     pendingSelectionText = getSelectionText();
     console.log('[PromptImprover] Selected text:', pendingSelectionText);
-    overlayToken = overlayToken || createToken();
+    // Always generate new token to prevent race conditions with old messages
+    overlayToken = createToken();
     ensureOverlay();
     if (overlayReady) {
       sendToOverlay({ type: 'SELECTION_TEXT', text: pendingSelectionText });
@@ -231,11 +240,13 @@
     }
   });
 
-  window.addEventListener('resize', () => {
+  // Create resize handler once to avoid memory leaks
+  resizeHandler = () => {
     if (!overlayFrame || !overlayReady) return;
     overlayMetrics = getOverlayMetrics();
     if (overlayMetrics) {
       sendToOverlay({ type: 'OVERLAY_FRAME', frame: overlayMetrics });
     }
-  });
+  };
+  window.addEventListener('resize', resizeHandler);
 })();

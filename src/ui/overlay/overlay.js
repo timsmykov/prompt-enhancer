@@ -279,6 +279,15 @@
   };
 
   const closeOverlay = () => {
+    // Clear timers to prevent memory leaks
+    if (state.typingTimer) {
+      clearTimeout(state.typingTimer);
+      state.typingTimer = null;
+    }
+    if (state.toastTimer) {
+      clearTimeout(state.toastTimer);
+      state.toastTimer = null;
+    }
     sendOverlayAction({ action: 'close' });
   };
 
