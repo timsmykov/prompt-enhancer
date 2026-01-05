@@ -206,7 +206,6 @@
   });
 
   window.addEventListener('message', (event) => {
-    if (event.source !== overlayFrame?.contentWindow) return;
     if (event.data?.type !== 'OVERLAY_ACTION') return;
     if (!overlayToken || event.data.token !== overlayToken) return;
 
