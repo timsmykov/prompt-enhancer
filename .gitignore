@@ -1,1 +1,13 @@
 .DS_Store
+
+# Extension build folder (auto-generated, do not commit)
+# Uncomment the line below if you want to ignore extension/ folder
+# extension/
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
