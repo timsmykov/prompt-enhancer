@@ -21,6 +21,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   height: 100%;
@@ -222,7 +226,7 @@ body.is-resizing .surface {
   gap: 12px;
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .content > .panel {
@@ -235,7 +239,8 @@ body.is-resizing .surface {
 
 .content > .panel:first-of-type {
   flex: 1 1 auto;
-  min-height: 160px;
+  min-height: 120px;
+  max-height: 100%;
 }
 
 .hint {
@@ -266,9 +271,8 @@ body.is-resizing .surface {
 
 .textarea {
   width: 100%;
-  min-height: 96px;
-  flex: 1;
-  height: 100%;
+  min-height: 60px;
+  flex: 1 1 auto;
   resize: none;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(60, 46, 36, 0.18);
@@ -277,6 +281,23 @@ body.is-resizing .surface {
   font-size: 0.95rem;
   background: #fffdf9;
   color: var(--text);
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(48, 38, 30, 0.2) transparent;
+}
+
+.textarea::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+  background: rgba(48, 38, 30, 0.2);
+  border-radius: 3px;
 }
 
 .textarea:focus {
