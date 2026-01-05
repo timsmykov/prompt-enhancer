@@ -206,6 +206,11 @@
   });
 
   window.addEventListener('message', (event) => {
+    if (event.data?.type === 'OVERLAY_INIT' && event.data.token) {
+      // Accept token from overlay's initial handshake
+      overlayToken = event.data.token;
+      return;
+    }
     if (event.data?.type !== 'OVERLAY_ACTION') return;
     if (!overlayToken || event.data.token !== overlayToken) return;
 

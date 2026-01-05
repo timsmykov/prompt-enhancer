@@ -40,6 +40,17 @@
   const MIN_WIDTH = 280;
   const MIN_HEIGHT = 200;
 
+  // Remove markdown bold (**text**) and italic (*text*) formatting
+  const cleanupMarkdown = (text) => {
+    if (typeof text !== 'string') return '';
+    return text
+      .replace(/\*\*([^*]+)\*\*/g, '$1')   // Remove **bold**
+      .replace(/__([^_]+)__/g, '$1')       // Remove __bold__
+      .replace(/\*([^*]+)\*/g, '$1')       // Remove *italic*
+      .replace(/_([^_]+)_/g, '$1')         // Remove _italic_
+      .trim();
+  };
+
   const frameState = {
     left: 0,
     top: 0,
@@ -177,7 +188,7 @@
       setError(response.error);
       return;
     }
-    const payload = (response.result || '').trim();
+    const payload = cleanupMarkdown(response.result || '');
     if (!payload) {
       setError('No response content returned.');
       return;
@@ -256,7 +267,7 @@
   };
 
   const copyResult = () => {
-    const text = state.resultText.trim();
+    const text = cleanupMarkdown(state.resultText);
     if (!text) return;
     if (navigator.clipboard?.writeText) {
       navigator.clipboard
@@ -275,7 +286,7 @@
   };
 
   const replaceSelection = () => {
-    const text = state.resultText.trim();
+    const text = cleanupMarkdown(state.resultText);
     if (!text) return;
     sendOverlayAction({ action: 'replace', text });
   };
