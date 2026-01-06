@@ -51,6 +51,12 @@
       .trim();
   };
 
+  const sanitizeHTML = (text) => {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  };
+
   const frameState = {
     left: 0,
     top: 0,
@@ -72,9 +78,10 @@
 
   const sendOverlayAction = (payload) => {
     if (!window.parent) return;
+    const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
     window.parent.postMessage(
       { type: 'OVERLAY_ACTION', token: state.sessionToken, ...payload },
-      '*'
+      extensionOrigin
     );
   };
 

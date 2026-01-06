@@ -75,9 +75,10 @@
 
   const sendToOverlay = (payload) => {
     if (!overlayFrame?.contentWindow) return;
+    const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
     overlayFrame.contentWindow.postMessage(
       { ...payload, token: overlayToken },
-      '*'
+      extensionOrigin
     );
   };
 
@@ -206,6 +207,8 @@
   });
 
   window.addEventListener('message', (event) => {
+    const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
+    if (event.origin !== extensionOrigin) return;
     if (event.data?.type === 'OVERLAY_INIT' && event.data.token) {
       // Accept token from overlay's initial handshake
       overlayToken = event.data.token;
