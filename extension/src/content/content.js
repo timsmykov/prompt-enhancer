@@ -209,17 +209,40 @@
   };
 
   window.addEventListener('message', (event) => {
+    // DIAGNOSTIC: Log ALL messages BEFORE any filtering
+    console.log('[Content Diagnostics] RAW Message received (before filtering):', {
+      dataType: event.data?.type,
+      dataAction: event.data?.action,
+      hasDataToken: !!event.data?.token,
+      eventOrigin: event.origin,
+      'source is window': event.source === window,
+      'overlayFrame exists': !!overlayFrame,
+      'overlayFrame.contentWindow exists': !!overlayFrame?.contentWindow,
+      'source === overlayFrame.contentWindow': overlayFrame?.contentWindow && event.source === overlayFrame.contentWindow
+    });
+
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
 
     // For messages from our overlay iframe, event.origin is the page's origin (not extension)
     // So we use event.source verification instead for iframe messages
     const isFromOurOverlay = overlayFrame?.contentWindow && event.source === overlayFrame.contentWindow;
 
+    console.log('[Content Diagnostics] Source validation:', {
+      isFromOurOverlay,
+      'event.origin': event.origin,
+      'extensionOrigin': extensionOrigin,
+      'origins match': event.origin === extensionOrigin,
+      'will accept message': isFromOurOverlay || event.origin === extensionOrigin
+    });
+
     // Accept messages from our overlay (iframe) OR from extension pages
-    if (!isFromOurOverlay && event.origin !== extensionOrigin) return;
+    if (!isFromOurOverlay && event.origin !== extensionOrigin) {
+      console.warn('[Content Diagnostics] Message REJECTED by source/origin check');
+      return;
+    }
 
     // DIAGNOSTIC: Log all messages
-    console.log('[Content Diagnostics] Message received:', {
+    console.log('[Content Diagnostics] Message received (AFTER filtering):', {
       type: event.data?.type,
       hasToken: !!event.data?.token,
       tokenMatches: event.data?.token === overlayToken,

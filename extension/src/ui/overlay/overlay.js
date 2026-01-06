@@ -14,6 +14,7 @@
     typingTimer: null,
     toastTimer: null,
     sessionToken: '',
+    isClosing: false, // Guard to prevent multiple closeOverlay calls
   };
 
   const dom = {
@@ -369,7 +370,14 @@
   };
 
   const closeOverlay = () => {
+    // Guard against multiple calls
+    if (state.isClosing) {
+      console.warn('[Overlay Diagnostics] closeOverlay: Already closing, ignoring call');
+      return;
+    }
+
     console.log('[Overlay Diagnostics] closeOverlay called');
+    state.isClosing = true;
 
     // Clear timers to prevent memory leaks
     if (state.typingTimer) {
