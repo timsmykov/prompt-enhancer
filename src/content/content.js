@@ -63,7 +63,7 @@
       return;
     }
 
-    if (!savedRange) return;
+    if (!savedRange || typeof savedRange.deleteContents !== 'function') return;
     try {
       savedRange.deleteContents();
       savedRange.insertNode(document.createTextNode(text));
@@ -108,6 +108,21 @@
     overlayFrame.style.bottom = 'auto';
   };
 
+  // Resize handler - added only when overlay is created
+  const createResizeHandler = () => {
+    if (resizeHandler) {
+      window.removeEventListener('resize', resizeHandler);
+    }
+    resizeHandler = () => {
+      if (!overlayFrame || !overlayReady) return;
+      overlayMetrics = getOverlayMetrics();
+      if (overlayMetrics) {
+        sendToOverlay({ type: 'OVERLAY_FRAME', frame: overlayMetrics });
+      }
+    };
+    window.addEventListener('resize', resizeHandler);
+  };
+
   const ensureOverlay = () => {
     if (overlayFrame) {
       console.log('[PromptImprover] Overlay already exists');
@@ -126,14 +141,6 @@
     overlayFrame.className = 'prompt-improver-frame';
     overlayFrame.setAttribute('title', 'Prompt improver');
     overlayFrame.setAttribute('aria-label', 'Prompt improver');
-
-    overlayFrame.onload = () => {
-      console.log('[PromptImprover] Overlay iframe loaded successfully');
-    };
-
-    overlayFrame.onerror = (err) => {
-      console.log('[PromptImprover] Overlay iframe error:', err);
-    };
 
     overlayStyle = document.createElement('style');
     overlayStyle.textContent = `
@@ -157,10 +164,9 @@
       }
     `;
 
-    document.head.appendChild(overlayStyle);
-    document.body.appendChild(overlayFrame);
-
+    // Add load listener BEFORE appendChild to avoid race condition
     overlayFrame.addEventListener('load', () => {
+      console.log('[PromptImprover] Overlay iframe loaded successfully');
       overlayReady = true;
       overlayMetrics = getOverlayMetrics();
       sendToOverlay({
@@ -169,15 +175,19 @@
         frame: overlayMetrics,
       });
     });
+
+    overlayFrame.onerror = (err) => {
+      console.log('[PromptImprover] Overlay iframe error:', err);
+    };
+
+    // Create and add resize handler when overlay is created
+    createResizeHandler();
+
+    document.head.appendChild(overlayStyle);
+    document.body.appendChild(overlayFrame);
   };
 
   const closeOverlay = () => {
-    // Remove resize listener to prevent memory leak
-    if (resizeHandler) {
-      window.removeEventListener('resize', resizeHandler);
-      resizeHandler = null;
-    }
-
     overlayFrame?.remove();
     overlayStyle?.remove();
     overlayFrame = null;
@@ -189,6 +199,12 @@
     savedInput = null;
     savedOffsets = null;
     pendingSelectionText = '';
+
+    // Remove resize listener to prevent memory leak
+    if (resizeHandler) {
+      window.removeEventListener('resize', resizeHandler);
+      resizeHandler = null;
+    }
   };
 
   chrome.runtime.onMessage.addListener((message) => {
@@ -243,14 +259,4 @@
       applyOverlayMetrics();
     }
   });
-
-  // Create resize handler once to avoid memory leaks
-  resizeHandler = () => {
-    if (!overlayFrame || !overlayReady) return;
-    overlayMetrics = getOverlayMetrics();
-    if (overlayMetrics) {
-      sendToOverlay({ type: 'OVERLAY_FRAME', frame: overlayMetrics });
-    }
-  };
-  window.addEventListener('resize', resizeHandler);
 })();

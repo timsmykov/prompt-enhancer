@@ -40,14 +40,14 @@
   const MIN_WIDTH = 280;
   const MIN_HEIGHT = 200;
 
-  // Remove markdown bold (**text**) and italic (*text*) formatting
+  // Remove markdown bold (**text**) and italic (*text*) formatting - use non-greedy regex
   const cleanupMarkdown = (text) => {
     if (typeof text !== 'string') return '';
     return text
-      .replace(/\*\*([^*]+)\*\*/g, '$1')   // Remove **bold**
-      .replace(/__([^_]+)__/g, '$1')       // Remove __bold__
-      .replace(/\*([^*]+)\*/g, '$1')       // Remove *italic*
-      .replace(/_([^_]+)_/g, '$1')         // Remove _italic_
+      .replace(/\*\*([^*]+?)\*\*/g, '$1')   // Remove **bold**
+      .replace(/__([^_]+?)__/g, '$1')       // Remove __bold__
+      .replace(/\*([^*]+?)\*/g, '$1')       // Remove *italic*
+      .replace(/_([^_]+?)_/g, '$1')         // Remove _italic_
       .trim();
   };
 
@@ -188,7 +188,11 @@
       setError(response.error);
       return;
     }
-    const payload = cleanupMarkdown(response.result || '');
+    if (typeof response.result !== 'string') {
+      setError('No response content returned.');
+      return;
+    }
+    const payload = cleanupMarkdown(response.result);
     if (!payload) {
       setError('No response content returned.');
       return;
@@ -325,7 +329,10 @@
   };
 
   const startTyping = (text) => {
-    stopTyping();
+    // Guard against multiple typing calls
+    if (state.isTyping) {
+      stopTyping();
+    }
     const payload = text || '';
     if (!payload) {
       state.resultText = '';
@@ -440,9 +447,13 @@
   }
 
   if (dom.resultTextarea) {
+    let inputTimeout;
     dom.resultTextarea.addEventListener('input', () => {
-      state.resultText = dom.resultTextarea.value;
-      render();
+      clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(() => {
+        state.resultText = dom.resultTextarea.value;
+        render();
+      }, 150);
     });
   }
 

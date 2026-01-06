@@ -15,7 +15,7 @@ const getSettings = () =>
   });
 
 const clearBadge = (tabId) => {
-  if (!chrome.action) return;
+  if (!chrome.action || typeof tabId !== 'number') return;
   chrome.action.setBadgeText({ tabId, text: '' });
   chrome.action.setTitle({ tabId, title: 'Prompt Improver' });
 };
@@ -40,8 +40,10 @@ const sendToActiveTab = (message) => {
       if (chrome.runtime.lastError) {
         console.log('[PromptImprover] Error:', chrome.runtime.lastError.message);
         showBadgeError(tab.id, 'Cannot run on this page.');
-      } else {
+      } else if (response && typeof response === 'object') {
         console.log('[PromptImprover] Response:', response);
+      } else {
+        console.log('[PromptImprover] Invalid response received');
       }
     });
   });
