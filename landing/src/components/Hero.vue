@@ -606,6 +606,11 @@ const cursorColor = computed(() => {
   transform: translateY(-1px) scale(0.98);
 }
 
+.btn-primary:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 3px;
+}
+
 .btn-secondary {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -619,6 +624,11 @@ const cursorColor = computed(() => {
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-3px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 3px;
 }
 
 .hero-stats {

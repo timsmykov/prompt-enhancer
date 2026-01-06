@@ -193,13 +193,22 @@ const resetDemo = () => {
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   transition: all var(--transition-base);
   position: relative;
 }
 
 .demo-box:hover {
   box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary-light);
+}
+
+.demo-box.input-box {
+  border-left: 4px solid var(--color-primary);
+}
+
+.demo-box.output-box {
+  border-left: 4px solid var(--color-accent);
 }
 
 /* Subtle glow effect */
@@ -263,6 +272,12 @@ const resetDemo = () => {
 
 .demo-textarea:focus {
   background: var(--color-bg-alt);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.demo-textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .demo-textarea::placeholder {
@@ -349,6 +364,11 @@ const resetDemo = () => {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.improve-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 3px;
 }
 
 .improve-button.loading {
