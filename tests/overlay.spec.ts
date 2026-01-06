@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Overlay UI Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to overlay HTML file
-    await page.goto('file:///Users/timsmykov/Desktop/Extention for prompts/src/ui/overlay/overlay.html');
+    await page.goto('file:///Users/timsmykov/worktrees-prompt-extension/frontend/extension/src/ui/overlay/overlay.html');
     await page.waitForLoadState('domcontentloaded');
   });
 

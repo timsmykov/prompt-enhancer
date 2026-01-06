@@ -104,6 +104,16 @@ textarea:focus {
   border-color: rgba(224, 100, 58, 0.45);
 }
 
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+}
+button:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+}
+
 input::placeholder,
 textarea::placeholder {
   color: var(--muted);
