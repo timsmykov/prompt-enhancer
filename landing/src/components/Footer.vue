@@ -57,7 +57,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 .footer {
   background: var(--color-bg-dark);
   color: var(--color-text-inverse);
-  padding: 6rem 1rem 3rem 1rem;
+  padding: var(--space-5xl) var(--space-md) var(--space-3xl) var(--space-md);
 }
 
 .container {
@@ -70,8 +70,8 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 .footer-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 3rem;
-  margin-bottom: 3rem;
+  gap: var(--space-3xl);
+  margin-bottom: var(--space-3xl);
   width: 100%;
   max-width: 100%;
 }
@@ -85,7 +85,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text-inverse);
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 var(--space-xl) 0;
 }
 
 .footer-links {
@@ -104,7 +104,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 .footer-link {
   color: var(--color-text-light);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
   display: inline-block;
 }
 
@@ -125,7 +125,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   padding: 0;
   margin: 0;
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .social-link {
@@ -136,9 +136,9 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   height: 2.5rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   color: var(--color-text-light);
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .social-link:hover {
@@ -148,8 +148,13 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   transform: translateY(-2px);
 }
 
+.social-link:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+}
+
 .footer-bottom {
-  padding-top: 2rem;
+  padding-top: var(--space-2xl);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
 }
@@ -162,17 +167,17 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 
 @media (max-width: 768px) {
   .footer {
-    padding: 4rem 1rem 2rem 1rem;
+    padding: var(--space-4xl) var(--space-md) var(--space-2xl) var(--space-md);
   }
 
   .footer-grid {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    gap: var(--space-2xl);
   }
 
   .footer-title {
     font-size: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-lg);
   }
 
   .footer-links li {
@@ -184,7 +189,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   }
 
   .footer-bottom {
-    padding-top: 1.5rem;
+    padding-top: var(--space-xl);
   }
 
   .footer-bottom p {

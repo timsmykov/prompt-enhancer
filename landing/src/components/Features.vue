@@ -72,7 +72,7 @@ const features = [
 <style scoped>
 .features {
   position: relative;
-  padding: var(--space-4xl) var(--space-md);
+  padding: var(--space-5xl) var(--space-md);
   background: var(--color-bg-alt);
   overflow: hidden;
 }
@@ -333,7 +333,7 @@ const features = [
 
 @media (max-width: 768px) {
   .features {
-    padding: var(--space-3xl) var(--space-md);
+    padding: var(--space-4xl) var(--space-md);
   }
 
   /* Already handled above - removed duplicate */

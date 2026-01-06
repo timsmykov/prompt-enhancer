@@ -123,7 +123,7 @@ const setActive = (index) => {
 <style scoped>
 .before-after {
   position: relative;
-  padding: var(--space-4xl) var(--space-md);
+  padding: var(--space-5xl) var(--space-md);
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   overflow: hidden;
 }
@@ -229,6 +229,14 @@ const setActive = (index) => {
     transform: rotate(90deg);
     margin: var(--space-md) auto;
   }
+}
+
+@media (max-width: 768px) {
+  .before-after {
+    padding: var(--space-4xl) var(--space-md);
+  }
+
+  /* Already handled above - removed duplicate */
 }
 
 .comparison-card {

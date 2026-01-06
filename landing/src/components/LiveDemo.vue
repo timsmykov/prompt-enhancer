@@ -134,7 +134,7 @@ const resetDemo = () => {
 <style scoped>
 .live-demo {
   position: relative;
-  padding: var(--space-4xl) var(--space-md);
+  padding: var(--space-5xl) var(--space-md);
   background: var(--color-bg);
   overflow: hidden;
 }
@@ -506,7 +506,7 @@ const resetDemo = () => {
 
 @media (max-width: 768px) {
   .live-demo {
-    padding: var(--space-3xl) var(--space-md);
+    padding: var(--space-4xl) var(--space-md);
   }
 
   .section-title {

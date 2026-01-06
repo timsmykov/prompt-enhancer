@@ -754,7 +754,7 @@ onMounted(() => {
 /* Responsive Design */
 @media (max-width: 768px) {
   .testimonials {
-    padding: var(--space-3xl) var(--space-md);
+    padding: var(--space-4xl) var(--space-md);
   }
 
   .testimonials-masonry {

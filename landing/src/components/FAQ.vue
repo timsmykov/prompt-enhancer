@@ -87,7 +87,7 @@ const toggleFAQ = (index) => {
 <style scoped>
 .faq {
   position: relative;
-  padding: var(--space-4xl) var(--space-md);
+  padding: var(--space-5xl) var(--space-md);
   background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
   overflow: hidden;
 }
@@ -311,7 +311,7 @@ const toggleFAQ = (index) => {
 
 @media (max-width: 768px) {
   .faq {
-    padding: var(--space-3xl) var(--space-md);
+    padding: var(--space-4xl) var(--space-md);
   }
 
   .faq-question {
