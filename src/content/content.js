@@ -224,10 +224,19 @@
 
   window.addEventListener('message', (event) => {
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
-    if (event.origin !== extensionOrigin) return;
+
+    // For messages from our overlay iframe, event.origin is the page's origin (not extension)
+    // So we use event.source verification instead for iframe messages
+    const isFromOurOverlay = overlayFrame?.contentWindow && event.source === overlayFrame.contentWindow;
+
+    // Accept messages from our overlay (iframe) OR from extension pages
+    if (!isFromOurOverlay && event.origin !== extensionOrigin) return;
+
     if (event.data?.type === 'OVERLAY_INIT' && event.data.token) {
-      // Accept token from overlay's initial handshake
-      overlayToken = event.data.token;
+      // Verify this is our token echoed back
+      if (!overlayToken) {
+        overlayToken = event.data.token;
+      }
       return;
     }
     if (event.data?.type !== 'OVERLAY_ACTION') return;

@@ -300,6 +300,7 @@
     const text = cleanupMarkdown(state.resultText);
     if (!text) return;
     sendOverlayAction({ action: 'replace', text });
+    closeOverlay();
   };
 
   const closeOverlay = () => {
