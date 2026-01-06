@@ -1,27 +1,132 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Sparkles, Download, ArrowRight } from 'lucide-vue-next'
 
+// Multi-stage typing animation
+const prompts = [
+  "Improve Your Prompts in One Click",
+  "Better Prompts, Better Results",
+  "AI-Powered Prompt Enhancement",
+  "Transform Your Writing Instantly"
+]
+
 const animationText = ref('')
-const fullText = 'Select text → Improve → Get better results'
-let currentIndex = 0
+const currentPromptIndex = ref(0)
+const isDeleting = ref(false)
+const isPaused = ref(false)
+const charIndex = ref(0)
+const showCursor = ref(true)
+
+// Animation timing
+const TYPE_SPEED = 80
+const DELETE_SPEED = 40
+const PAUSE_DURATION = 2000
+const PROMPT_SWITCH_DELAY = 500
+
+let animationTimeout = null
+
+// Random variance for natural typing feel
+const getRandomVariance = () => Math.random() * 50 - 25
+
+const animateText = () => {
+  const currentPrompt = prompts[currentPromptIndex.value]
+
+  if (isPaused.value) {
+    // Paused state - will resume after pauseDuration
+    return
+  }
+
+  if (isDeleting.value) {
+    // Delete stage
+    if (charIndex.value > 0) {
+      animationText.value = currentPrompt.slice(0, charIndex.value - 1)
+      charIndex.value--
+      animationTimeout = setTimeout(
+        animateText,
+        DELETE_SPEED + getRandomVariance()
+      )
+    } else {
+      // Finished deleting - switch to next prompt
+      isDeleting.value = false
+      currentPromptIndex.value = (currentPromptIndex.value + 1) % prompts.length
+      isPaused.value = true
+      showCursor.value = false
+
+      animationTimeout = setTimeout(() => {
+        isPaused.value = false
+        showCursor.value = true
+        animateText()
+      }, PROMPT_SWITCH_DELAY)
+    }
+  } else {
+    // Typing stage
+    if (charIndex.value < currentPrompt.length) {
+      animationText.value = currentPrompt.slice(0, charIndex.value + 1)
+      charIndex.value++
+      animationTimeout = setTimeout(
+        animateText,
+        TYPE_SPEED + getRandomVariance()
+      )
+    } else {
+      // Finished typing - pause then delete
+      isPaused.value = true
+
+      animationTimeout = setTimeout(() => {
+        isPaused.value = false
+        isDeleting.value = true
+        animateText()
+      }, PAUSE_DURATION)
+    }
+  }
+}
+
+// Particle effect state
+const particles = ref([])
+let particleInterval = null
+
+const createParticle = () => {
+  if (isPaused.value && !isDeleting.value) return
+
+  const particle = {
+    id: Date.now() + Math.random(),
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    duration: Math.random() * 1000 + 500,
+    delay: Math.random() * 200
+  }
+
+  particles.value.push(particle)
+
+  // Remove particle after animation
+  setTimeout(() => {
+    const index = particles.value.findIndex(p => p.id === particle.id)
+    if (index > -1) {
+      particles.value.splice(index, 1)
+    }
+  }, particle.duration + particle.delay)
+}
 
 onMounted(() => {
-  const typeInterval = setInterval(() => {
-    if (currentIndex < fullText.length) {
-      animationText.value += fullText[currentIndex]
-      currentIndex++
-    } else {
-      clearInterval(typeInterval)
-      setTimeout(() => {
-        animationText.value = ''
-        currentIndex = 0
-        typeInterval()
-      }, 2000)
-    }
-  }, 100)
+  // Start typing animation
+  animationTimeout = setTimeout(animateText, 500)
 
-  return () => clearInterval(typeInterval)
+  // Start particle effect
+  particleInterval = setInterval(createParticle, 300)
+})
+
+onUnmounted(() => {
+  if (animationTimeout) {
+    clearTimeout(animationTimeout)
+  }
+  if (particleInterval) {
+    clearInterval(particleInterval)
+  }
+})
+
+// Computed cursor color based on state
+const cursorColor = computed(() => {
+  return isDeleting.value ? '#f472b6' : '#10b981'
 })
 </script>
 
@@ -46,7 +151,33 @@ onMounted(() => {
         </p>
 
         <div class="animation-box">
-          <code class="typing-animation">{{ animationText }}<span class="cursor">|</span></code>
+          <!-- Particle effects -->
+          <div class="particles-container">
+            <div
+              v-for="particle in particles"
+              :key="particle.id"
+              class="particle"
+              :style="{
+                left: particle.x + '%',
+                top: particle.y + '%',
+                width: particle.size + 'px',
+                height: particle.size + 'px',
+                animationDuration: particle.duration + 'ms',
+                animationDelay: particle.delay + 'ms'
+              }"
+            ></div>
+          </div>
+
+          <div class="typing-container">
+            <span class="animated-text" :data-text="animationText">
+              {{ animationText }}
+            </span>
+            <span
+              v-if="showCursor"
+              class="typing-cursor"
+              :style="{ background: cursorColor }"
+            ></span>
+          </div>
         </div>
 
         <div class="cta-buttons">
@@ -97,6 +228,17 @@ onMounted(() => {
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Animated Background Orbs */
@@ -262,29 +404,146 @@ onMounted(() => {
   50% { background-position: 100% 50%; }
 }
 
-.typing-animation {
-  color: #10b981;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-  font-size: var(--text-lg);
-  display: block;
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+/* Particle effects container */
+.particles-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
 }
 
-.cursor {
+.particle {
+  position: absolute;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.8) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: particleFloat 1.5s ease-out forwards;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(var(--tx, 0), var(--ty, -50px)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Typing container */
+.typing-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+  font-size: var(--text-lg);
+  letter-spacing: 0.05em;
+  z-index: 1;
+}
+
+/* Animated text with gradient and glow */
+.animated-text {
+  background: linear-gradient(
+    135deg,
+    #10b981 0%,
+    #3b82f6 25%,
+    #8b5cf6 50%,
+    #ec4899 75%,
+    #10b981 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textGradient 4s ease infinite;
+  display: inline;
+  position: relative;
+  text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
+}
+
+/* Character reveal animation */
+.animated-text::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: linear-gradient(
+    135deg,
+    #10b981 0%,
+    #3b82f6 25%,
+    #8b5cf6 50%,
+    #ec4899 75%,
+    #10b981 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textGradient 4s ease infinite;
+  opacity: 0.3;
+  filter: blur(8px);
+  z-index: -1;
+}
+
+@keyframes textGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(30deg);
+  }
+}
+
+/* Enhanced cursor with multiple effects */
+.typing-cursor {
   display: inline-block;
-  width: 3px;
+  width: 4px;
   height: 1.2em;
-  background: #10b981;
-  margin-left: 4px;
+  margin-left: 6px;
   vertical-align: middle;
-  animation: cursorBlink 1s step-end infinite;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+  border-radius: 2px;
+  position: relative;
+  transition: background 0.3s ease;
+
+  animation:
+    cursorBlink 1s step-end infinite,
+    cursorGlow 2s ease-in-out infinite alternate,
+    cursorPulse 1.5s ease-in-out infinite;
 }
 
 @keyframes cursorBlink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
+}
+
+@keyframes cursorGlow {
+  0% {
+    box-shadow: 0 0 5px currentColor,
+                0 0 10px currentColor,
+                0 0 15px currentColor;
+  }
+  100% {
+    box-shadow: 0 0 10px currentColor,
+                0 0 20px currentColor,
+                0 0 30px currentColor,
+                0 0 40px currentColor;
+  }
+}
+
+@keyframes cursorPulse {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.1);
+  }
 }
 
 .cta-buttons {
@@ -428,8 +687,12 @@ onMounted(() => {
     padding: var(--space-md);
   }
 
-  .typing-animation {
+  .typing-container {
     font-size: var(--text-base);
+  }
+
+  .particles-container {
+    display: none;
   }
 
   .hero-stats {
