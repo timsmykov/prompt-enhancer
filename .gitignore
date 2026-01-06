@@ -1,30 +1,26 @@
+# macOS
 .DS_Store
-*.log
 
-# Claude Code - local AI assistant configuration
-.claude/
-!.claude/CLAUDE.md
-
-# VS Code
-.vscode/
-*.code-workspace
-
-# Extension build folder (auto-generated, do not commit)
-extension/
-
-# Playwright
+# Dependencies
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/
 
-# npm
+# Test artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+playwright/.auth/
+
+# Development tooling
+tests/
+playwright.config.ts
+package.json
 package-lock.json
 
-# OS
-Thumbs.db
-*.swp
-*.swo
-*~
+# Claude Code agents and configuration
+.claude/
+claude_code_zai_env.sh
+
+# Build artifacts (if added in future)
+dist/
+build/
