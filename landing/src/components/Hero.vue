@@ -27,6 +27,7 @@ onMounted(() => {
 
 <template>
   <section class="hero">
+    <div class="hero-bg-pattern"></div>
     <div class="container">
       <div class="hero-content">
         <div class="badge">
@@ -80,168 +81,370 @@ onMounted(() => {
 
 <style scoped>
 .hero {
-  padding: 6rem 1rem;
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5xl) var(--space-md);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+  overflow: hidden;
   text-align: center;
 }
 
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Animated Background Orbs */
+.hero::before,
+.hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero::before {
+  width: 400px;
+  height: 400px;
+  background: rgba(59, 130, 246, 0.4);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.hero::after {
+  width: 350px;
+  height: 350px;
+  background: rgba(139, 92, 246, 0.4);
+  bottom: -100px;
+  right: -100px;
+  animation-delay: -4s;
+}
+
+/* Grid Pattern Overlay */
+.hero-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
 .container {
-  max-width: 1200px;
+  max-width: var(--container-xl);
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-content {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #dbeafe;
-  color: #1e40af;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 2rem;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-xl);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.8s ease forwards;
+  animation-delay: 0.1s;
+  opacity: 0;
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  line-height: 1.1;
-  margin: 0 0 1.5rem 0;
-  color: #0f172a;
+  font-size: var(--text-5xl);
+  font-weight: var(--font-extrabold);
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-xl) 0;
+  color: white;
+  letter-spacing: var(--tracking-tight);
+  animation: fadeInUp 0.8s ease forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(
+    90deg,
+    #fff 0%,
+    #fbbf24 25%,
+    #f472b6 50%,
+    #fbbf24 75%,
+    #fff 100%
+  );
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: textGradient 4s linear infinite;
+}
+
+@keyframes textGradient {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 200% center; }
 }
 
 .hero-description {
-  font-size: 1.25rem;
-  color: #475569;
-  line-height: 1.6;
-  margin: 0 0 2rem 0;
+  font-size: var(--text-xl);
+  color: rgba(255, 255, 255, 0.95);
+  line-height: var(--leading-relaxed);
+  margin: 0 0 var(--space-2xl) 0;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fadeInUp 0.8s ease forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+  letter-spacing: var(--tracking-wide);
 }
 
 .animation-box {
-  background: #1e293b;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 2rem 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  margin: var(--space-2xl) auto;
+  max-width: 650px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: fadeInUp 0.8s ease forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glowing border effect */
+.animation-box::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    #3b82f6,
+    #8b5cf6,
+    #ec4899,
+    #fbbf24,
+    #3b82f6
+  );
+  background-size: 400% 400%;
+  border-radius: var(--radius-xl);
+  z-index: -1;
+  animation: borderGlow 6s ease infinite;
+  opacity: 0.5;
+}
+
+@keyframes borderGlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .typing-animation {
   color: #10b981;
-  font-family: 'Courier New', monospace;
-  font-size: 1.125rem;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+  font-size: var(--text-lg);
   display: block;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
 }
 
 .cursor {
-  animation: blink 1s infinite;
-  -webkit-animation: blink 1s infinite;
+  display: inline-block;
+  width: 3px;
+  height: 1.2em;
+  background: #10b981;
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: cursorBlink 1s step-end infinite;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
 }
 
-@keyframes blink {
+@keyframes cursorBlink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
 }
 
 .cta-buttons {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   justify-content: center;
   flex-wrap: wrap;
-  margin: 2rem 0;
+  margin: var(--space-2xl) 0;
+  animation: fadeInUp 0.8s ease forwards;
+  animation-delay: 0.5s;
+  opacity: 0;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-xl);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
   border: none;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: var(--tracking-wide);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+  background: white;
+  color: #667eea;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
+              0 0 0 0 rgba(255, 255, 255, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
+                0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
+                0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
+                0 0 0 0 rgba(255, 255, 255, 0);
+  }
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 12px -1px rgba(59, 130, 246, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
 .btn-secondary {
-  background: white;
-  color: #1e293b;
-  border: 2px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-secondary:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 2rem;
-  margin-top: 4rem;
-  padding-top: 2rem;
-  border-top: 1px solid #e2e8f0;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-xl);
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeInUp 0.8s ease forwards;
+  animation-delay: 0.6s;
+  opacity: 0;
+}
+
+.stat {
+  text-align: center;
 }
 
 .stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-extrabold);
+  color: white;
+  margin-bottom: var(--space-xs);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin-top: 0.25rem;
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: var(--font-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 @media (max-width: 768px) {
   .hero {
-    padding: 4rem 1rem;
+    padding: var(--space-3xl) var(--space-md);
+    min-height: auto;
+  }
+
+  .hero::before,
+  .hero::after {
+    width: 250px;
+    height: 250px;
   }
 
   .hero-title {
-    font-size: 2.5rem;
+    font-size: var(--text-4xl);
   }
 
   .hero-description {
-    font-size: 1.125rem;
+    font-size: var(--text-lg);
   }
 
   .cta-buttons {
     flex-direction: column;
+    width: 100%;
   }
 
   .btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .animation-box {
+    padding: var(--space-md);
+  }
+
+  .typing-animation {
+    font-size: var(--text-base);
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: var(--text-3xl);
+  }
+
+  .stat-number {
+    font-size: var(--text-2xl);
   }
 }
 </style>
