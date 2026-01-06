@@ -242,8 +242,19 @@
     });
 
     // Accept messages from our overlay (iframe) OR from extension pages
-    if (!isFromOurOverlay && event.origin !== extensionOrigin) {
-      console.warn('[Content Diagnostics] Message REJECTED by source/origin check');
+    // FIXED: Accept if from overlay OR from extension (OR logic, not AND)
+    const isValidSource = isFromOurOverlay || event.origin === extensionOrigin;
+    if (!isValidSource) {
+      console.warn('[Content Diagnostics] Message REJECTED by source/origin check', {
+        isFromOurOverlay,
+        'origin is extension': event.origin === extensionOrigin
+      });
+      return;
+    }
+
+    // ADDITIONAL GUARD: If we have an overlay and message is from postMessage, check source more carefully
+    if (overlayFrame && event.source === window) {
+      console.warn('[Content Diagnostics] Message from window itself (not from iframe), ignoring');
       return;
     }
 
