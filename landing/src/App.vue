@@ -7,11 +7,11 @@ import Features from './components/Features.vue'
 import Testimonials from './components/Testimonials.vue'
 import FAQ from './components/FAQ.vue'
 import FinalCTA from './components/FinalCTA.vue'
-// Footer component to be created
+import Footer from './components/Footer.vue'
 </script>
 
 <template>
-  <div class="landing-page">
+  <main class="landing-page">
     <Hero />
     <HowItWorks />
     <LiveDemo id="demo" />
@@ -20,19 +20,19 @@ import FinalCTA from './components/FinalCTA.vue'
     <Testimonials />
     <FAQ />
     <FinalCTA id="download" />
-    <!-- Footer component to be added here -->
-  </div>
+    <Footer />
+  </main>
 </template>
+
+<style>
+html {
+  scroll-behavior: smooth;
+}
+</style>
 
 <style scoped>
 .landing-page {
   min-height: 100vh;
   width: 100%;
 }
-
-html {
-  scroll-behavior: smooth;
-}
-
-/* Let each component manage its own spacing */
 </style>

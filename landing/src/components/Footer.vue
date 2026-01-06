@@ -6,39 +6,39 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-column">
-          <h3 class="footer-title">Product</h3>
+        <div class="footer-column" role="navigation" aria-labelledby="product-heading">
+          <h3 id="product-heading" class="footer-title">Product</h3>
           <ul class="footer-links">
-            <li><a href="#" class="footer-link">Chrome Web Store</a></li>
-            <li><a href="#" class="footer-link">Documentation</a></li>
-            <li><a href="#" class="footer-link">GitHub Repository</a></li>
+            <li><a href="javascript:void(0)" class="footer-link" rel="noopener noreferrer" aria-label="Chrome Web Store (coming soon)">Chrome Web Store</a></li>
+            <li><a href="javascript:void(0)" class="footer-link" rel="noopener noreferrer" aria-label="Documentation (coming soon)">Documentation</a></li>
+            <li><a href="javascript:void(0)" class="footer-link" rel="noopener noreferrer" aria-label="GitHub Repository (coming soon)">GitHub Repository</a></li>
           </ul>
         </div>
 
-        <div class="footer-column">
-          <h3 class="footer-title">Legal</h3>
+        <div class="footer-column" role="navigation" aria-labelledby="legal-heading">
+          <h3 id="legal-heading" class="footer-title">Legal</h3>
           <ul class="footer-links">
-            <li><a href="#" class="footer-link">Privacy Policy</a></li>
-            <li><a href="#" class="footer-link">Terms of Service</a></li>
+            <li><a href="javascript:void(0)" class="footer-link" rel="noopener noreferrer" aria-label="Privacy Policy (coming soon)">Privacy Policy</a></li>
+            <li><a href="javascript:void(0)" class="footer-link" rel="noopener noreferrer" aria-label="Terms of Service (coming soon)">Terms of Service</a></li>
             <li class="footer-text">License: MIT</li>
           </ul>
         </div>
 
-        <div class="footer-column">
-          <h3 class="footer-title">Connect</h3>
+        <div class="footer-column" role="navigation" aria-labelledby="connect-heading">
+          <h3 id="connect-heading" class="footer-title">Connect</h3>
           <ul class="social-links">
             <li>
-              <a href="#" class="social-link" aria-label="GitHub">
+              <a href="javascript:void(0)" class="social-link" rel="noopener noreferrer" aria-label="GitHub (coming soon)">
                 <Github :size="20" />
               </a>
             </li>
             <li>
-              <a href="#" class="social-link" aria-label="Twitter">
+              <a href="javascript:void(0)" class="social-link" rel="noopener noreferrer" aria-label="Twitter (coming soon)">
                 <Twitter :size="20" />
               </a>
             </li>
             <li>
-              <a href="mailto:contact@example.com" class="social-link" aria-label="Email">
+              <a href="mailto:contact@example.com" class="social-link" rel="noopener noreferrer" aria-label="Email">
                 <Mail :size="20" />
               </a>
             </li>
@@ -55,8 +55,8 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 
 <style scoped>
 .footer {
-  background: #0f172a;
-  color: #e2e8f0;
+  background: var(--color-bg-dark);
+  color: var(--color-text-inverse);
   padding: 6rem 1rem 3rem 1rem;
 }
 
@@ -80,7 +80,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 .footer-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-text-inverse);
   margin: 0 0 1.5rem 0;
 }
 
@@ -98,21 +98,21 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 }
 
 .footer-link {
-  color: #94a3b8;
+  color: var(--color-text-light);
   text-decoration: none;
   transition: color 0.2s ease;
   display: inline-block;
 }
 
 .footer-link:hover {
-  color: #ffffff;
+  color: var(--color-text-inverse);
   text-decoration: underline;
-  text-decoration-color: #3b82f6;
+  text-decoration-color: var(--color-primary);
   text-underline-offset: 4px;
 }
 
 .footer-text {
-  color: #94a3b8;
+  color: var(--color-text-light);
   font-size: 0.9375rem;
 }
 
@@ -133,14 +133,14 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  color: #cbd5e1;
+  color: var(--color-text-light);
   transition: all 0.2s ease;
 }
 
 .social-link:hover {
   background: rgba(59, 130, 246, 0.2);
   border-color: rgba(59, 130, 246, 0.5);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   transform: translateY(-2px);
 }
 
@@ -153,7 +153,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 .footer-bottom p {
   margin: 0;
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 @media (max-width: 768px) {
