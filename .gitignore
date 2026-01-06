@@ -20,6 +20,7 @@ package-lock.json
 # Claude Code agents and configuration
 .claude/
 claude_code_zai_env.sh
+CLAUDE.md
 
 # Build artifacts (if added in future)
 dist/
