@@ -208,20 +208,6 @@
     }
   };
 
-  chrome.runtime.onMessage.addListener((message) => {
-    console.log('[PromptImprover] Content script received:', message);
-    if (message?.type !== 'OPEN_OVERLAY') return;
-    captureSelection();
-    pendingSelectionText = getSelectionText();
-    console.log('[PromptImprover] Selected text:', pendingSelectionText);
-    // Always generate new token to prevent race conditions with old messages
-    overlayToken = createToken();
-    ensureOverlay();
-    if (overlayReady) {
-      sendToOverlay({ type: 'SELECTION_TEXT', text: pendingSelectionText });
-    }
-  });
-
   window.addEventListener('message', (event) => {
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
 
@@ -240,7 +226,7 @@
       return;
     }
     if (event.data?.type !== 'OVERLAY_ACTION') return;
-    if (!overlayToken || event.data.token !== overlayToken) return;
+    if (!event.data.token || event.data.token !== overlayToken) return;
 
     if (event.data.action === 'replace') {
       replaceSelectionText(event.data.text || '');
@@ -269,6 +255,20 @@
         metrics.height = event.data.height;
       }
       applyOverlayMetrics();
+    }
+  });
+
+  chrome.runtime.onMessage.addListener((message) => {
+    console.log('[PromptImprover] Content script received:', message);
+    if (message?.type !== 'OPEN_OVERLAY') return;
+    captureSelection();
+    pendingSelectionText = getSelectionText();
+    console.log('[PromptImprover] Selected text:', pendingSelectionText);
+    // Always generate new token to prevent race conditions with old messages
+    overlayToken = createToken();
+    ensureOverlay();
+    if (overlayReady) {
+      sendToOverlay({ type: 'SELECTION_TEXT', text: pendingSelectionText });
     }
   });
 })();

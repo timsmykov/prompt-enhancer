@@ -112,8 +112,15 @@
     if (dom.resultTextarea) {
       dom.resultTextarea.readOnly = state.status !== 'ready';
       if (dom.resultTextarea.value !== state.resultText) {
+        const scrollPos = dom.resultTextarea.scrollTop;
         dom.resultTextarea.value = state.resultText;
-        dom.resultTextarea.scrollTop = 0;
+        // Only reset scroll to top if this is initial load or new content (not during typing)
+        if (state.status !== 'typing') {
+          dom.resultTextarea.scrollTop = 0;
+        } else {
+          // Preserve user's scroll position during typing
+          dom.resultTextarea.scrollTop = scrollPos;
+        }
       }
     }
 
