@@ -26,7 +26,7 @@
         ),
       set: (data) => {
         Object.keys(data).forEach((key) => {
-          localStorage.setItem(key, data[key] || '');
+          localStorage.setItem(key, String(data[key] ?? ''));
         });
         return Promise.resolve();
       },
@@ -125,6 +125,7 @@
       });
       setStatus('Saved.');
     } catch (error) {
+      console.error('[PromptImprover] Save settings error:', error);
       setStatus('Failed.');
     } finally {
       setSaving(false);
