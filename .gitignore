@@ -1,8 +1,16 @@
 .DS_Store
+*.log
+
+# Claude Code - local AI assistant configuration
+.claude/
+!.claude/CLAUDE.md
+
+# VS Code
+.vscode/
+*.code-workspace
 
 # Extension build folder (auto-generated, do not commit)
-# Uncomment the line below if you want to ignore extension/ folder
-# extension/
+extension/
 
 # Playwright
 node_modules/
@@ -11,3 +19,12 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# npm
+package-lock.json
+
+# OS
+Thumbs.db
+*.swp
+*.swo
+*~
