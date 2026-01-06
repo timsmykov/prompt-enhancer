@@ -218,20 +218,49 @@
     // Accept messages from our overlay (iframe) OR from extension pages
     if (!isFromOurOverlay && event.origin !== extensionOrigin) return;
 
+    // DIAGNOSTIC: Log all messages
+    console.log('[Content Diagnostics] Message received:', {
+      type: event.data?.type,
+      hasToken: !!event.data?.token,
+      tokenMatches: event.data?.token === overlayToken,
+      currentToken: overlayToken?.substring(0, 8) + '...',
+      receivedToken: event.data?.token?.substring(0, 8) + '...',
+      action: event.data?.action,
+      isFromOverlay: isFromOurOverlay
+    });
+
     if (event.data?.type === 'OVERLAY_INIT' && event.data.token) {
+      console.log('[Content Diagnostics] OVERLAY_INIT received, token:', event.data.token.substring(0, 8) + '...');
       // Verify this is our token echoed back
       if (!overlayToken) {
+        console.log('[Content Diagnostics] Setting overlayToken from echo');
         overlayToken = event.data.token;
+      } else {
+        console.log('[Content Diagnostics] overlayToken already set, skipping echo validation');
       }
       return;
     }
     if (event.data?.type !== 'OVERLAY_ACTION') return;
-    if (!event.data.token || event.data.token !== overlayToken) return;
+    console.log('[Content Diagnostics] OVERLAY_ACTION received, validating token...');
+
+    if (!event.data.token || event.data.token !== overlayToken) {
+      console.error('[Content Diagnostics] Token validation FAILED!', {
+        hasToken: !!event.data.token,
+        tokenMatches: event.data.token === overlayToken,
+        expected: overlayToken?.substring(0, 8) + '...',
+        received: event.data?.token?.substring(0, 8) + '...'
+      });
+      return;
+    }
+
+    console.log('[Content Diagnostics] Token validated, executing action:', event.data.action);
 
     if (event.data.action === 'replace') {
+      console.log('[Content Diagnostics] Executing replace with text length:', event.data.text?.length);
       replaceSelectionText(event.data.text || '');
     }
     if (event.data.action === 'close') {
+      console.log('[Content Diagnostics] Executing close');
       closeOverlay();
     }
     if (event.data.action === 'position' && overlayFrame) {
