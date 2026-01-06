@@ -63,6 +63,8 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 var(--space-md);
+  width: 100%;
 }
 
 .footer-grid {
@@ -70,6 +72,8 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   grid-template-columns: repeat(3, 1fr);
   gap: 3rem;
   margin-bottom: 3rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .footer-column {

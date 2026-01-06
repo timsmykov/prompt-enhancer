@@ -259,6 +259,8 @@ onMounted(() => {
   align-items: stretch;
   justify-content: center;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
 }
 
 .step-card-wrapper {
@@ -269,6 +271,7 @@ onMounted(() => {
   align-items: center;
   gap: var(--space-lg);
   transition: all var(--transition-slow);
+  overflow: hidden;
 }
 
 .step-card-wrapper.active {
@@ -294,6 +297,7 @@ onMounted(() => {
   transition: all var(--transition-slow);
   cursor: pointer;
   overflow: hidden;
+  max-width: 100%;
 }
 
 /* Hover effects */
@@ -575,13 +579,21 @@ onMounted(() => {
 
 /* Responsive Design */
 @media (max-width: 1024px) {
+  .steps-container {
+    perspective: none;
+  }
+
   .steps-track {
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
   .step-card-wrapper {
     max-width: 100%;
+    width: 100%;
     flex-direction: column;
   }
 
@@ -607,6 +619,10 @@ onMounted(() => {
     100% {
       left: 100%;
     }
+  }
+
+  .step-card:hover {
+    transform: translateY(-8px);
   }
 }
 

@@ -122,6 +122,7 @@ import { Download, Sparkles } from 'lucide-vue-next'
 .container {
   max-width: var(--container-xl);
   margin: 0 auto;
+  padding: 0 var(--space-md);
   position: relative;
   z-index: 1;
 }
@@ -130,6 +131,7 @@ import { Download, Sparkles } from 'lucide-vue-next'
   text-align: center;
   max-width: 900px;
   margin: 0 auto var(--space-3xl) auto;
+  padding: 0 var(--space-md);
 }
 
 .badge {
@@ -277,6 +279,8 @@ import { Download, Sparkles } from 'lucide-vue-next'
   max-width: 800px;
   margin: 0 auto;
   position: relative;
+  width: 100%;
+  padding: 0 var(--space-md);
 }
 
 /* Glow effect behind browser */
@@ -500,6 +504,13 @@ import { Download, Sparkles } from 'lucide-vue-next'
 @media (max-width: 768px) {
   .final-cta {
     padding: var(--space-3xl) var(--space-md);
+  }
+
+  .container,
+  .cta-content,
+  .cta-visual {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
   }
 
   .cta-title {

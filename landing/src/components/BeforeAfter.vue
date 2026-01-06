@@ -213,6 +213,22 @@ const setActive = (index) => {
   gap: var(--space-lg);
   align-items: stretch;
   margin-bottom: var(--space-3xl);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 968px) {
+  .comparison-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .arrow-container {
+    order: -1;
+    transform: rotate(90deg);
+    margin: var(--space-md) auto;
+  }
 }
 
 .comparison-card {
@@ -396,16 +412,11 @@ const setActive = (index) => {
 }
 
 @media (max-width: 968px) {
-  .comparison-container {
-    grid-template-columns: 1fr;
-  }
-
-  .arrow-container {
-    transform: rotate(90deg);
-  }
+  /* Already handled above - removed duplicate */
 
   .tabs {
     flex-direction: column;
+    width: 100%;
   }
 
   .tab {

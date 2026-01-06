@@ -186,6 +186,9 @@ const resetDemo = () => {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .demo-box {
@@ -196,6 +199,8 @@ const resetDemo = () => {
   border: 2px solid var(--color-border);
   transition: all var(--transition-base);
   position: relative;
+  width: 100%;
+  max-width: 100%;
 }
 
 .demo-box:hover {

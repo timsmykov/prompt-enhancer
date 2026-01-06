@@ -126,12 +126,39 @@ const features = [
   grid-template-rows: repeat(2, auto);
   gap: var(--space-lg);
   margin-bottom: var(--space-3xl);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Large feature card spans 2 columns */
 .feature-card:nth-child(1) {
   grid-column: span 2;
   grid-row: span 2;
+}
+
+@media (max-width: 1200px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .feature-card:nth-child(1) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: var(--space-md);
+  }
+
+  .feature-card,
+  .feature-card:nth-child(1) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
 }
 
 .feature-card {
@@ -301,13 +328,7 @@ const features = [
 }
 
 @media (max-width: 1024px) {
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .feature-card:nth-child(1) {
-    grid-column: span 2;
-  }
+  /* Already handled above - removed duplicate */
 }
 
 @media (max-width: 768px) {
@@ -315,18 +336,7 @@ const features = [
     padding: var(--space-3xl) var(--space-md);
   }
 
-  .features-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    gap: var(--space-md);
-  }
-
-  .feature-card,
-  .feature-card:nth-child(1) {
-    grid-column: span 1;
-    grid-row: span 1;
-    padding: var(--space-lg);
-  }
+  /* Already handled above - removed duplicate */
 
   .feature-card:nth-child(1) .icon-container {
     width: 4.5rem;

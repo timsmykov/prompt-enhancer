@@ -136,6 +136,8 @@ const toggleFAQ = (index) => {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  width: 100%;
+  max-width: 100%;
 }
 
 .faq-item {

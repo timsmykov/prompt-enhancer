@@ -291,6 +291,8 @@ const cursorColor = computed(() => {
 .hero-content {
   max-width: 900px;
   margin: 0 auto;
+  padding: 0 var(--space-md);
+  width: 100%;
 }
 
 .badge {
@@ -369,6 +371,7 @@ const cursorColor = computed(() => {
   padding: var(--space-lg);
   margin: var(--space-2xl) auto;
   max-width: 650px;
+  width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
               inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -669,6 +672,10 @@ const cursorColor = computed(() => {
     min-height: auto;
   }
 
+  .hero-content {
+    padding: 0 var(--space-sm);
+  }
+
   .hero::before,
   .hero::after {
     width: 250px;
@@ -695,6 +702,7 @@ const cursorColor = computed(() => {
 
   .animation-box {
     padding: var(--space-md);
+    max-width: 100%;
   }
 
   .typing-container {
