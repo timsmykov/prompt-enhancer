@@ -1,4 +1,8 @@
 (() => {
+  console.log('[Content Diagnostics] ===== CONTENT SCRIPT LOADED =====');
+  console.log('[Content Diagnostics] Page URL:', window.location.href);
+  console.log('[Content Diagnostics] Document ready:', document.readyState);
+
   let overlayFrame = null;
   let overlayStyle = null;
   let overlayReady = false;
@@ -220,6 +224,8 @@
       'overlayFrame.contentWindow exists': !!overlayFrame?.contentWindow,
       'source === overlayFrame.contentWindow': overlayFrame?.contentWindow && event.source === overlayFrame.contentWindow
     });
+    console.log('[Content Diagnostics] Message SOURCE:', event.source);
+    console.log('[Content Diagnostics] Message ORIGIN:', event.origin);
 
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
 
@@ -323,4 +329,8 @@
       sendToOverlay({ type: 'SELECTION_TEXT', text: pendingSelectionText });
     }
   });
+
+  console.log('[Content Diagnostics] ===== MESSAGE LISTENER ATTACHED =====');
+  console.log('[Content Diagnostics] Window object:', window);
+  console.log('[Content Diagnostics] Document object:', document);
 })();
