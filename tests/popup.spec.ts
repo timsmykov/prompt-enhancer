@@ -14,7 +14,7 @@ test.describe('Popup UI Tests', () => {
     (page as any).consoleErrors = consoleErrors;
 
     // Navigate to popup HTML file
-    await page.goto('file:///Users/timsmykov/Desktop/Extention for prompts/src/ui/popup/popup.html');
+    await page.goto('file:///Users/timsmykov/worktrees-prompt-extension/frontend/extension/src/ui/popup/popup.html');
     await page.waitForLoadState('domcontentloaded');
   });
 

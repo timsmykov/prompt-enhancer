@@ -320,6 +320,15 @@ body.is-resizing .surface {
   padding: 4px 8px;
 }
 
+.icon-button:focus-visible,
+.toggle:focus-visible,
+.primary:focus-visible,
+.secondary:focus-visible,
+.ghost:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+}
+
 .loading {
   display: inline-flex;
   align-items: center;
