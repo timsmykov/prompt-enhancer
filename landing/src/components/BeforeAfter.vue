@@ -28,19 +28,19 @@ const activeExample = computed(() => examples[activeCategory.value])
 </script>
 
 <template>
-  <section class="before-after">
+  <section class="before-after" aria-labelledby="before-after-title">
     <!-- Animated background -->
-    <div class="bg-pattern"></div>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
+    <div class="bg-pattern" aria-hidden="true"></div>
+    <div class="bg-orb orb-1" aria-hidden="true"></div>
+    <div class="bg-orb orb-2" aria-hidden="true"></div>
 
     <div class="container">
       <div class="section-header">
         <div class="badge">
-          <TrendingUp :size="16" />
+          <TrendingUp :size="16" aria-hidden="true" />
           <span>Real Results</span>
         </div>
-        <h2 class="section-title">
+        <h2 id="before-after-title" class="section-title">
           See the <span class="gradient-text">Transformation</span>
         </h2>
         <p class="section-subtitle">
@@ -49,52 +49,56 @@ const activeExample = computed(() => examples[activeCategory.value])
       </div>
 
       <!-- Category Tabs -->
-      <div class="tabs">
+      <div class="tabs" role="tablist" aria-label="Select example category">
         <button
           v-for="category in categories"
           :key="category"
           @click="activeCategory = category"
           class="tab"
           :class="{ active: activeCategory === category }"
+          :aria-selected="activeCategory === category"
+          :tabindex="activeCategory === category ? 0 : -1"
+          role="tab"
+          :aria-label="`View ${category} examples`"
         >
           {{ category }}
         </button>
       </div>
 
       <!-- Comparison Cards -->
-      <div class="comparison">
+      <div class="comparison" role="region" :aria-label="`Comparison example for ${activeCategory} category`">
         <!-- Before Card -->
-        <div class="comparison-card before-card">
+        <div class="comparison-card before-card" role="article" aria-labelledby="before-heading">
           <div class="card-header">
-            <div class="icon-badge before-icon">→</div>
-            <h3>Before</h3>
+            <div class="icon-badge before-icon" aria-hidden="true">→</div>
+            <h3 id="before-heading">Before</h3>
           </div>
           <p class="comparison-text">{{ activeExample.before }}</p>
           <div class="card-footer">
-            <div class="rating">
-              <span class="stars">★★</span>
+            <div class="rating" :aria-label="`Rating: 2 out of 5 stars - ${activeCategory} quality`">
+              <span class="stars" aria-hidden="true">★★</span>
               <span class="rating-label">Basic</span>
             </div>
           </div>
         </div>
 
         <!-- Arrow -->
-        <div class="arrow-container">
+        <div class="arrow-container" aria-hidden="true">
           <div class="arrow-circle">
             <ArrowRight :size="32" />
           </div>
         </div>
 
         <!-- After Card -->
-        <div class="comparison-card after-card">
+        <div class="comparison-card after-card" role="article" aria-labelledby="after-heading">
           <div class="card-header">
-            <div class="icon-badge after-icon">✓</div>
-            <h3>After</h3>
+            <div class="icon-badge after-icon" aria-hidden="true">✓</div>
+            <h3 id="after-heading">After</h3>
           </div>
           <p class="comparison-text">{{ activeExample.after }}</p>
           <div class="card-footer">
-            <div class="rating">
-              <span class="stars">★★★★★</span>
+            <div class="rating" :aria-label="`Rating: 5 out of 5 stars - Excellent ${activeCategory} quality`">
+              <span class="stars" aria-hidden="true">★★★★★</span>
               <span class="rating-label">Enhanced</span>
             </div>
           </div>
@@ -102,16 +106,16 @@ const activeExample = computed(() => examples[activeCategory.value])
       </div>
 
       <!-- Metrics -->
-      <div class="metrics">
-        <div class="metric-card">
+      <div class="metrics" role="list" aria-label="Improvement metrics">
+        <div class="metric-card" role="listitem">
           <div class="metric-number">3x</div>
           <div class="metric-label">More Detailed</div>
         </div>
-        <div class="metric-card">
+        <div class="metric-card" role="listitem">
           <div class="metric-number">5x</div>
           <div class="metric-label">More Specific</div>
         </div>
-        <div class="metric-card">
+        <div class="metric-card" role="listitem">
           <div class="metric-number">10x</div>
           <div class="metric-label">Better Results</div>
         </div>

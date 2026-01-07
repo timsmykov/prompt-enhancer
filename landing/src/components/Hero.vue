@@ -51,18 +51,18 @@ const cursorColor = computed(() => {
 </script>
 
 <template>
-  <section class="hero">
-    <div class="hero-bg-pattern"></div>
+  <section class="hero" role="banner" aria-labelledby="hero-title">
+    <div class="hero-bg-pattern" aria-hidden="true"></div>
     <div class="container">
       <div class="hero-content">
         <div class="badge">
-          <Sparkles :size="16" />
+          <Sparkles :size="16" aria-hidden="true" />
           <span>Free Chrome Extension</span>
         </div>
 
-        <h1 class="hero-title">
+        <h1 id="hero-title" class="hero-title">
           Improve Your Prompts in
-          <span class="gradient-text">One Click</span>
+          <span class="gradient-text" aria-label="One Click">One Click</span>
         </h1>
 
         <p class="hero-description">
@@ -70,9 +70,9 @@ const cursorColor = computed(() => {
           Simply select any text, click "Improve prompt", and watch the magic happen.
         </p>
 
-        <div class="animation-box">
+        <div class="animation-box" role="img" :aria-label="`Animated example: ${animationText}`">
           <!-- Particle effects -->
-          <div class="particles-container">
+          <div class="particles-container" aria-hidden="true">
             <div
               v-for="particle in particles"
               :key="particle.id"
@@ -89,38 +89,39 @@ const cursorColor = computed(() => {
           </div>
 
           <div class="typing-container">
-            <span class="animated-text" :data-text="animationText">
+            <span class="animated-text" :data-text="animationText" aria-hidden="true">
               {{ animationText }}
             </span>
             <span
               v-if="showCursor"
               class="typing-cursor"
               :style="{ background: cursorColor }"
+              aria-hidden="true"
             ></span>
           </div>
         </div>
 
-        <div class="cta-buttons">
-          <a href="#download" class="btn btn-primary">
-            <Download :size="20" />
+        <div class="cta-buttons" role="group" aria-label="Call to action buttons">
+          <a href="#download" class="btn btn-primary" aria-label="Download Prompt Improver extension for Chrome - Free">
+            <Download :size="20" aria-hidden="true" />
             Add to Chrome - Free
           </a>
-          <a href="#demo" class="btn btn-secondary">
-            Try Live Demo
-            <ArrowRight :size="20" />
+          <a href="#demo" class="btn btn-secondary" aria-label="Try live demo of Prompt Improver">
+            <span aria-hidden="true">Try Live Demo</span>
+            <ArrowRight :size="20" aria-hidden="true" />
           </a>
         </div>
 
-        <div class="hero-stats">
-          <div class="stat">
+        <div class="hero-stats" role="list" aria-label="Extension statistics">
+          <div class="stat" role="listitem">
             <div class="stat-number">10K+</div>
             <div class="stat-label">Active Users</div>
           </div>
-          <div class="stat">
+          <div class="stat" role="listitem">
             <div class="stat-number">4.8★</div>
             <div class="stat-label">Average Rating</div>
           </div>
-          <div class="stat">
+          <div class="stat" role="listitem">
             <div class="stat-number">100%</div>
             <div class="stat-label">Privacy First</div>
           </div>

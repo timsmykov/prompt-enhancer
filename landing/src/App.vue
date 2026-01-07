@@ -2,6 +2,7 @@
 import { defineAsyncComponent } from 'vue'
 import ErrorBoundary from './components/ErrorBoundary.vue'
 import LoadingSpinner from './components/LoadingSpinner.vue'
+import SkipLink from './components/SkipLink.vue'
 
 // Above-fold components - immediate load
 import Hero from './components/Hero.vue'
@@ -18,12 +19,15 @@ const Footer = defineAsyncComponent(() => import('./components/Footer.vue'))
 </script>
 
 <template>
+  <!-- Skip Links for Keyboard Navigation -->
+  <SkipLink />
+
   <ErrorBoundary>
-    <main class="landing-page">
+    <main id="main-content" class="landing-page">
       <!-- Above-fold - loads immediately -->
       <Hero />
-      <Features />
-      <HowItWorks />
+      <Features id="features" />
+      <HowItWorks id="how-it-works" />
 
       <!-- Below-fold - individual Suspense for each component -->
       <Suspense>

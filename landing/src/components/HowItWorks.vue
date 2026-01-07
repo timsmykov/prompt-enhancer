@@ -45,20 +45,20 @@ const setActiveStep = (index) => {
 </script>
 
 <template>
-  <section class="how-it-works">
+  <section class="how-it-works" aria-labelledby="how-it-works-title">
     <!-- Animated Background -->
-    <div class="bg-pattern"></div>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
+    <div class="bg-pattern" aria-hidden="true"></div>
+    <div class="bg-orb orb-1" aria-hidden="true"></div>
+    <div class="bg-orb orb-2" aria-hidden="true"></div>
 
     <div class="container">
       <!-- Section Header -->
       <div class="section-header">
         <div class="badge">
-          <Sparkles :size="16" />
+          <Sparkles :size="16" aria-hidden="true" />
           <span>Simple Process</span>
         </div>
-        <h2 class="section-title">
+        <h2 id="how-it-works-title" class="section-title">
           How It <span class="gradient-text">Works</span>
         </h2>
         <p class="section-subtitle">
@@ -67,21 +67,26 @@ const setActiveStep = (index) => {
       </div>
 
       <!-- Steps Display -->
-      <div class="steps-display">
+      <div class="steps-display" role="list" aria-label="Three step process">
         <div
           v-for="(step, index) in steps"
           :key="index"
           class="step-card"
           :class="{ active: activeStep === index }"
           @click="setActiveStep(index)"
+          role="listitem"
+          :aria-label="`${step.title}: ${step.description}`"
+          :tabindex="0"
+          @keyup.enter="setActiveStep(index)"
+          @keyup.space.prevent="setActiveStep(index)"
         >
           <!-- Step Number Badge -->
-          <div class="step-number" :style="{ '--step-color': step.color }">
+          <div class="step-number" :style="{ '--step-color': step.color }" aria-hidden="true">
             {{ index + 1 }}
           </div>
 
           <!-- Icon with Glow -->
-          <div class="icon-wrapper" :style="{ '--step-color': step.color }">
+          <div class="icon-wrapper" :style="{ '--step-color': step.color }" aria-hidden="true">
             <div class="icon-glow"></div>
             <component :is="step.icon" :size="48" class="step-icon" />
           </div>
@@ -91,21 +96,23 @@ const setActiveStep = (index) => {
           <p class="step-description">{{ step.description }}</p>
 
           <!-- Connector Arrow (not on last) -->
-          <div v-if="index < steps.length - 1" class="connector-arrow">
+          <div v-if="index < steps.length - 1" class="connector-arrow" aria-hidden="true">
             <ArrowRight :size="24" />
           </div>
         </div>
       </div>
 
       <!-- Progress Indicator -->
-      <div class="progress-indicator">
-        <div
+      <div class="progress-indicator" role="navigation" aria-label="Step progress indicators">
+        <button
           v-for="(step, index) in steps"
           :key="index"
           class="progress-dot"
           :class="{ active: activeStep === index }"
           @click="setActiveStep(index)"
-        ></div>
+          :aria-label="`Go to step ${index + 1}: ${step.title}`"
+          :aria-current="activeStep === index ? 'step' : undefined"
+        ></button>
       </div>
     </div>
   </section>

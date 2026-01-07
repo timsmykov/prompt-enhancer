@@ -34,17 +34,17 @@ const features = [
 </script>
 
 <template>
-  <section class="features">
+  <section class="features" aria-labelledby="features-title">
     <!-- Animated background -->
-    <div class="bg-pattern"></div>
+    <div class="bg-pattern" aria-hidden="true"></div>
 
     <div class="container">
       <div class="section-header">
         <div class="badge">
-          <Zap :size="16" />
+          <Zap :size="16" aria-hidden="true" />
           <span>Powerful Features</span>
         </div>
-        <h2 class="section-title">
+        <h2 id="features-title" class="section-title">
           Why Choose <span class="gradient-text">Prompt Improver?</span>
         </h2>
         <p class="section-subtitle">
@@ -52,15 +52,17 @@ const features = [
         </p>
       </div>
 
-      <div class="features-grid">
+      <div class="features-grid" role="list" aria-label="Key features">
         <div
           v-for="(feature, index) in features"
           :key="index"
           class="feature-card"
           :style="{ '--feature-color': feature.color, '--feature-gradient': feature.gradient }"
+          role="listitem"
+          :aria-label="`${feature.title}: ${feature.description}`"
         >
           <!-- Icon with glow -->
-          <div class="icon-container">
+          <div class="icon-container" aria-hidden="true">
             <div class="icon-glow"></div>
             <component :is="feature.icon" :size="36" class="feature-icon" />
           </div>
@@ -69,12 +71,12 @@ const features = [
           <p class="feature-description">{{ feature.description }}</p>
 
           <!-- Hover indicator -->
-          <div class="hover-indicator"></div>
+          <div class="hover-indicator" aria-hidden="true"></div>
         </div>
       </div>
 
       <!-- Gradient CTA Box -->
-      <div class="feature-cta">
+      <div class="feature-cta" role="region" aria-label="Free Forever Announcement">
         <div class="cta-content">
           <h3>Free Forever</h3>
           <p>
