@@ -37,8 +37,22 @@ coverage/
 
 # Claude Code agents and configuration
 .claude/
+.claude_settings.json
+.mcp.json
 claude_code_zai_env.sh
 CLAUDE.md
+
+# Development and temporary reports
+BUG_FIXES_*.md
+BUG_REVIEW_*.md
+REORGANIZATION_*.md
+INSTALL_AND_TEST.md
+*_FINAL_REPORT.md
+*_AUDIT_REPORT.md
+*_COMPLETE.md
+
+# Archive documentation
+docs/archive/
 
 # Build artifacts (if added in future)
 dist/
