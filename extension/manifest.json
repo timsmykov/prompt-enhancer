@@ -35,8 +35,7 @@
         "src/ui/popup/popup.html",
         "src/ui/popup/popup.css",
         "src/ui/popup/popup.js",
-        "src/ui/popup/modules/*.js",
-        "vendor/vue.global.prod.js"
+        "src/ui/popup/modules/*.js"
       ],
       "matches": ["<all_urls>"]
     }
