@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foundation Tests - Prompt Improver</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fdf6e3;
+    }
+    h1 { color: #002b36; }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-result {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .test-result.pass {
+      background: #f0f9e8;
+      border-left: 4px solid #859900;
+    }
+    .test-result.fail {
+      background: #fce8e6;
+      border-left: 4px solid #dc322f;
+    }
+    button {
+      background: #268bd2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1e7cb8;
+    }
+    pre {
+      background: #073642;
+      color: #fdf6e3;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Foundation Layer Tests</h1>
+
+  <div class="test-section">
+    <h2>Test Runner</h2>
+    <button id="runAllTests">Run All Tests</button>
+    <div id="results"></div>
+  </div>
+
+  <!-- Load foundation modules -->
+  <script src="utils.js"></script>
+  <script>
+    // Test runner
+    const results = document.getElementById('results');
+    const runButton = document.getElementById('runAllTests');
+
+    function assert(condition, message) {
+      const div = document.createElement('div');
+      div.className = `test-result ${condition ? 'pass' : 'fail'}`;
+      div.textContent = message;
+      results.appendChild(div);
+      return condition;
+    }
+
+    async function testUtils() {
+      console.log('Testing Utils...');
+
+      // Test debounce
+      let debounceCount = 0;
+      const debouncedFn = Utils.debounce(() => debounceCount++, 100);
+      debouncedFn();
+      debouncedFn();
+      debouncedFn();
+      await Utils.sleep(150);
+      assert(debounceCount === 1, 'Debounce: Function should execute once after delay');
+
+      // Test throttle
+      let throttleCount = 0;
+      const throttledFn = Utils.throttle(() => throttleCount++, 100);
+      throttledFn();
+      throttledFn();
+      throttledFn();
+      assert(throttleCount === 1, 'Throttle: Function should execute once immediately');
+      await Utils.sleep(150);
+      throttledFn();
+      assert(throttleCount === 2, 'Throttle: Function should execute again after delay');
+
+      // Test generateId
+      const id1 = Utils.generateId();
+      const id2 = Utils.generateId();
+      assert(id1 !== id2 && id1.length === 36, 'GenerateId: Should generate unique IDs');
+
+      // Test timeago
+      const now = Date.now();
+      const oneMinuteAgo = now - 60000;
+      const timeStr = Utils.timeago(oneMinuteAgo);
+      assert(timeStr.includes('minute'), `Timeago: Should show "1 minute ago", got "${timeStr}"`);
+
+      // Test truncate
+      const longText = 'This is a very long text that should be truncated';
+      const truncated = Utils.truncate(longText, 20);
+      assert(truncated.length === 20, 'Truncate: Should truncate to specified length');
+
+      // Test escapeHtml
+      const html = '<script>alert("xss")</script>';
+      const escaped = Utils.escapeHtml(html);
+      assert(!escaped.includes('<script>'), 'EscapeHtml: Should escape HTML tags');
+
+      // Test isEmpty
+      assert(Utils.isEmpty(null) === true, 'IsEmpty: null should be empty');
+      assert(Utils.isEmpty('') === true, 'IsEmpty: empty string should be empty');
+      assert(Utils.isEmpty([]) === true, 'IsEmpty: empty array should be empty');
+      assert(Utils.isEmpty({}) === true, 'IsEmpty: empty object should be empty');
+      assert(Utils.isEmpty('text') === false, 'IsEmpty: non-empty string should not be empty');
+
+      console.log('Utils tests complete!');
+    }
+
+    async function runAllTests() {
+      results.innerHTML = '<p>Running tests...</p>';
+      results.innerHTML = '';
+
+      try {
+        await testUtils();
+        console.log('All tests completed!');
+      } catch (error) {
+        console.error('Test error:', error);
+        const div = document.createElement('div');
+        div.className = 'test-result fail';
+        div.textContent = `Test error: ${error.message}`;
+        results.appendChild(div);
+      }
+    }
+
+    runButton.addEventListener('click', runAllTests);
+
+    console.log('Test page loaded');
+  </script>
+</body>
+</html>
