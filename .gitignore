@@ -11,11 +11,20 @@ blob-report/
 playwright/.cache/
 playwright/.auth/
 
+# Test pages (auto-generated)
+test-pages/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Vitest cache
+.vitest/
+
 # Development tooling
-tests/
-playwright.config.ts
-package.json
-package-lock.json
+# playright.config.ts - needed for testing
+# package.json - needed for dependencies
+# package-lock.json - needed for dependency locking
 
 # Claude Code agents and configuration
 .claude/
