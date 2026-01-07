@@ -42,6 +42,10 @@ coverage/
 claude_code_zai_env.sh
 CLAUDE.md
 
+# Testing configuration
+jest.config.js
+playwright.config.ts
+
 # Development and temporary reports
 BUG_FIXES_*.md
 BUG_REVIEW_*.md
