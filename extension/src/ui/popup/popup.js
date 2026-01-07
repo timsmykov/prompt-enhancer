@@ -1,136 +1,250 @@
+/**
+ * Popup Application - Modular Architecture
+ * Prompt Improver Extension Settings
+ */
+
 (() => {
-  const STORAGE_KEYS = ['apiKey', 'model', 'systemPrompt', 'typingSpeed'];
-  const DEFAULT_TYPING_SPEED = 25;
+  'use strict';
 
-  const createStorage = () => {
-    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
-      return {
-        get: (keys) =>
-          new Promise((resolve) => {
-            chrome.storage.local.get(keys, resolve);
-          }),
-        set: (data) =>
-          new Promise((resolve) => {
-            chrome.storage.local.set(data, resolve);
-          }),
+  // ========== Application State ==========
+  const popupState = {
+    currentTab: 'account',
+    theme: 'system',
+    unsavedChanges: false,
+    saving: false
+  };
+
+  // ========== Tab Navigation Manager ==========
+  const TabManager = {
+    init() {
+      this.tabs = document.querySelectorAll('.tab-button');
+      this.panels = document.querySelectorAll('.tab-panel');
+
+      this.tabs.forEach(tab => {
+        tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+      });
+
+      // Keyboard shortcuts for tabs
+      document.addEventListener('keydown', (e) => {
+        if (e.metaKey || e.ctrlKey) {
+          const tabNumbers = { '1': 'account', '2': 'model', '3': 'behavior', '4': 'advanced' };
+          if (tabNumbers[e.key]) {
+            e.preventDefault();
+            this.switchTab(tabNumbers[e.key]);
+          }
+        }
+      });
+    },
+
+    switchTab(tabName) {
+      // Update tab buttons
+      this.tabs.forEach(tab => {
+        const isSelected = tab.dataset.tab === tabName;
+        tab.setAttribute('aria-selected', isSelected);
+      });
+
+      // Update panels
+      this.panels.forEach(panel => {
+        const shouldShow = panel.dataset.section === tabName;
+        panel.hidden = !shouldShow;
+        if (shouldShow) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+
+      popupState.currentTab = tabName;
+    }
+  };
+
+  // ========== Toast Notification Manager ==========
+  const ToastManager = {
+    init() {
+      this.toast = document.querySelector('.toast');
+    },
+
+    show(message, type = 'success') {
+      if (!this.toast) return;
+
+      this.toast.textContent = message;
+      this.toast.classList.remove('error');
+      if (type === 'error') {
+        this.toast.classList.add('error');
+      }
+      this.toast.classList.add('show');
+
+      setTimeout(() => {
+        this.toast.classList.remove('show');
+      }, 2500);
+    },
+
+    success(message) {
+      this.show(message, 'success');
+    },
+
+    error(message) {
+      this.show(message, 'error');
+    }
+  };
+
+  // ========== Settings Form Manager ==========
+  const FormManager = {
+    init() {
+      this.form = document.querySelector('#settingsForm');
+      this.saveButton = document.querySelector('#saveButton');
+      this.cancelButton = document.querySelector('#cancelButton');
+      this.apiStatusText = document.querySelector('#apiStatusText');
+
+      this.attachListeners();
+      this.renderModules();
+      this.updateApiStatus();
+    },
+
+    attachListeners() {
+      this.form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.saveSettings();
+      });
+
+      this.cancelButton?.addEventListener('click', () => {
+        window.close();
+      });
+
+      // Cmd+S to save
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+          e.preventDefault();
+          this.saveSettings();
+        }
+        if (e.key === 'Escape') {
+          window.close();
+        }
+      });
+    },
+
+    renderModules() {
+      // Render each module into its panel
+      const panels = {
+        account: document.querySelector('#panel-account'),
+        model: document.querySelector('#panel-model'),
+        behavior: document.querySelector('#panel-behavior'),
+        advanced: document.querySelector('#panel-advanced')
       };
-    }
 
-    // SECURE FAIL - no insecure fallback
-    throw new Error('Chrome storage API not available. Extension cannot function securely.');
-  };
+      if (panels.account) panels.account.innerHTML = AccountSettings.render();
+      if (panels.model) panels.model.innerHTML = ModelSettings.render();
+      if (panels.behavior) panels.behavior.innerHTML = BehaviorSettings.render();
+      if (panels.advanced) panels.advanced.innerHTML = AdvancedSettings.render();
 
-  const storage = createStorage();
+      // Initialize each module
+      Object.values(panels).forEach(panel => {
+        if (panel) {
+          const section = panel.dataset.section;
+          const module = {
+            account: AccountSettings,
+            model: ModelSettings,
+            behavior: BehaviorSettings,
+            advanced: AdvancedSettings
+          }[section];
 
-  const form = document.querySelector('#settingsForm');
-  const apiKeyInput = document.querySelector('#apiKey');
-  const modelInput = document.querySelector('#model');
-  const systemPromptInput = document.querySelector('#systemPrompt');
-  const typingSpeedInput = document.querySelector('#typingSpeed');
-  const toggleKeyButton = document.querySelector('#toggleKey');
-  const saveButton = document.querySelector('#saveButton');
-  const statusMessage = document.querySelector('.status');
-  const toast = document.querySelector('.toast');
+          if (module && module.init) {
+            module.init(panel, { notifier: ToastManager, theme: popupState.theme });
+          }
+        }
+      });
+    },
 
-  if (!form || !apiKeyInput || !modelInput || !systemPromptInput || !typingSpeedInput) {
-    return;
-  }
+    async updateApiStatus() {
+      if (!this.apiStatusText) return;
 
-  let showKey = false;
-  let saving = false;
-
-  const normalizeTypingSpeed = (value) => {
-    if (value === '' || value === null || value === undefined) {
-      return DEFAULT_TYPING_SPEED;
-    }
-    const numeric = Number(value);
-    if (Number.isFinite(numeric) && numeric >= 0) {
-      return Math.round(numeric);
-    }
-    return DEFAULT_TYPING_SPEED;
-  };
-
-  const updateToggleLabel = () => {
-    if (!toggleKeyButton) return;
-    apiKeyInput.type = showKey ? 'text' : 'password';
-    toggleKeyButton.textContent = showKey ? 'Hide' : 'Show';
-  };
-
-  const setSaving = (next) => {
-    saving = next;
-    if (saveButton) {
-      saveButton.disabled = saving;
-      if (saving) {
-        saveButton.classList.add('loading');
+      const data = await ExtensionState.getStorage(['apiKey']);
+      if (data.apiKey) {
+        this.apiStatusText.textContent = 'Configured';
+        this.apiStatusText.classList.add('stat-success');
       } else {
-        saveButton.classList.remove('loading');
+        this.apiStatusText.textContent = 'Not configured';
+        this.apiStatusText.classList.remove('stat-success');
+      }
+    },
+
+    async saveSettings() {
+      if (popupState.saving) return;
+
+      popupState.saving = true;
+      this.setLoading(true);
+
+      try {
+        // Gather values from all modules
+        const panels = document.querySelectorAll('.tab-panel');
+        const allValues = {};
+
+        panels.forEach(panel => {
+          const section = panel.dataset.section;
+          const module = {
+            account: AccountSettings,
+            model: ModelSettings,
+            behavior: BehaviorSettings,
+            advanced: AdvancedSettings
+          }[section];
+
+          if (module && module.getValues) {
+            Object.assign(allValues, module.getValues(panel));
+          }
+        });
+
+        // Save to storage
+        await ExtensionState.setStorage(allValues);
+
+        ToastManager.success('Settings saved successfully');
+        popupState.unsavedChanges = false;
+
+        // Update status
+        await this.updateApiStatus();
+
+      } catch (error) {
+        console.error('[Popup] Save error:', error);
+        ToastManager.error('Failed to save settings');
+      } finally {
+        popupState.saving = false;
+        this.setLoading(false);
+      }
+    },
+
+    setLoading(loading) {
+      if (this.saveButton) {
+        this.saveButton.disabled = loading;
+        this.saveButton.classList.toggle('loading', loading);
       }
     }
   };
 
-  const showToast = (message, isError = false) => {
-    if (toast) {
-      toast.textContent = message;
-      toast.classList.toggle('error', isError);
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2000);
-    }
-  };
-
-  const setStatus = (message) => {
-    if (statusMessage) {
-      statusMessage.textContent = message;
-    }
-  };
-
-  const loadSettings = async () => {
+  // ========== Initialize Application ==========
+  const initApp = () => {
     try {
-      const data = await storage.get(STORAGE_KEYS);
-      apiKeyInput.value = data.apiKey || '';
-      modelInput.value = data.model || 'openrouter/auto';
-      systemPromptInput.value = data.systemPrompt || '';
-      typingSpeedInput.value = String(
-        normalizeTypingSpeed(data.typingSpeed ?? DEFAULT_TYPING_SPEED)
-      );
+      // Check if running in extension context
+      if (typeof chrome === 'undefined' || !chrome.storage?.local) {
+        console.error('[Popup] Chrome storage not available');
+        return;
+      }
+
+      // Initialize managers
+      ToastManager.init();
+      TabManager.init();
+      FormManager.init();
+
+      console.log('[Popup] Application initialized');
+
     } catch (error) {
-      setStatus('Failed to load.');
+      console.error('[Popup] Initialization error:', error);
     }
   };
 
-  const saveSettings = async () => {
-    if (saving) return;
-    setSaving(true);
-    setStatus('');
-    try {
-      await storage.set({
-        apiKey: apiKeyInput.value.trim(),
-        model: modelInput.value.trim(),
-        systemPrompt: systemPromptInput.value.trim(),
-        typingSpeed: normalizeTypingSpeed(typingSpeedInput.value),
-      });
-      setStatus('Saved.');
-    } catch (error) {
-      console.error('[PromptImprover] Save settings error:', error);
-      setStatus('Failed.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    saveSettings();
-  });
-
-  if (toggleKeyButton) {
-    toggleKeyButton.addEventListener('click', () => {
-      showKey = !showKey;
-      updateToggleLabel();
-    });
+  // Start application when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
   }
 
-  updateToggleLabel();
-  loadSettings();
 })();

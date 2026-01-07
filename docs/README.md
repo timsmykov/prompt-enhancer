@@ -4,18 +4,23 @@ Welcome to the Prompt Improver documentation. This folder contains project docum
 
 ## Quick Links
 
-### Essential Documents
+### Core Documentation
 - **[Current Status](current_status.md)** - Project status, metrics, and next steps
 - **[Changelog](changelog.md)** - Version history and changes
 - **[Architecture](architecture.md)** - Technical architecture and patterns
+- **[Design Documentation](DESIGN.md)** - Architecture decisions and component design
+- **[API Documentation](API.md)** - Internal APIs and message protocol
+- **[Specification](SPECIFICATION.md)** - Detailed feature specification
 
-### Performance & Optimization
-- **[Performance Summary Dashboard](performance-summary-dashboard.md)** - Quick reference for extension performance metrics
-- **[Landing Page Optimization Complete](landing-optimization-complete.md)** - Landing page implementation report (A+ grade)
-- **[Landing Page Optimization Plan](landing-optimization-plan.md)** - Original optimization plan
+### User Guides
+- **[Keyboard Shortcuts](guides/KEYBOARD_SHORTCUTS.md)** - Complete keyboard reference
+- **[Troubleshooting](guides/TROUBLESHOOTING.md)** - Common issues and solutions
 
-### Phase 1 Status
-- **[Phase 1 Critical Fixes Complete](phase1-critical-fixes-complete.md)** - Extension fixes implementation report
+### Reports & Analysis
+- **[Performance Summary Dashboard](reports/performance-summary-dashboard.md)** - Quick reference for extension performance metrics
+- **[Landing Page Optimization Complete](reports/landing-optimization-complete.md)** - Landing page implementation report (A+ grade)
+- **[Landing Page Optimization Plan](reports/landing-optimization-plan.md)** - Original optimization plan
+- **[Phase 1 Critical Fixes Complete](reports/phase1-critical-fixes-complete.md)** - Extension fixes implementation report
 
 ### Historical Archives
 - **[archive/](archive/)** - Historical audit reports and analysis documents (see archive/README.md)
@@ -28,10 +33,17 @@ docs/
 ├── current_status.md                      # Current project status
 ├── changelog.md                           # Version history
 ├── architecture.md                        # Technical architecture
-├── performance-summary-dashboard.md       # Performance metrics quick reference
-├── landing-optimization-complete.md       # Landing page implementation report
-├── landing-optimization-plan.md           # Landing page optimization plan
-├── phase1-critical-fixes-complete.md      # Phase 1 implementation report
+├── DESIGN.md                              # Architecture decisions and design
+├── API.md                                 # Internal APIs and message protocol
+├── SPECIFICATION.md                       # Feature specification
+├── guides/                                # User guides
+│   ├── KEYBOARD_SHORTCUTS.md             # Keyboard shortcuts reference
+│   └── TROUBLESHOOTING.md                # Troubleshooting guide
+├── reports/                               # Performance and optimization reports
+│   ├── performance-summary-dashboard.md  # Performance metrics
+│   ├── landing-optimization-complete.md  # Landing page report
+│   ├── landing-optimization-plan.md      # Optimization plan
+│   └── phase1-critical-fixes-complete.md # Phase 1 report
 └── archive/                               # Historical audit reports
     ├── README.md                          # Archive index
     ├── performance-audit-report-2025-01-07.md

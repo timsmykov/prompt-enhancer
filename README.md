@@ -76,13 +76,56 @@ prompt-improver/
 │   │   ├── components/    # Hero, Features, FAQ, etc.
 │   │   └── composables/   # Reusable Vue composition functions
 │   └── package.json
-└── docs/                  # Documentation
-    ├── current_status.md  # Project status and next steps
-    ├── changelog.md       # Version history
-    └── architecture.md    # Technical architecture
+├── docs/                  # Documentation
+│   ├── core/              # Core documentation
+│   ├── guides/            # User guides
+│   ├── reports/           # Performance and optimization reports
+│   └── archive/           # Historical documentation
+├── unit/                  # Unit tests (Jest)
+│   ├── setup.js           # Test configuration and mocks
+│   ├── background.test.js # 45 tests (API, retry logic)
+│   ├── content.test.js    # 44 tests (overlay, selection)
+│   ├── popup.test.js      # 36 tests (form handling)
+│   ├── overlay.test.js    # 56 tests (UI logic)
+│   └── TESTING_SUMMARY.md # Test suite documentation
+├── tests/                 # E2E tests (Playwright)
+│   ├── overlay.spec.ts    # Overlay UI tests
+│   └── popup.spec.ts      # Popup UI tests
+└── scripts/               # Build and utility scripts
 ```
 
 ## Development
+
+### Testing
+
+The project includes comprehensive unit and E2E tests.
+
+**Run Unit Tests:**
+```bash
+# Run all unit tests
+npm test
+
+# Run with coverage report
+npm run test:coverage
+
+# Run specific test file
+npm test -- background.test.js
+```
+
+**Run E2E Tests:**
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run specific E2E test suite
+npm run test:popup
+npm run test:overlay
+```
+
+**Test Coverage:**
+- Unit Tests: 181 tests (92.3% pass rate)
+- E2E Tests: Playwright-based UI tests
+- Coverage Report: See `unit/TESTING_SUMMARY.md` for details
 
 ### Extension (No Build Required)
 
@@ -171,15 +214,27 @@ MAX_RETRIES = 1
 
 ## Documentation
 
-- **[Extension README](extension/README.md)** - Extension-specific documentation
-- **[Landing Page README](landing/README.md)** - Landing page features and setup
+### Core Documentation
 - **[Current Status](docs/current_status.md)** - Project status and known issues
 - **[Changelog](docs/changelog.md)** - Version history and changes
 - **[Architecture](docs/architecture.md)** - Technical architecture details
 - **[Design Documentation](docs/DESIGN.md)** - Architecture decisions, component design, technology choices
-- **[Keyboard Shortcuts](docs/KEYBOARD_SHORTCUTS.md)** - Complete keyboard reference
-- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 - **[API Documentation](docs/API.md)** - Internal APIs and message protocol
+- **[Specification](docs/SPECIFICATION.md)** - Detailed feature specification
+
+### User Guides
+- **[Keyboard Shortcuts](docs/guides/KEYBOARD_SHORTCUTS.md)** - Complete keyboard reference
+- **[Troubleshooting](docs/guides/TROUBLESHOOTING.md)** - Common issues and solutions
+
+### Reports
+- **[Performance Dashboard](docs/reports/performance-summary-dashboard.md)** - Performance metrics and optimization results
+- **[Landing Page Optimization](docs/reports/landing-optimization-complete.md)** - Landing page performance improvements
+- **[Phase 1 Critical Fixes](docs/reports/phase1-critical-fixes-complete.md)** - Critical bug fixes summary
+
+### Component Documentation
+- **[Extension README](extension/README.md)** - Extension-specific documentation
+- **[Landing Page README](landing/README.md)** - Landing page features and setup
+- **[Unit Tests](unit/README.md)** - Test suite documentation and coverage report
 
 ## Performance
 

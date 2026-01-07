@@ -1,0 +1,35 @@
+{
+  "name": "extention-for-prompts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:unit": "jest",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:popup": "playwright test --project=popup",
+    "test:overlay": "playwright test --project=overlay"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timsmykov/prompt-enhancer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/timsmykov/prompt-enhancer/issues"
+  },
+  "homepage": "https://github.com/timsmykov/prompt-enhancer#readme",
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@playwright/test": "^1.57.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0"
+  }
+}

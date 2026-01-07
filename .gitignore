@@ -1,30 +1,55 @@
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
 
 # Dependencies
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Test artifacts
 test-results/
 playwright-report/
 blob-report/
+coverage/
+.nyc_output/
+
+# Playwright
 playwright/.cache/
 playwright/.auth/
 
-# Development tooling
-tests/
-playwright.config.ts
-package.json
-package-lock.json
-
-# Claude Code agents and configuration
-.claude/
-claude_code_zai_env.sh
-CLAUDE.md
-
-# Build artifacts (if added in future)
+# Build artifacts
 dist/
 build/
+*.log
+
+# IDEs and editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+.cache/
+
+# OS files
+Thumbs.db
+Desktop.ini
 
 # Auto Claude data directory
 .auto-claude/
+
+# Claude Code (optional - uncomment if you don't want to track these)
+# .claude/
+# claude_code_zai_env.sh
+# CLAUDE.md

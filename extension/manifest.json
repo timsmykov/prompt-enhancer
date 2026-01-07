@@ -21,12 +21,15 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "src/shared/design-tokens.css",
+        "src/shared/ExtensionState.js",
         "src/ui/overlay/overlay.html",
         "src/ui/overlay/overlay.css",
         "src/ui/overlay/overlay.js",
         "src/ui/popup/popup.html",
         "src/ui/popup/popup.css",
         "src/ui/popup/popup.js",
+        "src/ui/popup/modules/*.js",
         "vendor/vue.global.prod.js"
       ],
       "matches": ["<all_urls>"]
