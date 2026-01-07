@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { MousePointer, Sparkles, CheckCircle, ArrowRight } from 'lucide-vue-next'
 
 const steps = ref([
@@ -7,56 +7,52 @@ const steps = ref([
     icon: MousePointer,
     title: 'Select Your Text',
     description: 'Highlight any text you want to improve - a prompt, question, or message.',
-    color: '#3b82f6',
-    gradient: 'from-blue-500 to-cyan-500',
-    delay: 0
+    color: '#3b82f6'
   },
   {
     icon: Sparkles,
     title: 'Click "Improve Prompt"',
     description: 'Right-click and select "Improve prompt" from the context menu.',
-    color: '#8b5cf6',
-    gradient: 'from-purple-500 to-pink-500',
-    delay: 200
+    color: '#8b5cf6'
   },
   {
     icon: CheckCircle,
     title: 'Get Enhanced Result',
     description: 'Instantly see an AI-improved version. Replace or copy with one click.',
-    color: '#10b981',
-    gradient: 'from-green-500 to-emerald-500',
-    delay: 400
+    color: '#10b981'
   }
 ])
 
 const activeStep = ref(0)
 let stepInterval = null
 
-// Auto-rotate through steps
 onMounted(() => {
   stepInterval = setInterval(() => {
     activeStep.value = (activeStep.value + 1) % steps.value.length
   }, 3000)
 })
 
-import { onUnmounted } from 'vue'
 onUnmounted(() => {
   if (stepInterval) {
     clearInterval(stepInterval)
     stepInterval = null
   }
 })
+
+const setActiveStep = (index) => {
+  activeStep.value = index
+}
 </script>
 
 <template>
   <section class="how-it-works">
-    <!-- Animated background -->
+    <!-- Animated Background -->
     <div class="bg-pattern"></div>
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
 
     <div class="container">
+      <!-- Section Header -->
       <div class="section-header">
         <div class="badge">
           <Sparkles :size="16" />
@@ -70,59 +66,45 @@ onUnmounted(() => {
         </p>
       </div>
 
-      <!-- 3D Steps Display -->
-      <div class="steps-container">
-        <div class="steps-track">
-          <div
-            v-for="(step, index) in steps"
-            :key="index"
-            class="step-card-wrapper"
-            :class="{ active: activeStep === index }"
-            @click="activeStep = index"
-          >
-            <!-- Step Card -->
-            <div class="step-card">
-              <!-- Glowing number badge -->
-              <div class="step-number" :style="{ '--step-color': step.color }">
-                {{ index + 1 }}
-              </div>
+      <!-- Steps Display -->
+      <div class="steps-display">
+        <div
+          v-for="(step, index) in steps"
+          :key="index"
+          class="step-card"
+          :class="{ active: activeStep === index }"
+          @click="setActiveStep(index)"
+        >
+          <!-- Step Number Badge -->
+          <div class="step-number" :style="{ '--step-color': step.color }">
+            {{ index + 1 }}
+          </div>
 
-              <!-- 3D Icon with glow -->
-              <div
-                class="icon-wrapper"
-                :style="{ '--step-color': step.color }"
-              >
-                <div class="icon-glow"></div>
-                <component :is="step.icon" :size="48" class="step-icon" />
-              </div>
+          <!-- Icon with Glow -->
+          <div class="icon-wrapper" :style="{ '--step-color': step.color }">
+            <div class="icon-glow"></div>
+            <component :is="step.icon" :size="48" class="step-icon" />
+          </div>
 
-              <!-- Content -->
-              <h3 class="step-title">{{ step.title }}</h3>
-              <p class="step-description">{{ step.description }}</p>
+          <!-- Content -->
+          <h3 class="step-title">{{ step.title }}</h3>
+          <p class="step-description">{{ step.description }}</p>
 
-              <!-- Hover indicator -->
-              <div class="hover-indicator"></div>
-            </div>
-
-            <!-- Connector arrow (except last) -->
-            <div v-if="index < steps.length - 1" class="connector">
-              <div class="connector-line"></div>
-              <div class="connector-arrow">
-                <ArrowRight :size="24" />
-              </div>
-            </div>
+          <!-- Connector Arrow (not on last) -->
+          <div v-if="index < steps.length - 1" class="connector-arrow">
+            <ArrowRight :size="24" />
           </div>
         </div>
       </div>
 
-      <!-- Progress indicator -->
+      <!-- Progress Indicator -->
       <div class="progress-indicator">
         <div
           v-for="(step, index) in steps"
           :key="index"
           class="progress-dot"
           :class="{ active: activeStep === index }"
-          @click="activeStep = index"
+          @click="setActiveStep(index)"
         ></div>
       </div>
     </div>
@@ -130,18 +112,11 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* ============================================
-   HERO STYLE DESIGN - Gradient backgrounds,
-   Glassmorphism, Animated elements
-   ============================================ */
-
-/* Mobile-first base layout (320px and up) */
 .how-it-works {
   position: relative;
   padding: 3rem 1rem;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   overflow: hidden;
-  min-height: 100vh;
 }
 
 /* Animated Background Pattern */
@@ -178,34 +153,21 @@ onUnmounted(() => {
   width: 21.875rem;
   height: 21.875rem;
   background: rgba(139, 92, 246, 0.3);
-  top: 50%;
-  right: -6.25rem;
-  animation-delay: -7s;
-}
-
-.orb-3 {
-  width: 18.75rem;
-  height: 18.75rem;
-  background: rgba(16, 185, 129, 0.3);
   bottom: -6.25rem;
-  left: 30%;
-  animation-delay: -14s;
+  right: -6.25rem;
+  animation-delay: -10s;
 }
 
 @keyframes floatOrb {
   0%, 100% {
     transform: translate(0, 0) scale(1);
   }
-  33% {
+  50% {
     transform: translate(1.875rem, -1.875rem) scale(1.1);
-  }
-  66% {
-    transform: translate(-1.25rem, 1.25rem) scale(0.9);
   }
 }
 
 .container {
-  width: 100%;
   max-width: 80rem;
   margin: 0 auto;
   position: relative;
@@ -259,90 +221,59 @@ onUnmounted(() => {
   line-height: 1.75;
 }
 
-/* Steps Container - Mobile First */
-.steps-container {
-  perspective: 1500px;
-  margin-bottom: 3rem;
-}
-
-.steps-track {
+/* Steps Display */
+.steps-display {
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-  width: 100%;
-  max-width: 100%;
-}
-
-.step-card-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  transition: transform 0.3s ease;
-  width: 100%;
-}
-
-.step-card-wrapper.active {
-  transform: scale(1.02);
+  margin-bottom: 3rem;
 }
 
 /* Step Card with Glassmorphism */
 .step-card {
   position: relative;
-  width: 100%;
-  padding: 2rem 1.5rem;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(1.25rem);
   -webkit-backdrop-filter: blur(1.25rem);
   border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
   text-align: center;
   border: 0.125rem solid rgba(255, 255, 255, 0.5);
   box-shadow:
     0 1.25rem 2.5rem rgba(0, 0, 0, 0.1),
     0 0 0 0.0625rem rgba(255, 255, 255, 0.1),
     inset 0 0.0625rem 0 rgba(255, 255, 255, 0.8);
-  transform-style: preserve-3d;
   transition: all 0.3s ease;
   cursor: pointer;
   overflow: hidden;
 }
 
-/* Hover effects */
 .step-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(59, 130, 246, 0.1) 0%,
-    rgba(139, 92, 246, 0.1) 100%
-  );
+  background: linear-gradient(135deg, var(--step-color, #3b82f6) 0%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
   border-radius: 1.5rem;
 }
 
-.step-card:hover::before {
-  opacity: 1;
+.step-card:hover::before,
+.step-card.active::before {
+  opacity: 0.08;
 }
 
-.step-card:hover {
+.step-card:hover,
+.step-card.active {
   transform: translateY(-0.5rem);
   box-shadow:
     0 1.875rem 3.75rem rgba(0, 0, 0, 0.15),
     0 0 0 0.0625rem rgba(255, 255, 255, 0.2),
     inset 0 0.0625rem 0 rgba(255, 255, 255, 1);
-}
-
-.step-card-wrapper.active .step-card {
   border-color: var(--step-color, #3b82f6);
-  box-shadow:
-    0 1.5625rem 3.125rem rgba(0, 0, 0, 0.12),
-    0 0 0 0.1875rem rgba(59, 130, 246, 0.2),
-    inset 0 0.0625rem 0 rgba(255, 255, 255, 1);
 }
 
-/* Number Badge */
+/* Step Number Badge */
 .step-number {
   position: absolute;
   top: -1.5rem;
@@ -383,11 +314,10 @@ onUnmounted(() => {
   position: relative;
   width: 7rem;
   height: 7rem;
-  margin: 0 auto 1rem auto;
+  margin: 0 auto 1.5rem auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform-style: preserve-3d;
 }
 
 .icon-glow {
@@ -413,7 +343,7 @@ onUnmounted(() => {
 .step-icon {
   color: var(--step-color, #3b82f6);
   filter: drop-shadow(0 0.25rem 0.5rem rgba(0, 0, 0, 0.1));
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   animation: iconFloat 3s ease-in-out infinite;
 }
 
@@ -448,98 +378,31 @@ onUnmounted(() => {
   margin: 0;
 }
 
-/* Hover Indicator */
-.hover-indicator {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0.1875rem;
-  background: var(--step-color, #3b82f6);
-  transition: width 0.2s ease;
-  border-radius: 9999px 9999px 0 0;
-}
-
-.step-card:hover .hover-indicator {
-  width: 60%;
-}
-
-/* Connector - Mobile Vertical */
-.connector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 3rem;
-  min-height: 3rem;
-}
-
-.connector-line {
-  width: 100%;
-  height: 0.1875rem;
-  background: linear-gradient(
-    90deg,
-    #e2e8f0 0%,
-    #cbd5e1 50%,
-    #e2e8f0 100%
-  );
-  position: relative;
-  overflow: hidden;
-}
-
-.connector-line::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -30%;
-  width: 30%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    #3b82f6 50%,
-    transparent 100%
-  );
-  animation: flowRight 2s ease-in-out infinite;
-}
-
-@keyframes flowRight {
-  0% {
-    left: -30%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
+/* Connector Arrow */
 .connector-arrow {
+  display: none;
+  position: absolute;
+  right: -2rem;
+  top: 50%;
+  transform: translateY(-50%);
   width: 3rem;
   height: 3rem;
   background: white;
   border-radius: 9999px;
-  display: flex;
   align-items: center;
   justify-content: center;
   color: #64748b;
   box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
   animation: arrowPulse 2s ease-in-out infinite;
 }
 
 @keyframes arrowPulse {
   0%, 100% {
-    transform: scale(1);
+    transform: translateY(-50%) scale(1);
   }
   50% {
-    transform: scale(1.1);
+    transform: translateY(-50%) scale(1.1);
   }
-}
-
-.step-card-wrapper:hover + .step-card-wrapper .connector-arrow {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  color: white;
-  transform: scale(1.1);
 }
 
 /* Progress Indicator */
@@ -556,7 +419,7 @@ onUnmounted(() => {
   background: #cbd5e1;
   border-radius: 9999px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
 }
 
@@ -566,7 +429,7 @@ onUnmounted(() => {
   inset: -0.25rem;
   border-radius: 9999px;
   border: 0.125rem solid transparent;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .progress-dot.active {
@@ -584,7 +447,7 @@ onUnmounted(() => {
   background: #60a5fa;
 }
 
-/* Tablet Layout - 768px and up */
+/* Tablet */
 @media (min-width: 48rem) {
   .how-it-works {
     padding: 3rem 2rem;
@@ -594,93 +457,36 @@ onUnmounted(() => {
     margin-bottom: 4rem;
   }
 
-  .steps-track {
-    gap: 2.5rem;
-  }
-
-  .step-card {
-    padding: 2.5rem 2rem;
-  }
-
   .bg-orb {
     display: block;
   }
 }
 
-/* Desktop Layout - 1024px and up */
+/* Desktop */
 @media (min-width: 64rem) {
   .how-it-works {
     padding: 3rem;
   }
 
-  .steps-track {
+  .steps-display {
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    align-items: stretch;
-  }
-
-  .step-card-wrapper {
-    flex-direction: row;
-    gap: 1rem;
-  }
-
-  .connector {
-    min-width: 5rem;
-    min-height: auto;
-    flex-direction: row;
-  }
-
-  .connector-line {
-    width: 0.1875rem;
-    height: 100%;
-    background: linear-gradient(
-      180deg,
-      #e2e8f0 0%,
-      #cbd5e1 50%,
-      #e2e8f0 100%
-    );
-  }
-
-  .connector-line::after {
-    width: 100%;
-    height: 30%;
-    top: 0;
-    left: 0;
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      #3b82f6 50%,
-      transparent 100%
-    );
-    animation: flowDown 2s ease-in-out infinite;
-  }
-
-  @keyframes flowDown {
-    0% {
-      top: -30%;
-    }
-    100% {
-      top: 100%;
-    }
-  }
-
-  .step-card:hover {
-    transform: translateY(-0.75rem) rotateX(5deg);
-  }
-}
-
-/* Large Desktop - 1280px and up */
-@media (min-width: 80rem) {
-  .steps-track {
     gap: 2rem;
+    align-items: stretch;
   }
 
   .step-card {
     padding: 3rem 2.5rem;
   }
 
-  .connector {
-    min-width: 6rem;
+  .connector-arrow {
+    display: flex;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 80rem) {
+  .steps-display {
+    gap: 2.5rem;
   }
 }
 </style>
