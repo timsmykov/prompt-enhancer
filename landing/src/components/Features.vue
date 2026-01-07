@@ -70,20 +70,25 @@ const features = [
 </template>
 
 <style scoped>
+/* ============================================
+   MOBILE-FIRST CSS GRID REDESIGN
+   Base: 320px mobile, progressive enhancement
+   Units: rem only (no px except border-radius)
+   ============================================ */
+
+/* Section Container - Compact 3rem (48px) padding */
 .features {
   position: relative;
-  padding: var(--space-3xl) var(--space-md);
+  padding: 3rem 1rem;
   background: var(--color-bg-alt);
   overflow: hidden;
 }
 
+/* Ambient gradient background */
 .features::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-image:
     radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
@@ -91,83 +96,75 @@ const features = [
 }
 
 .container {
-  max-width: var(--container-2xl);
+  max-width: 80rem;
   margin: 0 auto;
   position: relative;
   z-index: 1;
 }
 
+/* Section Header - Centered, compact spacing */
 .section-header {
   text-align: center;
-  margin-bottom: var(--space-3xl);
+  margin-bottom: 2.5rem;
 }
 
 .section-title {
-  font-size: var(--text-4xl);
-  font-weight: var(--font-extrabold);
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
   color: var(--color-text);
-  margin: 0 0 var(--space-md) 0;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
 }
 
 .section-subtitle {
-  font-size: var(--text-xl);
+  font-size: clamp(1rem, 2vw, 1.25rem);
   color: var(--color-text-muted);
-  max-width: 700px;
+  max-width: 43.75rem;
   margin: 0 auto;
-  line-height: var(--leading-relaxed);
+  line-height: 1.6;
 }
 
-/* Modern Bento Grid Layout */
+/* ============================================
+   RESPONSIVE CSS GRID - Mobile-First
+   Mobile: 1 column (320px+)
+   Tablet: 2 columns (48rem+)
+   Desktop: Auto-fit (64rem+)
+   ============================================ */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: var(--space-lg);
-  margin-bottom: var(--space-3xl);
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
   width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
-/* Large feature card spans 2 columns */
-.feature-card:nth-child(1) {
-  grid-column: span 2;
-  grid-row: span 2;
-}
-
-@media (max-width: 1200px) {
+/* Tablet: 2 columns */
+@media (min-width: 48rem) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .feature-card:nth-child(1) {
-    grid-column: span 2;
+    gap: 1.25rem;
   }
 }
 
-@media (max-width: 768px) {
+/* Desktop: Auto-fit with minmax */
+@media (min-width: 64rem) {
   .features-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    gap: var(--space-md);
-  }
-
-  .feature-card,
-  .feature-card:nth-child(1) {
-    grid-column: span 1;
-    grid-row: span 1;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1.5rem;
   }
 }
 
+/* ============================================
+   FEATURE CARD - Modern Glass Design
+   ============================================ */
 .feature-card {
   background: white;
-  padding: var(--space-xl);
-  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
   text-align: left;
-  transition: all var(--transition-base);
-  border: 1px solid var(--color-border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 0.0625rem solid var(--color-border);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -181,8 +178,9 @@ const features = [
   inset: 0;
   background: linear-gradient(135deg, var(--feature-color, #3b82f6) 0%, transparent 100%);
   opacity: 0;
-  transition: opacity var(--transition-base);
+  transition: opacity 0.3s ease;
   pointer-events: none;
+  z-index: 0;
 }
 
 .feature-card:hover::before {
@@ -190,82 +188,67 @@ const features = [
 }
 
 .feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-2xl);
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.75rem 1.5rem -0.25rem rgba(0, 0, 0, 0.1);
   border-color: var(--feature-color, #3b82f6);
 }
 
-.feature-card:nth-child(1):hover {
-  transform: translateY(-12px) scale(1.02);
-}
-
-/* Special styling for large feature card */
-.feature-card:nth-child(1) {
-  padding: var(--space-2xl);
-  background: linear-gradient(135deg, #ffffff 0%, var(--color-bg-alt) 100%);
-}
-
-.feature-card:nth-child(1) .icon-container {
-  width: 6rem;
-  height: 6rem;
-  margin: 0 0 var(--space-lg) 0;
-}
-
-.feature-card:nth-child(1) .feature-title {
-  font-size: var(--text-3xl);
-}
-
-.feature-card:nth-child(1) .feature-description {
-  font-size: var(--text-lg);
-}
-
+/* ============================================
+   ICON CONTAINER - Gradient + Shadow
+   ============================================ */
 .icon-container {
-  width: 4rem;
-  height: 4rem;
-  margin: 0 auto var(--space-md) 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 0 1rem 0;
   background: linear-gradient(135deg, var(--feature-color, #3b82f6) 0%, var(--feature-color, #3b82f6)dd 100%);
-  border-radius: var(--radius-xl);
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 12px 24px -4px var(--feature-color, rgba(59, 130, 246, 0.3));
-  transition: all var(--transition-base);
+  box-shadow: 0 0.75rem 1.5rem -0.25rem var(--feature-color, rgba(59, 130, 246, 0.3));
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .feature-card:hover .icon-container {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 16px 32px -4px var(--feature-color, rgba(59, 130, 246, 0.4));
+  transform: scale(1.05) rotate(3deg);
+  box-shadow: 0 1rem 2rem -0.25rem var(--feature-color, rgba(59, 130, 246, 0.4));
 }
 
+/* ============================================
+   TYPOGRAPHY - Fluid Sizes
+   ============================================ */
 .feature-title {
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  font-weight: 700;
   color: var(--color-text);
-  margin: 0 0 var(--space-md) 0;
-  line-height: var(--leading-snug);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.4;
   position: relative;
   z-index: 1;
 }
 
 .feature-description {
-  font-size: var(--text-base);
+  font-size: clamp(0.875rem, 2vw, 1rem);
   color: var(--color-text-muted);
-  line-height: var(--leading-relaxed);
+  line-height: 1.6;
   margin: 0;
   position: relative;
   z-index: 1;
 }
 
-/* Enhanced highlight section */
+/* ============================================
+   HIGHLIGHT SECTION - Gradient CTA
+   ============================================ */
 .feature-highlight {
-  background: var(--gradient-blue-purple);
-  border-radius: var(--radius-2xl);
-  padding: var(--space-3xl);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 0.5rem;
+  padding: 2rem 1.5rem;
   text-align: center;
-  box-shadow: var(--shadow-primary);
+  box-shadow: 0 1rem 2rem -0.5rem rgba(59, 130, 246, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -282,8 +265,12 @@ const features = [
 }
 
 @keyframes patternMove {
-  0%, 100% { transform: translateX(0) translateY(0); }
-  50% { transform: translateX(-20px) translateY(-20px); }
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-1.25rem) translateY(-1.25rem);
+  }
 }
 
 .highlight-content {
@@ -292,90 +279,106 @@ const features = [
 }
 
 .highlight-content h3 {
-  font-size: var(--text-4xl);
-  font-weight: var(--font-extrabold);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 800;
   color: white;
-  margin: 0 0 var(--space-md) 0;
-  letter-spacing: var(--tracking-tight);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.025em;
+  text-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
 }
 
 .highlight-content p {
-  font-size: var(--text-xl);
+  font-size: clamp(0.9375rem, 2.5vw, 1.25rem);
   color: rgba(255, 255, 255, 0.95);
-  line-height: var(--leading-relaxed);
+  line-height: 1.6;
   margin: 0;
-  max-width: 800px;
+  max-width: 50rem;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Badge for highlight */
-.feature-highlight-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: white;
-  margin-bottom: var(--space-lg);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
 
-@media (max-width: 1024px) {
-  /* Already handled above - removed duplicate */
-}
-
-@media (max-width: 768px) {
+/* Small mobile (320px-375px) */
+@media (max-width: 23.4375rem) {
   .features {
-    padding: var(--space-4xl) var(--space-md);
-  }
-
-  /* Already handled above - removed duplicate */
-
-  .feature-card:nth-child(1) .icon-container {
-    width: 4.5rem;
-    height: 4.5rem;
-  }
-
-  .feature-card:nth-child(1) .feature-title {
-    font-size: var(--text-2xl);
-  }
-
-  .feature-card:nth-child(1) .feature-description {
-    font-size: var(--text-base);
-  }
-
-  .feature-highlight {
-    padding: var(--space-xl);
-  }
-
-  .highlight-content h3 {
-    font-size: var(--text-2xl);
-  }
-
-  .highlight-content p {
-    font-size: var(--text-lg);
-  }
-}
-
-@media (max-width: 480px) {
-  .section-title {
-    font-size: var(--text-3xl);
+    padding: 2.5rem 0.75rem;
   }
 
   .feature-card {
-    padding: var(--space-md);
+    padding: 1.25rem;
   }
 
   .icon-container {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .feature-highlight {
+    padding: 1.75rem 1.25rem;
+  }
+}
+
+/* Large mobile (375px-48rem) */
+@media (min-width: 23.4375rem) and (max-width: 48rem) {
+  .features {
+    padding: 3rem 1.25rem;
+  }
+}
+
+/* Tablet (48rem-64rem) */
+@media (min-width: 48rem) {
+  .features {
+    padding: 3rem 2rem;
+  }
+
+  .section-header {
+    margin-bottom: 3rem;
+  }
+
+  .feature-card {
+    padding: 1.75rem;
+  }
+
+  .feature-highlight {
+    padding: 2.5rem 2rem;
+  }
+}
+
+/* Desktop (64rem+) */
+@media (min-width: 64rem) {
+  .features {
+    padding: 3rem 2.5rem;
+  }
+
+  .section-header {
+    margin-bottom: 3.5rem;
+  }
+
+  .features-grid {
+    margin-bottom: 3rem;
+  }
+
+  .feature-card {
+    padding: 2rem;
+  }
+
+  .icon-container {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .feature-highlight {
+    padding: 3rem 2.5rem;
+  }
+}
+
+/* Large desktop (80rem+) */
+@media (min-width: 80rem) {
+  .features {
+    padding: 3.5rem 3rem;
   }
 }
 </style>
