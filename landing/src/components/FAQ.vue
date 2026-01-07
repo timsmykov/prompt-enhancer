@@ -53,17 +53,26 @@ const toggleFAQ = (index) => {
           :class="{ open: faq.isOpen }"
         >
           <button
+            :id="'faq-question-' + index"
             @click="toggleFAQ(index)"
             class="faq-question"
+            :aria-expanded="faq.isOpen"
+            :aria-controls="'faq-answer-' + index"
           >
             <span>{{ faq.question }}</span>
-            <span class="icon">
+            <span class="icon" aria-hidden="true">
               <ChevronDown v-if="!faq.isOpen" :size="20" />
               <ChevronUp v-else :size="20" />
             </span>
           </button>
 
-          <div class="faq-answer" v-show="faq.isOpen">
+          <div
+            :id="'faq-answer-' + index"
+            role="region"
+            class="faq-answer"
+            v-show="faq.isOpen"
+            :aria-labelledby="'faq-question-' + index"
+          >
             <p>{{ faq.answer }}</p>
           </div>
         </div>
@@ -87,7 +96,7 @@ const toggleFAQ = (index) => {
 <style scoped>
 .faq {
   position: relative;
-  padding: var(--space-5xl) var(--space-md);
+  padding: var(--space-3xl) var(--space-md);
   background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
   overflow: hidden;
 }

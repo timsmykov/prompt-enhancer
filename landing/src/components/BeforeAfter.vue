@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ArrowRight, TrendingUp } from 'lucide-vue-next'
+import { safeArrayAccess } from '../utils/validation'
 
 const examples = ref([
   {
@@ -30,6 +31,9 @@ const activeIndex = ref(0)
 const setActive = (index) => {
   activeIndex.value = index
 }
+
+// Safely access active example with fallback
+const activeExample = () => safeArrayAccess(examples.value, activeIndex.value, examples.value[0])
 </script>
 
 <template>
@@ -61,7 +65,7 @@ const setActive = (index) => {
             <h3>Basic Prompt</h3>
           </div>
           <div class="card-content">
-            <p class="example-text">{{ examples[activeIndex].before }}</p>
+            <p class="example-text">{{ activeExample().before }}</p>
           </div>
           <div class="card-footer">
             <div class="rating">
@@ -89,7 +93,7 @@ const setActive = (index) => {
             <h3>Improved Prompt</h3>
           </div>
           <div class="card-content">
-            <p class="example-text">{{ examples[activeIndex].after }}</p>
+            <p class="example-text">{{ activeExample().after }}</p>
           </div>
           <div class="card-footer">
             <div class="rating">
@@ -123,7 +127,7 @@ const setActive = (index) => {
 <style scoped>
 .before-after {
   position: relative;
-  padding: var(--space-5xl) var(--space-md);
+  padding: var(--space-3xl) var(--space-md);
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   overflow: hidden;
 }

@@ -1,0 +1,208 @@
+# Prompt Improver
+
+A Chrome browser extension (Manifest V3) that improves selected text prompts via LLM. Select text → click "Improve prompt" → see enhanced result with typing animation → replace or copy.
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-green.svg)](https://chrome.google.com/webstore)
+[![Landing Page](https://img.shields.io/badge/Website-Live-orange.svg)](https://promptimprover.com)
+
+## Features
+
+- **One-Click Enhancement**: Right-click any selected text and choose "Improve prompt"
+- **AI-Powered**: Uses OpenRouter API to enhance prompts with configurable models
+- **Smooth UX**: Typing animation shows results character-by-character
+- **Draggable Overlay**: Repositionable interface that stays out of your way
+- **Customizable**: Configure API key, model, system prompt, and typing speed
+- **Privacy-First**: API key stored locally, no data sent to external servers except OpenRouter
+
+## Quick Start
+
+### Install Extension
+
+1. Go to `chrome://extensions/`
+2. Enable "Developer mode" (toggle in top-right)
+3. Click "Load unpacked"
+4. Select the `extension/` folder from this repository
+
+### Configure API Key
+
+1. Click the extension icon in Chrome toolbar
+2. Enter your OpenRouter API key (get one at [openrouter.ai](https://openrouter.ai))
+3. Optionally customize model, system prompt, and typing speed
+4. Click "Save Settings"
+
+### Use Extension
+
+1. Select any text on a webpage
+2. Right-click and choose "Improve prompt"
+3. Watch the enhanced version appear with typing animation
+4. Click "Replace" to update original text or "Copy" to copy result
+
+## Project Structure
+
+```
+prompt-improver/
+├── extension/              # Chrome extension (Manifest V3)
+│   ├── manifest.json      # Extension configuration
+│   ├── src/
+│   │   ├── background.js  # Context menu, API calls, error handling
+│   │   ├── content.js     # Selection capture, overlay injection
+│   │   └── ui/
+│   │       ├── overlay/   # Vue 2 overlay UI (typing effect, actions)
+│   │       └── popup/     # Vue 2 settings UI
+│   └── vendor/            # Vue 2.7.16 runtime (CSP-compatible)
+├── landing/               # Vue 3 landing page
+│   ├── src/
+│   │   ├── components/    # Hero, Features, FAQ, etc.
+│   │   └── composables/   # Reusable Vue composition functions
+│   └── package.json
+└── docs/                  # Documentation
+    ├── current_status.md  # Project status and next steps
+    ├── changelog.md       # Version history
+    └── architecture.md    # Technical architecture
+```
+
+## Development
+
+### Extension (No Build Required)
+
+The extension uses vanilla JavaScript with Vue 2.7.16 runtime. No build step needed.
+
+**Key Files:**
+- `extension/src/background/background.js` - OpenRouter API integration
+- `extension/src/content/content.js` - Overlay injection and text replacement
+- `extension/src/ui/overlay/overlay.js` - Overlay UI with Vue 2 Options API
+
+**Load Extension:**
+```bash
+# In Chrome
+chrome://extensions/ → Developer mode → Load unpacked → Select extension/ folder
+```
+
+**Make Changes:**
+1. Edit any file in `extension/`
+2. Go to `chrome://extensions/`
+3. Click reload icon on extension card
+4. Test changes immediately
+
+### Landing Page (Vue 3 + Vite)
+
+The landing page uses Vue 3 with Vite for fast development.
+
+**Install Dependencies:**
+```bash
+cd landing
+npm install
+```
+
+**Run Dev Server:**
+```bash
+npm run dev
+# Opens at http://localhost:5173
+```
+
+**Build for Production:**
+```bash
+npm run build
+# Output in landing/dist/
+```
+
+## Technical Architecture
+
+### Extension Flow
+
+```
+User selects text
+      ↓
+Right-click → "Improve prompt"
+      ↓
+background.js receives context menu event
+      ↓
+Injects content.js (if not already loaded)
+      ↓
+content.js creates iframe overlay
+      ↓
+overlay.js sends IMPROVE_PROMPT to background.js
+      ↓
+background.js calls OpenRouter API
+      ↓
+overlay.js displays result with typing effect
+      ↓
+User clicks Replace/Copy
+```
+
+### Key Patterns
+
+- **IIFE Wrappers**: All scripts wrapped to avoid global scope pollution
+- **Session Tokens**: `crypto.getRandomValues()` for overlay security
+- **Network Isolation**: API calls stay in background.js (content scripts can't make HTTPS)
+- **Fallback Copy**: `document.execCommand` when Clipboard API unavailable
+- **Settings Storage**: `chrome.storage.local` for persistence
+
+### Constants (background.js)
+
+```
+DEFAULT_MODEL = 'openrouter/auto'
+DEFAULT_SYSTEM_PROMPT = 'You are a helpful prompt improver...'
+REQUEST_TIMEOUT_MS = 15000
+MAX_PROMPT_CHARS = 4000
+MAX_RETRIES = 1
+```
+
+## Documentation
+
+- **[Extension README](extension/README.md)** - Extension-specific documentation
+- **[Landing Page README](landing/README.md)** - Landing page features and setup
+- **[Current Status](docs/current_status.md)** - Project status and known issues
+- **[Changelog](docs/changelog.md)** - Version history and changes
+- **[Architecture](docs/architecture.md)** - Technical architecture details
+
+## Performance
+
+### Extension Status
+- **Performance Score**: 6.8/10 (Good foundation, identified optimizations)
+- **Memory Management**: 8/10 (Excellent cleanup patterns)
+- **Known Issues**: 31-second timeout scenario, excessive render calls
+- **See**: `docs/performance-audit-report-2025-01-07.md` for details
+
+### Landing Page Status
+- **Performance Score**: 95/100 (A+ grade, production-ready)
+- **Accessibility**: WCAG AA compliant (95+ Lighthouse score)
+- **Memory**: Zero leaks, proper cleanup
+- **See**: `docs/landing-optimization-complete.md` for details
+
+## Contributing
+
+Contributions welcome! Please read our contributing guidelines and code of conduct.
+
+**Development Workflow:**
+1. Check existing issues and PRs
+2. Create feature branch: `git checkout -b feature/your-feature`
+3. Make changes with clear commit messages
+4. Test thoroughly in Chrome and with landing page dev server
+5. Submit PR with description
+
+**For Agents:** See `CLAUDE.md` for agent orchestration strategy (git worktrees required for parallel work).
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Acknowledgments
+
+- Built with Vue 2.7 (extension) and Vue 3 (landing)
+- Uses OpenRouter API for LLM access
+- Icons from Lucide Vue Next
+- Design inspired by 2025 web trends (glassmorphism, micro-interactions)
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/prompt-improver/issues)
+- **Documentation**: See `docs/` folder
+- **Email**: support@example.com
+
+---
+
+**Version**: 1.0.1
+**Last Updated**: 2025-01-07
+**Status**: Extension MVP complete, Landing page production-ready

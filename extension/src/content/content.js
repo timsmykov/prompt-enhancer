@@ -1,7 +1,12 @@
 (() => {
-  console.log('[Content Diagnostics] ===== CONTENT SCRIPT LOADED =====');
-  console.log('[Content Diagnostics] Page URL:', window.location.href);
-  console.log('[Content Diagnostics] Document ready:', document.readyState);
+  // Logger utility with environment-aware logging
+  const DEBUG_MODE = false; // Set via build flag or environment variable
+
+  const logger = {
+    log: (...args) => { if (DEBUG_MODE) console.log('[PromptImprover]', ...args); },
+    warn: (...args) => console.warn('[PromptImprover]', ...args),
+    error: (...args) => console.error('[PromptImprover]', ...args),
+  };
 
   let overlayFrame = null;
   let overlayStyle = null;
@@ -15,12 +20,12 @@
   let resizeHandler = null;
 
   const createToken = () => {
-    if (crypto?.getRandomValues) {
-      const values = new Uint32Array(4);
-      crypto.getRandomValues(values);
-      return Array.from(values, (value) => value.toString(16)).join('');
+    if (!crypto?.getRandomValues) {
+      throw new Error('Cryptographically secure random number generation not available. Extension cannot function securely.');
     }
-    return `${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`;
+    const values = new Uint32Array(8); // 256-bit entropy (increased from 4)
+    crypto.getRandomValues(values);
+    return Array.from(values, (value) => value.toString(16)).join('');
   };
 
   const captureSelection = () => {
@@ -130,17 +135,17 @@
 
   const ensureOverlay = () => {
     if (overlayFrame) {
-      console.log('[PromptImprover] Overlay already exists');
+      logger.log('Overlay already exists');
       return;
     }
     if (!document.body || !document.head) {
-      console.log('[PromptImprover] DOM not ready, waiting for DOMContentLoaded');
+      logger.log('DOM not ready, waiting for DOMContentLoaded');
       document.addEventListener('DOMContentLoaded', ensureOverlay, {
         once: true,
       });
       return;
     }
-    console.log('[PromptImprover] Creating overlay iframe...');
+    logger.log('Creating overlay iframe');
     overlayFrame = document.createElement('iframe');
     overlayFrame.src = chrome.runtime.getURL('src/ui/overlay/overlay.html');
     overlayFrame.className = 'prompt-improver-frame';
@@ -171,7 +176,7 @@
 
     // Add load listener BEFORE appendChild to avoid race condition
     overlayFrame.addEventListener('load', () => {
-      console.log('[PromptImprover] Overlay iframe loaded successfully');
+      logger.log('Overlay iframe loaded successfully');
       overlayReady = true;
       overlayMetrics = getOverlayMetrics();
       sendToOverlay({
@@ -182,7 +187,7 @@
     });
 
     overlayFrame.onerror = (err) => {
-      console.log('[PromptImprover] Overlay iframe error:', err);
+      logger.error('Overlay iframe error:', err);
     };
 
     // Create and add resize handler when overlay is created
@@ -213,94 +218,41 @@
   };
 
   window.addEventListener('message', (event) => {
-    // DIAGNOSTIC: Log ALL messages BEFORE any filtering
-    console.log('[Content Diagnostics] RAW Message received (before filtering):', {
-      dataType: event.data?.type,
-      dataAction: event.data?.action,
-      hasDataToken: !!event.data?.token,
-      eventOrigin: event.origin,
-      'source is window': event.source === window,
-      'overlayFrame exists': !!overlayFrame,
-      'overlayFrame.contentWindow exists': !!overlayFrame?.contentWindow,
-      'source === overlayFrame.contentWindow': overlayFrame?.contentWindow && event.source === overlayFrame.contentWindow
-    });
-    console.log('[Content Diagnostics] Message SOURCE:', event.source);
-    console.log('[Content Diagnostics] Message ORIGIN:', event.origin);
-
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
 
     // For messages from our overlay iframe, event.origin is the page's origin (not extension)
     // So we use event.source verification instead for iframe messages
     const isFromOurOverlay = overlayFrame?.contentWindow && event.source === overlayFrame.contentWindow;
 
-    console.log('[Content Diagnostics] Source validation:', {
-      isFromOurOverlay,
-      'event.origin': event.origin,
-      'extensionOrigin': extensionOrigin,
-      'origins match': event.origin === extensionOrigin,
-      'will accept message': isFromOurOverlay || event.origin === extensionOrigin
-    });
-
     // Accept messages from our overlay (iframe) OR from extension pages
-    // FIXED: Accept if from overlay OR from extension (OR logic, not AND)
     const isValidSource = isFromOurOverlay || event.origin === extensionOrigin;
     if (!isValidSource) {
-      console.warn('[Content Diagnostics] Message REJECTED by source/origin check', {
-        isFromOurOverlay,
-        'origin is extension': event.origin === extensionOrigin
-      });
       return;
     }
 
     // ADDITIONAL GUARD: If we have an overlay and message is from postMessage, check source more carefully
     if (overlayFrame && event.source === window) {
-      console.warn('[Content Diagnostics] Message from window itself (not from iframe), ignoring');
       return;
     }
 
-    // DIAGNOSTIC: Log all messages
-    console.log('[Content Diagnostics] Message received (AFTER filtering):', {
-      type: event.data?.type,
-      hasToken: !!event.data?.token,
-      tokenMatches: event.data?.token === overlayToken,
-      currentToken: overlayToken?.substring(0, 8) + '...',
-      receivedToken: event.data?.token?.substring(0, 8) + '...',
-      action: event.data?.action,
-      isFromOverlay: isFromOurOverlay
-    });
-
     if (event.data?.type === 'OVERLAY_INIT' && event.data.token) {
-      console.log('[Content Diagnostics] OVERLAY_INIT received, token:', event.data.token.substring(0, 8) + '...');
       // Verify this is our token echoed back
       if (!overlayToken) {
-        console.log('[Content Diagnostics] Setting overlayToken from echo');
         overlayToken = event.data.token;
-      } else {
-        console.log('[Content Diagnostics] overlayToken already set, skipping echo validation');
       }
       return;
     }
     if (event.data?.type !== 'OVERLAY_ACTION') return;
-    console.log('[Content Diagnostics] OVERLAY_ACTION received, validating token...');
 
     if (!event.data.token || event.data.token !== overlayToken) {
-      console.error('[Content Diagnostics] Token validation FAILED!', {
-        hasToken: !!event.data.token,
-        tokenMatches: event.data.token === overlayToken,
-        expected: overlayToken?.substring(0, 8) + '...',
-        received: event.data?.token?.substring(0, 8) + '...'
-      });
+      logger.error('Token validation failed');
       return;
     }
 
-    console.log('[Content Diagnostics] Token validated, executing action:', event.data.action);
-
     if (event.data.action === 'replace') {
-      console.log('[Content Diagnostics] Executing replace with text length:', event.data.text?.length);
       replaceSelectionText(event.data.text || '');
     }
     if (event.data.action === 'close') {
-      console.log('[Content Diagnostics] Executing close');
       closeOverlay();
     }
     if (event.data.action === 'position' && overlayFrame) {
@@ -328,11 +280,9 @@
   });
 
   chrome.runtime.onMessage.addListener((message) => {
-    console.log('[PromptImprover] Content script received:', message);
     if (message?.type !== 'OPEN_OVERLAY') return;
     captureSelection();
     pendingSelectionText = getSelectionText();
-    console.log('[PromptImprover] Selected text:', pendingSelectionText);
     // Always generate new token to prevent race conditions with old messages
     overlayToken = createToken();
     ensureOverlay();
@@ -340,8 +290,4 @@
       sendToOverlay({ type: 'SELECTION_TEXT', text: pendingSelectionText });
     }
   });
-
-  console.log('[Content Diagnostics] ===== MESSAGE LISTENER ATTACHED =====');
-  console.log('[Content Diagnostics] Window object:', window);
-  console.log('[Content Diagnostics] Document object:', document);
 })();

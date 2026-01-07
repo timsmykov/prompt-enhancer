@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "browser-use": {
+      "type": "stdio",
+      "command": "./scripts/browser-use-mcp.sh",
+      "env": {
+        "BROWSER_USE_LOGGING_LEVEL": "DEBUG",
+        "BROWSER_USE_MODEL": "glm-4.7",
+        "BROWSER_USE_AUTO_START_CHROME": "1",
+        "ANTHROPIC_API_KEY": "fc7d20e878e44ff3b0b39eaab6fa6c8a.Tiyb7SZKIE7z6EDA",
+        "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic"
+      }
+    }
+  }
+}

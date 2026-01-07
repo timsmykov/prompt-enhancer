@@ -1,6 +1,15 @@
 (() => {
   const DEFAULT_TYPING_SPEED = 25;
 
+  // Logger utility with environment-aware logging
+  const DEBUG_MODE = false; // Set via build flag or environment variable
+
+  const logger = {
+    log: (...args) => { if (DEBUG_MODE) console.log('[PromptImprover]', ...args); },
+    warn: (...args) => console.warn('[PromptImprover]', ...args),
+    error: (...args) => console.error('[PromptImprover]', ...args),
+  };
+
   const state = {
     status: 'idle',
     error: '',
@@ -41,32 +50,6 @@
   const MIN_WIDTH = 280;
   const MIN_HEIGHT = 200;
 
-  // DIAGNOSTIC: Log DOM element discovery
-  console.log('[Overlay Diagnostics] DOM Elements Status:', {
-    replaceButton: !!dom.replaceButton,
-    copyButton: !!dom.copyButton,
-    closeButton: !!dom.closeButton,
-    'document.readyState': document.readyState
-  });
-
-  if (dom.replaceButton) {
-    console.log('[Overlay Diagnostics] Replace button found:', {
-      text: dom.replaceButton.textContent,
-      className: dom.replaceButton.className
-    });
-  } else {
-    console.error('[Overlay Diagnostics] Replace button NOT FOUND!');
-  }
-
-  if (dom.closeButton) {
-    console.log('[Overlay Diagnostics] Close button found:', {
-      text: dom.closeButton.textContent,
-      className: dom.closeButton.className
-    });
-  } else {
-    console.error('[Overlay Diagnostics] Close button NOT FOUND!');
-  }
-
   // Remove markdown bold (**text**) and italic (*text*) formatting - use non-greedy regex
   const cleanupMarkdown = (text) => {
     if (typeof text !== 'string') return '';
@@ -104,31 +87,16 @@
   };
 
   const sendOverlayAction = (payload) => {
-    console.log('[Overlay Diagnostics] sendOverlayAction called:', {
-      action: payload.action,
-      hasToken: !!state.sessionToken,
-      tokenValue: state.sessionToken?.substring(0, 8) + '...',
-      'window.parent exists': !!window.parent
-    });
-
     if (!window.parent) {
-      console.error('[Overlay Diagnostics] No window.parent!');
+      logger.error('No window.parent');
       return;
     }
 
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
-    console.log('[Overlay Diagnostics] Posting message to parent:', {
-      type: 'OVERLAY_ACTION',
-      token: state.sessionToken?.substring(0, 8) + '...',
-      action: payload.action
-    });
-
     window.parent.postMessage(
       { type: 'OVERLAY_ACTION', token: state.sessionToken, ...payload },
       extensionOrigin
     );
-
-    console.log('[Overlay Diagnostics] Message posted successfully');
   };
 
   const setInteractionState = (name, active) => {
@@ -350,50 +318,35 @@
   };
 
   const replaceSelection = () => {
-    console.log('[Overlay Diagnostics] replaceSelection called', {
-      resultTextLength: state.resultText?.length,
-      status: state.status
-    });
-
     const text = cleanupMarkdown(state.resultText);
     if (!text) {
-      console.warn('[Overlay Diagnostics] replaceSelection: No text to replace');
+      logger.warn('No text to replace');
       return;
     }
 
-    console.log('[Overlay Diagnostics] replaceSelection: Sending replace action');
     sendOverlayAction({ action: 'replace', text });
-
-    console.log('[Overlay Diagnostics] replaceSelection: About to call closeOverlay');
     closeOverlay();
-    console.log('[Overlay Diagnostics] replaceSelection: closeOverlay returned');
   };
 
   const closeOverlay = () => {
     // Guard against multiple calls
     if (state.isClosing) {
-      console.warn('[Overlay Diagnostics] closeOverlay: Already closing, ignoring call');
       return;
     }
 
-    console.log('[Overlay Diagnostics] closeOverlay called');
     state.isClosing = true;
 
     // Clear timers to prevent memory leaks
     if (state.typingTimer) {
-      console.log('[Overlay Diagnostics] closeOverlay: Clearing typingTimer');
       clearTimeout(state.typingTimer);
       state.typingTimer = null;
     }
     if (state.toastTimer) {
-      console.log('[Overlay Diagnostics] closeOverlay: Clearing toastTimer');
       clearTimeout(state.toastTimer);
       state.toastTimer = null;
     }
 
-    console.log('[Overlay Diagnostics] closeOverlay: Sending close action');
     sendOverlayAction({ action: 'close' });
-    console.log('[Overlay Diagnostics] closeOverlay: Close action sent');
   };
 
   const regenerate = () => {

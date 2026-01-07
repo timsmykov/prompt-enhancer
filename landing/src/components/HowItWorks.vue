@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { MousePointer, Sparkles, CheckCircle, ArrowRight } from 'lucide-vue-next'
 
 const steps = ref([
@@ -30,12 +30,20 @@ const steps = ref([
 ])
 
 const activeStep = ref(0)
+let stepInterval = null
 
 // Auto-rotate through steps
 onMounted(() => {
-  setInterval(() => {
+  stepInterval = setInterval(() => {
     activeStep.value = (activeStep.value + 1) % steps.value.length
   }, 3000)
+})
+
+onUnmounted(() => {
+  if (stepInterval) {
+    clearInterval(stepInterval)
+    stepInterval = null
+  }
 })
 </script>
 
@@ -129,7 +137,7 @@ onMounted(() => {
 
 .how-it-works {
   position: relative;
-  padding: var(--space-5xl) var(--space-md);
+  padding: var(--space-3xl) var(--space-md);
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   overflow: hidden;
 }

@@ -1,27 +1,98 @@
 <script setup>
+import { defineAsyncComponent } from 'vue'
+import ErrorBoundary from './components/ErrorBoundary.vue'
+import LoadingSpinner from './components/LoadingSpinner.vue'
+
+// Above-fold components - immediate load
 import Hero from './components/Hero.vue'
-import HowItWorks from './components/HowItWorks.vue'
-import LiveDemo from './components/LiveDemo.vue'
-import BeforeAfter from './components/BeforeAfter.vue'
 import Features from './components/Features.vue'
-import Testimonials from './components/Testimonials.vue'
-import FAQ from './components/FAQ.vue'
-import FinalCTA from './components/FinalCTA.vue'
-import Footer from './components/Footer.vue'
+import HowItWorks from './components/HowItWorks.vue'
+
+// Below-fold components - lazy load
+const LiveDemo = defineAsyncComponent(() => import('./components/LiveDemo.vue'))
+const BeforeAfter = defineAsyncComponent(() => import('./components/BeforeAfter.vue'))
+const Testimonials = defineAsyncComponent(() => import('./components/Testimonials.vue'))
+const FAQ = defineAsyncComponent(() => import('./components/FAQ.vue'))
+const FinalCTA = defineAsyncComponent(() => import('./components/FinalCTA.vue'))
+const Footer = defineAsyncComponent(() => import('./components/Footer.vue'))
 </script>
 
 <template>
-  <main class="landing-page">
-    <Hero />
-    <HowItWorks />
-    <LiveDemo id="demo" />
-    <BeforeAfter />
-    <Features />
-    <Testimonials />
-    <FAQ />
-    <FinalCTA id="download" />
-    <Footer />
-  </main>
+  <ErrorBoundary>
+    <main class="landing-page">
+      <!-- Above-fold - loads immediately -->
+      <Hero />
+      <Features />
+      <HowItWorks />
+
+      <!-- Below-fold - individual Suspense for each component -->
+      <Suspense>
+        <template #default>
+          <ErrorBoundary>
+            <LiveDemo id="demo" />
+          </ErrorBoundary>
+        </template>
+        <template #fallback>
+          <LoadingSpinner />
+        </template>
+      </Suspense>
+
+      <Suspense>
+        <template #default>
+          <ErrorBoundary>
+            <BeforeAfter />
+          </ErrorBoundary>
+        </template>
+        <template #fallback>
+          <LoadingSpinner />
+        </template>
+      </Suspense>
+
+      <Suspense>
+        <template #default>
+          <ErrorBoundary>
+            <Testimonials />
+          </ErrorBoundary>
+        </template>
+        <template #fallback>
+          <LoadingSpinner />
+        </template>
+      </Suspense>
+
+      <Suspense>
+        <template #default>
+          <ErrorBoundary>
+            <FAQ />
+          </ErrorBoundary>
+        </template>
+        <template #fallback>
+          <LoadingSpinner />
+        </template>
+      </Suspense>
+
+      <Suspense>
+        <template #default>
+          <ErrorBoundary>
+            <FinalCTA id="download" />
+          </ErrorBoundary>
+        </template>
+        <template #fallback>
+          <LoadingSpinner />
+        </template>
+      </Suspense>
+
+      <Suspense>
+        <template #default>
+          <ErrorBoundary>
+            <Footer />
+          </ErrorBoundary>
+        </template>
+        <template #fallback>
+          <LoadingSpinner />
+        </template>
+      </Suspense>
+    </main>
+  </ErrorBoundary>
 </template>
 
 <style>

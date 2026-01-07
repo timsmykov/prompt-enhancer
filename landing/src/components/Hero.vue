@@ -1,6 +1,8 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { Sparkles, Download, ArrowRight } from 'lucide-vue-next'
+import { useTypewriter } from '../composables/useTypewriter'
+import { useParticles } from '../composables/useParticles'
 
 // Multi-stage typing animation
 const prompts = [
@@ -10,118 +12,36 @@ const prompts = [
   "Transform Your Writing Instantly"
 ]
 
-const animationText = ref('')
-const currentPromptIndex = ref(0)
-const isDeleting = ref(false)
-const isPaused = ref(false)
-const charIndex = ref(0)
-const showCursor = ref(true)
+// Use typewriter composable for animation
+const {
+  currentText: animationText,
+  isDeleting,
+  isPaused,
+  showCursor,
+  start: startTypewriter
+} = useTypewriter(prompts, {
+  typeSpeed: 80,
+  deleteSpeed: 40,
+  pauseDuration: 2000,
+  switchDelay: 500
+})
 
-// Animation timing
-const TYPE_SPEED = 80
-const DELETE_SPEED = 40
-const PAUSE_DURATION = 2000
-const PROMPT_SWITCH_DELAY = 500
-
-let animationTimeout = null
-
-// Random variance for natural typing feel
-const getRandomVariance = () => Math.random() * 50 - 25
-
-const animateText = () => {
-  const currentPrompt = prompts[currentPromptIndex.value]
-
-  if (isPaused.value) {
-    // Paused state - will resume after pauseDuration
-    return
-  }
-
-  if (isDeleting.value) {
-    // Delete stage
-    if (charIndex.value > 0) {
-      animationText.value = currentPrompt.slice(0, charIndex.value - 1)
-      charIndex.value--
-      animationTimeout = setTimeout(
-        animateText,
-        DELETE_SPEED + getRandomVariance()
-      )
-    } else {
-      // Finished deleting - switch to next prompt
-      isDeleting.value = false
-      currentPromptIndex.value = (currentPromptIndex.value + 1) % prompts.length
-      isPaused.value = true
-      showCursor.value = false
-
-      animationTimeout = setTimeout(() => {
-        isPaused.value = false
-        showCursor.value = true
-        animateText()
-      }, PROMPT_SWITCH_DELAY)
-    }
-  } else {
-    // Typing stage
-    if (charIndex.value < currentPrompt.length) {
-      animationText.value = currentPrompt.slice(0, charIndex.value + 1)
-      charIndex.value++
-      animationTimeout = setTimeout(
-        animateText,
-        TYPE_SPEED + getRandomVariance()
-      )
-    } else {
-      // Finished typing - pause then delete
-      isPaused.value = true
-
-      animationTimeout = setTimeout(() => {
-        isPaused.value = false
-        isDeleting.value = true
-        animateText()
-      }, PAUSE_DURATION)
-    }
-  }
-}
-
-// Particle effect state
-const particles = ref([])
-let particleInterval = null
-
-const createParticle = () => {
-  if (isPaused.value && !isDeleting.value) return
-
-  const particle = {
-    id: Date.now() + Math.random(),
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 4 + 2,
-    duration: Math.random() * 1000 + 500,
-    delay: Math.random() * 200
-  }
-
-  particles.value.push(particle)
-
-  // Remove particle after animation
-  setTimeout(() => {
-    const index = particles.value.findIndex(p => p.id === particle.id)
-    if (index > -1) {
-      particles.value.splice(index, 1)
-    }
-  }, particle.duration + particle.delay)
-}
+// Use particles composable for particle effects
+const {
+  particles,
+  startCreating: startParticles
+} = useParticles({
+  interval: 300,
+  maxParticles: 20,
+  shouldCreate: () => !isPaused.value || isDeleting.value
+})
 
 onMounted(() => {
   // Start typing animation
-  animationTimeout = setTimeout(animateText, 500)
+  startTypewriter(500)
 
   // Start particle effect
-  particleInterval = setInterval(createParticle, 300)
-})
-
-onUnmounted(() => {
-  if (animationTimeout) {
-    clearTimeout(animationTimeout)
-  }
-  if (particleInterval) {
-    clearInterval(particleInterval)
-  }
+  startParticles()
 })
 
 // Computed cursor color based on state
@@ -217,7 +137,7 @@ const cursorColor = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-5xl) var(--space-md);
+  padding: var(--space-3xl) var(--space-md);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 100%);
   background-size: 400% 400%;
   animation: gradientShift 20s ease infinite;
@@ -325,7 +245,8 @@ const cursorColor = computed(() => {
   animation: fadeInUp 0.8s ease forwards;
   animation-delay: 0.2s;
   opacity: 0;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7),
+               0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .gradient-text {
@@ -351,7 +272,7 @@ const cursorColor = computed(() => {
 
 .hero-description {
   font-size: var(--text-xl);
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255, 255, 255, 1);
   line-height: var(--leading-relaxed);
   margin: 0 0 var(--space-2xl) 0;
   max-width: 700px;
@@ -361,6 +282,8 @@ const cursorColor = computed(() => {
   animation-delay: 0.3s;
   opacity: 0;
   letter-spacing: var(--tracking-wide);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6),
+               0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .animation-box {

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Star, Quote, TrendingUp, Users, Globe } from 'lucide-vue-next'
+import { useCounterAnimation } from '../composables/useCounterAnimation'
 
 const testimonials = ref([
   {
@@ -67,33 +68,34 @@ const targetStats = {
   countries: 50
 }
 
-// Animated counter
-const animateCounter = (target, duration, callback) => {
-  const start = 0
-  const increment = target / (duration / 16)
-  let current = start
-
-  const timer = setInterval(() => {
-    current += increment
-    if (current >= target) {
-      current = target
-      clearInterval(timer)
-    }
-    callback(current)
-  }, 16)
-}
+// Create counter animations for each stat
+const usersCounter = useCounterAnimation(targetStats.users, 2000, { decimals: 0 })
+const ratingCounter = useCounterAnimation(targetStats.rating, 2000, { decimals: 1 })
+const countriesCounter = useCounterAnimation(targetStats.countries, 2000, { decimals: 0 })
 
 onMounted(() => {
-  // Animate stats on load
-  animateCounter(targetStats.users, 2000, (val) => {
-    stats.value.users = Math.floor(val)
-  })
-  animateCounter(targetStats.rating, 2000, (val) => {
-    stats.value.rating = val.toFixed(1)
-  })
-  animateCounter(targetStats.countries, 2000, (val) => {
-    stats.value.countries = Math.floor(val)
-  })
+  // Start all counter animations
+  usersCounter.start()
+  ratingCounter.start()
+  countriesCounter.start()
+
+  // Update stats reactively as counters animate
+  const updateStats = () => {
+    stats.value.users = Math.floor(usersCounter.current.value)
+    stats.value.rating = Number(ratingCounter.current.value.toFixed(1))
+    stats.value.countries = Math.floor(countriesCounter.current.value)
+
+    // Continue updating if animations are running
+    if (
+      usersCounter.current.value < targetStats.users ||
+      ratingCounter.current.value < targetStats.rating ||
+      countriesCounter.current.value < targetStats.countries
+    ) {
+      requestAnimationFrame(updateStats)
+    }
+  }
+
+  updateStats()
 })
 </script>
 

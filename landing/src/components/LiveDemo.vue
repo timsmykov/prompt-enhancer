@@ -1,11 +1,15 @@
 <script setup>
-import { ref } from 'vue'
-import { Wand2, Copy, Check, RotateCcw } from 'lucide-vue-next'
+import { ref, onUnmounted } from 'vue'
+import { Wand2, Copy, Check, RotateCcw, AlertCircle, X } from 'lucide-vue-next'
+import { validatePromptInput } from '../utils/validation'
 
 const originalText = ref('')
 const improvedText = ref('')
 const isLoading = ref(false)
 const isCopying = ref(false)
+const error = ref(null)
+const copyError = ref(null)
+const isCancelled = ref(false)
 
 const mockResponses = [
   "Can you help me with my project? → Transform into: 'Could you please assist me with my project? I need guidance on [specific aspect] and would appreciate your expertise in [relevant area].'",
@@ -13,37 +17,110 @@ const mockResponses = [
   "Write code → Transform into: 'Develop a well-documented, modular solution for [specific problem]. Include error handling, comments, and follow best practices for [language/framework].'"
 ]
 
-const improvePrompt = () => {
-  if (!originalText.value.trim()) return
+const improvePrompt = async () => {
+  // Clear previous errors
+  error.value = null
+  copyError.value = null
+  isCancelled.value = false
+
+  // Validate input
+  const validation = validatePromptInput(originalText.value)
+  if (!validation.valid) {
+    error.value = validation.error
+    return
+  }
 
   isLoading.value = true
 
-  // Simulate API call
-  setTimeout(() => {
-    const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)]
-    improvedText.value = randomResponse
+  try {
+    // Simulate API call with cleanup tracking
+    await new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        if (!isCancelled.value) {
+          const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)]
+          improvedText.value = randomResponse
+          resolve()
+        } else {
+          reject(new Error('Operation cancelled'))
+        }
+      }, 1500)
+
+      // Store timeout ID for cleanup
+      return () => clearTimeout(timeoutId)
+    })
+  } catch (err) {
+    error.value = 'Failed to improve prompt. Please try again.'
+  } finally {
     isLoading.value = false
-  }, 1500)
+  }
 }
 
 const copyToClipboard = async () => {
   if (!improvedText.value) return
 
+  copyError.value = null
+
   try {
-    await navigator.clipboard.writeText(improvedText.value)
-    isCopying.value = true
-    setTimeout(() => {
-      isCopying.value = false
-    }, 2000)
+    // Try modern Clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(improvedText.value)
+      isCopying.value = true
+      setTimeout(() => {
+        isCopying.value = false
+      }, 2000)
+    } else {
+      // Fallback for older browsers
+      throw new Error('Clipboard API not available')
+    }
   } catch (err) {
-    console.error('Failed to copy:', err)
+    // Fallback copy method for older browsers
+    try {
+      const textArea = document.createElement('textarea')
+      textArea.value = improvedText.value
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-999999px'
+      textArea.style.top = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      const successful = document.execCommand('copy')
+      document.body.removeChild(textArea)
+
+      if (successful) {
+        isCopying.value = true
+        setTimeout(() => {
+          isCopying.value = false
+        }, 2000)
+      } else {
+        throw new Error('Copy command failed')
+      }
+    } catch (fallbackErr) {
+      copyError.value = 'Copy not supported in this browser. Please copy manually.'
+    }
   }
 }
 
 const resetDemo = () => {
   originalText.value = ''
   improvedText.value = ''
+  error.value = null
+  copyError.value = null
 }
+
+const dismissError = () => {
+  error.value = null
+}
+
+const dismissCopyError = () => {
+  copyError.value = null
+}
+
+// Cleanup on unmount
+onUnmounted(() => {
+  isCancelled.value = true
+  isLoading.value = false
+})
 </script>
 
 <template>
@@ -54,6 +131,15 @@ const resetDemo = () => {
         <p class="section-subtitle">
           Experience the magic of prompt improvement right here
         </p>
+      </div>
+
+      <!-- Error alert -->
+      <div v-if="error" class="error-alert" role="alert">
+        <AlertCircle :size="20" />
+        <span>{{ error }}</span>
+        <button @click="dismissError" class="dismiss-button" aria-label="Dismiss error">
+          <X :size="18" />
+        </button>
       </div>
 
       <div class="demo-container">
@@ -67,6 +153,7 @@ const resetDemo = () => {
             class="demo-textarea"
             placeholder="Enter any text you want to improve... (e.g., 'I need help with my presentation')"
             rows="6"
+            aria-label="Enter your original text to improve"
           ></textarea>
         </div>
 
@@ -91,6 +178,7 @@ const resetDemo = () => {
               @click="copyToClipboard"
               class="icon-button"
               :class="{ copied: isCopying }"
+              :aria-label="isCopying ? 'Copied to clipboard' : 'Copy improved text to clipboard'"
             >
               <Check v-if="isCopying" :size="18" />
               <Copy v-else :size="18" />
@@ -98,14 +186,23 @@ const resetDemo = () => {
             </button>
           </div>
           <div class="output-content">
-            <div v-if="isLoading" class="loading-state">
+            <!-- Copy error alert -->
+            <div v-if="copyError" class="copy-error-alert" role="alert">
+              <AlertCircle :size="16" />
+              <span>{{ copyError }}</span>
+              <button @click="dismissCopyError" class="dismiss-button" aria-label="Dismiss error">
+                <X :size="14" />
+              </button>
+            </div>
+
+            <div v-if="isLoading" class="loading-state" role="status" aria-live="polite">
               <div class="spinner"></div>
               <p>AI is enhancing your prompt...</p>
             </div>
-            <div v-else-if="improvedText" class="improved-text">
+            <div v-else-if="improvedText" class="improved-text" role="status" aria-live="polite">
               {{ improvedText }}
             </div>
-            <div v-else class="placeholder-text">
+            <div v-else class="placeholder-text" aria-hidden="true">
               Your improved prompt will appear here...
             </div>
           </div>
@@ -134,7 +231,7 @@ const resetDemo = () => {
 <style scoped>
 .live-demo {
   position: relative;
-  padding: var(--space-5xl) var(--space-md);
+  padding: var(--space-3xl) var(--space-md);
   background: var(--color-bg);
   overflow: hidden;
 }
@@ -163,6 +260,49 @@ const resetDemo = () => {
 .section-header {
   text-align: center;
   margin-bottom: var(--space-3xl);
+}
+
+/* Error alert styling */
+.error-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #f87171;
+  border-radius: var(--radius-lg);
+  color: #991b1b;
+  margin-bottom: var(--space-lg);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.error-alert svg {
+  flex-shrink: 0;
+}
+
+.error-alert span {
+  flex: 1;
+  font-weight: var(--font-medium);
+}
+
+.dismiss-button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+  opacity: 0.7;
+}
+
+.dismiss-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  opacity: 1;
 }
 
 .section-title {
@@ -423,6 +563,23 @@ const resetDemo = () => {
   padding: var(--space-lg);
   min-height: 200px;
   position: relative;
+}
+
+.copy-error-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: var(--radius-md);
+  color: #92400e;
+  margin-bottom: var(--space-md);
+  font-size: var(--text-sm);
+}
+
+.copy-error-alert .dismiss-button {
+  padding: var(--space-xs);
 }
 
 .loading-state {

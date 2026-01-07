@@ -16,21 +16,8 @@
       };
     }
 
-    return {
-      get: (keys) =>
-        Promise.resolve(
-          keys.reduce((acc, key) => {
-            acc[key] = localStorage.getItem(key) || '';
-            return acc;
-          }, {})
-        ),
-      set: (data) => {
-        Object.keys(data).forEach((key) => {
-          localStorage.setItem(key, String(data[key] ?? ''));
-        });
-        return Promise.resolve();
-      },
-    };
+    // SECURE FAIL - no insecure fallback
+    throw new Error('Chrome storage API not available. Extension cannot function securely.');
   };
 
   const storage = createStorage();
