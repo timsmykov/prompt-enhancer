@@ -3,71 +3,147 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Prompt Improver</title>
+    <title>Prompt Improver Settings</title>
+    <link rel="stylesheet" href="../shared/design-tokens.css" />
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <div id="app">
-      <header class="header">
-        <div class="logo" aria-hidden="true"></div>
-        <span>Prompt Improver</span>
+    <div id="app" class="popup-container">
+      <!-- Header with logo and stats -->
+      <header class="popup-header">
+        <div class="header-brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="header-text">
+            <h1 class="header-title">Prompt Improver</h1>
+            <span class="version-badge">v0.1.0</span>
+          </div>
+        </div>
+        <div class="header-stats" id="headerStats" aria-live="polite">
+          <span class="stat-item">
+            <span class="stat-icon" aria-hidden="true">●</span>
+            <span class="stat-text" id="apiStatusText">Not configured</span>
+          </span>
+        </div>
       </header>
 
-      <main class="card">
+      <!-- Tab Navigation -->
+      <nav class="tab-navigation" role="tablist" aria-label="Settings categories">
+        <button
+          class="tab-button"
+          data-tab="account"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-account"
+          id="tab-account"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Account</span>
+        </button>
+        <button
+          class="tab-button"
+          data-tab="model"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-model"
+          id="tab-model"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+          <span>Model</span>
+        </button>
+        <button
+          class="tab-button"
+          data-tab="behavior"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-behavior"
+          id="tab-behavior"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Behavior</span>
+        </button>
+        <button
+          class="tab-button"
+          data-tab="advanced"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-advanced"
+          id="tab-advanced"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+          </svg>
+          <span>Advanced</span>
+        </button>
+      </nav>
+
+      <!-- Tab Panels -->
+      <main class="tab-content">
         <form id="settingsForm">
-          <div class="field">
-            <label for="apiKey">API key</label>
-            <div class="input-row">
-              <input
-                id="apiKey"
-                type="password"
-                autocomplete="off"
-                placeholder="sk-..."
-                required
-              />
-              <button type="button" class="ghost" id="toggleKey">
-                Show
-              </button>
-            </div>
-          </div>
+          <div
+            class="tab-panel active"
+            id="panel-account"
+            role="tabpanel"
+            aria-labelledby="tab-account"
+            tabindex="0"
+          ></div>
 
-          <div class="field">
-            <label for="model">Model</label>
-            <input id="model" placeholder="openrouter/auto" />
-          </div>
+          <div
+            class="tab-panel"
+            id="panel-model"
+            role="tabpanel"
+            aria-labelledby="tab-model"
+            tabindex="0"
+            hidden
+          ></div>
 
-          <div class="field">
-            <label for="systemPrompt">System prompt</label>
-            <textarea
-              id="systemPrompt"
-              placeholder="You are a helpful prompt improver..."
-              rows="3"
-            ></textarea>
-          </div>
+          <div
+            class="tab-panel"
+            id="panel-behavior"
+            role="tabpanel"
+            aria-labelledby="tab-behavior"
+            tabindex="0"
+            hidden
+          ></div>
 
-          <div class="field">
-            <label for="typingSpeed">Typing speed (ms)</label>
-            <input
-              id="typingSpeed"
-              type="number"
-              min="0"
-              step="5"
-              placeholder="25"
-            />
-          </div>
-
-          <div class="actions">
-            <div class="toast" id="toast" role="status" aria-live="polite"></div>
-            <button class="primary" type="submit" id="saveButton">
-              <span class="spinner" aria-hidden="true"></span>
-              <span class="btn-text">Save</span>
-            </button>
-            <span class="status" role="status" aria-live="polite"></span>
-          </div>
+          <div
+            class="tab-panel"
+            id="panel-advanced"
+            role="tabpanel"
+            aria-labelledby="tab-advanced"
+            tabindex="0"
+            hidden
+          ></div>
         </form>
       </main>
+
+      <!-- Footer Actions -->
+      <footer class="popup-footer">
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <div class="footer-actions">
+          <button type="button" class="button-ghost" id="cancelButton">
+            Cancel
+          </button>
+          <button type="submit" class="button-primary" id="saveButton" form="settingsForm">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="button-text">Save Changes</span>
+          </button>
+        </div>
+      </footer>
     </div>
 
+    <script src="../shared/ExtensionState.js"></script>
+    <script src="modules/AccountSettings.js"></script>
+    <script src="modules/ModelSettings.js"></script>
+    <script src="modules/BehaviorSettings.js"></script>
+    <script src="modules/AdvancedSettings.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

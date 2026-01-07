@@ -1,0 +1,83 @@
+/**
+ * Design Tokens for Prompt Improver Extension
+ */
+
+:root {
+  /* Colors */
+  --color-bg: #f8f3ec;
+  --color-bg-accent: #f2d7c8;
+  --color-bg-panel: #ffffff;
+  --color-bg-panel-muted: #faf6f0;
+  --color-bg-elevated: #fffdf9;
+  --color-bg-button: #fff6ef;
+
+  --color-text: #2f2a23;
+  --color-text-muted: #6d5f53;
+  --color-text-light: #9a8a7e;
+  --color-text-inverse: #ffffff;
+
+  --color-primary: #e0643a;
+  --color-primary-dark: #c24c25;
+  --color-primary-light: rgba(224, 100, 58, 0.12);
+
+  --color-accent: #2b7a78;
+  --color-success: #2b7a78;
+  --color-warning: #d4a017;
+  --color-error: #c44b2f;
+
+  --color-border: rgba(48, 38, 30, 0.15);
+  --color-border-light: rgba(48, 38, 30, 0.1);
+  --color-border-strong: rgba(48, 38, 30, 0.2);
+  --color-border-accent: rgba(224, 100, 58, 0.4);
+  --color-border-focus: rgba(224, 100, 58, 0.45);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+
+  /* Typography */
+  --font-sans: "Trebuchet MS", "Gill Sans", "Verdana", sans-serif;
+  --font-mono: "SF Mono", "Monaco", monospace;
+
+  --text-xs: 0.72rem;
+  --text-sm: 0.78rem;
+  --text-base: 0.88rem;
+  --text-md: 0.95rem;
+  --text-lg: 1.02rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-tight: 0.3px;
+  --letter-spacing-wide: 0.12em;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+
+  /* Shadows */
+  --shadow-primary: 0 10px 18px rgba(224, 100, 58, 0.3);
+  --shadow-primary-hover: 0 12px 22px rgba(224, 100, 58, 0.35);
+  --shadow-accent: 0 10px 18px rgba(43, 122, 120, 0.18);
+  --shadow-error: 0 10px 18px rgba(197, 68, 47, 0.18);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-blur: blur(12px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+
+  /* Transitions */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* Z-Index */
+  --z-toast: 1100;
+}
