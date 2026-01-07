@@ -12,9 +12,9 @@
         <p>Transform your prompts in three steps</p>
       </div>
 
-      <!-- Three Step Process -->
+      <!-- Three Step Process with Cards -->
       <div class="steps">
-        <div class="step">
+        <div class="step-card">
           <div class="step-number">01</div>
           <h3>Select Your Text</h3>
           <p>Highlight any text on any website</p>
@@ -22,7 +22,7 @@
 
         <div class="arrow">→</div>
 
-        <div class="step">
+        <div class="step-card">
           <div class="step-number">02</div>
           <h3>Click "Improve"</h3>
           <p>Right-click and select from menu</p>
@@ -30,7 +30,7 @@
 
         <div class="arrow">→</div>
 
-        <div class="step">
+        <div class="step-card">
           <div class="step-number">03</div>
           <h3>Get Enhanced Result</h3>
           <p>Instantly see your improved prompt</p>
@@ -105,23 +105,35 @@
   align-items: start;
 }
 
-/* Individual Step */
-.step {
+/* Step Card with Minimal Structure */
+.step-card {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: 0.75rem;
+  padding: 2rem;
   text-align: left;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* Large Number as Visual Anchor */
+.step-card:hover {
+  border-color: var(--slate-300);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Large Number with Accent Color */
 .step-number {
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 800;
-  color: var(--slate-200);
+  color: #3b82f6;
   line-height: 1;
   margin-bottom: 1rem;
   letter-spacing: -0.05em;
 }
 
 /* Step Title */
-.step h3 {
+.step-card h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--slate-900);
@@ -130,9 +142,9 @@
 }
 
 /* Step Description */
-.step p {
+.step-card p {
   font-size: 1rem;
-  color: var(--slate-500);
+  color: var(--slate-600);
   line-height: 1.6;
   margin: 0;
 }
@@ -172,7 +184,7 @@
   }
 
   /* Center steps on mobile */
-  .step {
+  .step-card {
     text-align: center;
   }
 

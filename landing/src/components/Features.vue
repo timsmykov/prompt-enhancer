@@ -10,37 +10,29 @@
         <p>Simple tools for better communication</p>
       </div>
 
-      <div class="features-list">
-        <div class="feature-item">
-          <div class="feature-bullet">⚡</div>
-          <div class="feature-content">
-            <h3>Lightning Fast</h3>
-            <p>Get improved prompts in 2-3 seconds. No waiting.</p>
-          </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Lightning Fast</h3>
+          <p>Get improved prompts in 2-3 seconds. No waiting.</p>
         </div>
 
-        <div class="feature-item">
-          <div class="feature-bullet">🔒</div>
-          <div class="feature-content">
-            <h3>Privacy First</h3>
-            <p>Your data stays on your device. We store nothing.</p>
-          </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Privacy First</h3>
+          <p>Your data stays on your device. We store nothing.</p>
         </div>
 
-        <div class="feature-item">
-          <div class="feature-bullet">🌐</div>
-          <div class="feature-content">
-            <h3>Works Everywhere</h3>
-            <p>Use it in Gmail, Docs, Twitter, or any website.</p>
-          </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>Works Everywhere</h3>
+          <p>Use it in Gmail, Docs, Twitter, or any website.</p>
         </div>
 
-        <div class="feature-item">
-          <div class="feature-bullet">⚙️</div>
-          <div class="feature-content">
-            <h3>Fully Customizable</h3>
-            <p>Choose AI model, typing speed, system prompts.</p>
-          </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <h3>Fully Customizable</h3>
+          <p>Choose AI model, typing speed, system prompts.</p>
         </div>
       </div>
 
@@ -111,37 +103,47 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Features List - Vertical stack */
-.features-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+/* Features Grid - 2x2 Layout */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
   margin-bottom: 3rem;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.feature-item {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+.feature-card {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.feature-bullet {
-  font-size: 1.5rem;
-  line-height: 1;
-  flex-shrink: 0;
-  margin-top: 0.125rem;
+.feature-card:hover {
+  border-color: var(--slate-300);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
-.feature-content h3 {
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--slate-900);
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.5rem 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.feature-content p {
-  font-size: 1rem;
+.feature-card p {
+  font-size: 0.9375rem;
   color: var(--slate-600);
   line-height: 1.6;
   margin: 0;
@@ -183,8 +185,8 @@
   background: var(--slate-800);
 }
 
-/* Mobile Responsive - Single column only */
-@media (max-width: 48rem) {
+/* Mobile Responsive - Single column */
+@media (max-width: 768px) {
   .features {
     padding: 3rem 1rem;
   }
@@ -197,20 +199,25 @@
     font-size: 1rem;
   }
 
-  .feature-item {
-    gap: 0.75rem;
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
-  .feature-bullet {
-    font-size: 1.25rem;
+  .feature-card {
+    padding: 1.5rem;
   }
 
-  .feature-content h3 {
+  .feature-icon {
+    font-size: 1.5rem;
+  }
+
+  .feature-card h3 {
     font-size: 1rem;
   }
 
-  .feature-content p {
-    font-size: 0.9375rem;
+  .feature-card p {
+    font-size: 0.875rem;
   }
 
   .cta-text {

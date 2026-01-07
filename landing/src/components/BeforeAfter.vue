@@ -47,14 +47,14 @@ const activeExample = computed(() => examples[activeCategory.value])
       </div>
 
       <div class="comparison">
-        <div class="comparison-side before">
+        <div class="comparison-card before-card">
           <div class="side-label">Before</div>
           <p class="comparison-text">{{ activeExample.before }}</p>
         </div>
 
         <div class="divider-vertical"></div>
 
-        <div class="comparison-side after">
+        <div class="comparison-card after-card">
           <div class="side-label">After</div>
           <p class="comparison-text">{{ activeExample.after }}</p>
         </div>
@@ -172,9 +172,23 @@ const activeExample = computed(() => examples[activeCategory.value])
   margin-right: auto;
 }
 
-.comparison-side {
+.comparison-card {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: 0.75rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.before-card {
+  border-left: 3px solid #cbd5e1;
+}
+
+.after-card {
+  border-left: 3px solid #10b981;
 }
 
 .side-label {
