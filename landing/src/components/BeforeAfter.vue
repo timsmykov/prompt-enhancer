@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { TrendingUp, ArrowRight } from 'lucide-vue-next'
 
 const categories = ['Business', 'Content', 'Technical', 'Communication']
 const activeCategory = ref('Business')
@@ -28,12 +29,26 @@ const activeExample = computed(() => examples[activeCategory.value])
 
 <template>
   <section class="before-after">
+    <!-- Animated background -->
+    <div class="bg-pattern"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
     <div class="container">
       <div class="section-header">
-        <h2>Real Results</h2>
-        <p>See the transformation from basic to powerful</p>
+        <div class="badge">
+          <TrendingUp :size="16" />
+          <span>Real Results</span>
+        </div>
+        <h2 class="section-title">
+          See the <span class="gradient-text">Transformation</span>
+        </h2>
+        <p class="section-subtitle">
+          From basic prompts to powerful, specific requests
+        </p>
       </div>
 
+      <!-- Category Tabs -->
       <div class="tabs">
         <button
           v-for="category in categories"
@@ -46,30 +61,57 @@ const activeExample = computed(() => examples[activeCategory.value])
         </button>
       </div>
 
+      <!-- Comparison Cards -->
       <div class="comparison">
+        <!-- Before Card -->
         <div class="comparison-card before-card">
-          <div class="side-label">Before</div>
+          <div class="card-header">
+            <div class="icon-badge before-icon">→</div>
+            <h3>Before</h3>
+          </div>
           <p class="comparison-text">{{ activeExample.before }}</p>
+          <div class="card-footer">
+            <div class="rating">
+              <span class="stars">★★</span>
+              <span class="rating-label">Basic</span>
+            </div>
+          </div>
         </div>
 
-        <div class="divider-vertical"></div>
+        <!-- Arrow -->
+        <div class="arrow-container">
+          <div class="arrow-circle">
+            <ArrowRight :size="32" />
+          </div>
+        </div>
 
+        <!-- After Card -->
         <div class="comparison-card after-card">
-          <div class="side-label">After</div>
+          <div class="card-header">
+            <div class="icon-badge after-icon">✓</div>
+            <h3>After</h3>
+          </div>
           <p class="comparison-text">{{ activeExample.after }}</p>
+          <div class="card-footer">
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-label">Enhanced</span>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- Metrics -->
       <div class="metrics">
-        <div class="metric">
+        <div class="metric-card">
           <div class="metric-number">3x</div>
           <div class="metric-label">More Detailed</div>
         </div>
-        <div class="metric">
+        <div class="metric-card">
           <div class="metric-number">5x</div>
           <div class="metric-label">More Specific</div>
         </div>
-        <div class="metric">
+        <div class="metric-card">
           <div class="metric-number">10x</div>
           <div class="metric-label">Better Results</div>
         </div>
@@ -79,195 +121,426 @@ const activeExample = computed(() => examples[activeCategory.value])
 </template>
 
 <style scoped>
-/* Slate Grayscale Color Palette */
-:root {
-  --slate-50: #f8fafc;
-  --slate-100: #f1f5f9;
-  --slate-200: #e2e8f0;
-  --slate-300: #cbd5e1;
-  --slate-400: #94a3b8;
-  --slate-500: #64748b;
-  --slate-600: #475569;
-  --slate-700: #334155;
-  --slate-800: #1e293b;
-  --slate-900: #0f172a;
+/* ============================================
+   HERO STYLE - Gradients, Glassmorphism, Animation
+   ============================================ */
+
+.before-after {
+  position: relative;
+  padding: 4rem 1rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  overflow: hidden;
 }
 
-/* Section Base */
-.before-after {
-  padding: 4rem 1rem;
-  background: white;
+/* Animated Background Pattern */
+.bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 30% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Animated Orbs */
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(5rem);
+  opacity: 0.4;
+  animation: floatOrb 20s ease-in-out infinite;
+  pointer-events: none;
+  display: none;
+}
+
+.orb-1 {
+  width: 25rem;
+  height: 25rem;
+  background: rgba(59, 130, 246, 0.3);
+  top: -6.25rem;
+  left: -6.25rem;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 21.875rem;
+  height: 21.875rem;
+  background: rgba(16, 185, 129, 0.3);
+  bottom: -6.25rem;
+  right: -6.25rem;
+  animation-delay: -10s;
+}
+
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(1.875rem, -1.875rem) scale(1.1);
+  }
 }
 
 .container {
-  max-width: 64rem;
+  max-width: 80rem;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* Section Header */
 .section-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
-.section-header h2 {
-  font-size: 2rem;
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
+  color: #1d4ed8;
+  border-radius: 9999px;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--slate-900);
-  margin: 0 0 1rem 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin-bottom: 1rem;
+  border: 0.0625rem solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0.25rem 0.75rem rgba(59, 130, 246, 0.1);
 }
 
-.section-header p {
-  font-size: 1.125rem;
-  color: var(--slate-500);
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+.section-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: #64748b;
+  max-width: 43.75rem;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 /* Category Tabs */
 .tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   justify-content: center;
   margin-bottom: 3rem;
   flex-wrap: wrap;
 }
 
 .tab {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1px solid var(--slate-200);
-  color: var(--slate-600);
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
+  border: 0.125rem solid rgba(59, 130, 246, 0.2);
+  color: #64748b;
+  font-size: 0.9375rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: all 0.3s ease;
+  border-radius: 9999px;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
 }
 
 .tab:hover {
-  background: var(--slate-50);
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-0.125rem);
 }
 
 .tab.active {
-  background: var(--slate-900);
-  border-color: var(--slate-900);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-color: transparent;
   color: white;
-}
-
-.tab:focus-visible {
-  outline: 2px solid var(--slate-900);
-  outline-offset: 2px;
+  box-shadow: 0 0.5rem 1.5rem rgba(59, 130, 246, 0.3);
 }
 
 /* Comparison Layout */
 .comparison {
   display: grid;
-  grid-template-columns: 1fr 1px 1fr;
-  gap: 3rem;
+  grid-template-columns: 1fr;
+  gap: 2rem;
   margin-bottom: 3rem;
-  max-width: 64rem;
+  max-width: 80rem;
   margin-left: auto;
   margin-right: auto;
 }
 
+/* Glassmorphism Comparison Cards */
 .comparison-card {
-  background: white;
-  border: 1px solid var(--slate-200);
-  border-radius: 0.75rem;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(1.25rem);
+  -webkit-backdrop-filter: blur(1.25rem);
+  border-radius: 1.5rem;
+  border: 0.125rem solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 1.25rem 2.5rem rgba(0, 0, 0, 0.1),
+    0 0 0 0.0625rem rgba(255, 255, 255, 0.1),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.8);
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.comparison-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 1.5rem;
+}
+
+.before-card::before {
+  background: linear-gradient(135deg, rgba(203, 213, 225, 0.2) 0%, transparent 100%);
+}
+
+.after-card::before {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+}
+
+.comparison-card:hover::before {
+  opacity: 1;
+}
+
+.comparison-card:hover {
+  transform: translateY(-0.5rem);
+  box-shadow:
+    0 1.875rem 3.75rem rgba(0, 0, 0, 0.15),
+    0 0 0 0.0625rem rgba(255, 255, 255, 0.2),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 1);
 }
 
 .before-card {
-  border-left: 3px solid #cbd5e1;
+  border-left: 0.25rem solid #cbd5e1;
 }
 
 .after-card {
-  border-left: 3px solid #10b981;
+  border-left: 0.25rem solid #10b981;
 }
 
-.side-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--slate-400);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--slate-200);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 0.125rem solid rgba(226, 232, 240, 0.8);
 }
 
+.icon-badge {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.before-icon {
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  color: white;
+  box-shadow: 0 0.5rem 1rem rgba(203, 213, 225, 0.3);
+}
+
+.after-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 0.5rem 1rem rgba(16, 185, 129, 0.3);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow: 0 0.5rem 1rem rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0.5rem 1.5rem rgba(16, 185, 129, 0.5);
+  }
+}
+
+.card-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Comparison Text */
 .comparison-text {
   font-size: 1rem;
   line-height: 1.8;
-  color: var(--slate-700);
+  color: #475569;
+  margin: 0 0 1.5rem 0;
+  flex: 1;
   white-space: pre-line;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.divider-vertical {
-  background: var(--slate-200);
-  width: 1px;
+/* Card Footer with Rating */
+.card-footer {
+  padding-top: 1rem;
+  border-top: 0.0625rem solid rgba(226, 232, 240, 0.8);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stars {
+  font-size: 1.125rem;
+  color: #fbbf24;
+}
+
+.rating-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Arrow Container */
+.arrow-container {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.arrow-circle {
+  width: 4rem;
+  height: 4rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 0.5rem 1rem rgba(59, 130, 246, 0.3);
+  animation: arrowPulse 2s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0.5rem 1rem rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0.5rem 1.5rem rgba(59, 130, 246, 0.5);
+  }
 }
 
 /* Metrics */
 .metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  max-width: 64rem;
+  gap: 1.5rem;
+  max-width: 80rem;
   margin: 0 auto;
-  padding-top: 2rem;
-  border-top: 1px solid var(--slate-200);
 }
 
-.metric {
+.metric-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(1.25rem);
+  -webkit-backdrop-filter: blur(1.25rem);
+  border-radius: 1rem;
+  padding: 1.5rem;
   text-align: center;
+  border: 0.125rem solid rgba(59, 130, 246, 0.2);
+  box-shadow:
+    0 0.5rem 1rem rgba(0, 0, 0, 0.05),
+    0 0 0 0.0625rem rgba(255, 255, 255, 0.1),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 0.75rem 1.5rem rgba(59, 130, 246, 0.15),
+    0 0 0 0.0625rem rgba(59, 130, 246, 0.2),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 1);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 .metric-number {
-  font-size: 2rem;
+  font-size: clamp(2rem, 5vw, 2.5rem);
   font-weight: 800;
-  color: var(--slate-900);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.25rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.2;
 }
 
 .metric-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--slate-500);
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 600;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
+/* Responsive Design */
+@media (min-width: 48rem) {
+  .before-after {
+    padding: 4rem 2rem;
+  }
+
+  .arrow-container {
+    display: flex;
+  }
+
+  .bg-orb {
+    display: block;
+  }
+}
+
+@media (min-width: 64rem) {
   .comparison {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1px auto;
+    grid-template-columns: 1fr auto 1fr;
     gap: 2rem;
   }
 
-  .metrics {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .comparison-card {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .comparison-card {
+    padding: 3rem 2.5rem;
   }
 
-  .section-header h2 {
-    font-size: 1.75rem;
-  }
-
-  .section-header p {
-    font-size: 1rem;
+  .arrow-container {
+    padding: 2rem 0;
   }
 }
 </style>
