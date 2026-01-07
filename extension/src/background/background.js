@@ -1,200 +1,309 @@
-const MENU_ID = 'prompt-improver';
-const DEFAULT_MODEL = 'openrouter/auto';
-const DEFAULT_SYSTEM_PROMPT =
-  'You are a helpful prompt improver. Rewrite the text to be clearer, concise, and actionable without changing intent.';
-const REQUEST_TIMEOUT_MS = 15000;
-const MAX_PROMPT_CHARS = 4000;
-const MAX_RETRIES = 1;
-const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
-const BADGE_ERROR_TIMEOUT_MS = 4500;
-const MAX_ERROR_DETAIL_CHARS = 500;
+/**
+ * Background Service Worker - Prompt Improver Extension
+ * Enhanced with retry logic, queuing, telemetry, and caching
+ */
 
-const getSettings = () =>
-  new Promise((resolve) => {
-    chrome.storage.local.get(['apiKey', 'model', 'systemPrompt'], resolve);
-  });
+// Import shared modules
+importScripts(
+  '../shared/ExtensionState.js',
+  '../shared/StorageManager.js',
+  '../shared/EventManager.js',
+  'TelemetryManager.js',
+  'RequestQueue.js',
+  'CacheManager.js',
+  'APIHandler.js'
+);
 
-const clearBadge = (tabId) => {
-  if (!chrome.action || typeof tabId !== 'number') return;
-  chrome.action.setBadgeText({ tabId, text: '' });
-  chrome.action.setTitle({ tabId, title: 'Prompt Improver' });
-};
+(() => {
+  'use strict';
 
-const showBadgeError = (tabId, message) => {
-  if (!chrome.action) return;
-  chrome.action.setBadgeBackgroundColor({ tabId, color: '#b73524' });
-  chrome.action.setBadgeText({ tabId, text: '!' });
-  chrome.action.setTitle({ tabId, title: `Prompt Improver: ${message}` });
-  setTimeout(() => clearBadge(tabId), BADGE_ERROR_TIMEOUT_MS);
-};
+  // Constants
+  const MENU_ID = 'prompt-improver';
+  const BADGE_ERROR_TIMEOUT_MS = 4500;
 
-const sendToActiveTab = (message) => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const tab = tabs[0];
-    if (!tab?.id) {
-      console.log('[PromptImprover] No active tab found');
-      return;
-    }
-    console.log('[PromptImprover] Sending message to tab', tab.id, message);
-    chrome.tabs.sendMessage(tab.id, message, (response) => {
-      if (chrome.runtime.lastError) {
-        console.log('[PromptImprover] Error:', chrome.runtime.lastError.message);
-        showBadgeError(tab.id, 'Cannot run on this page.');
-      } else if (response && typeof response === 'object') {
-        console.log('[PromptImprover] Response:', response);
-      } else {
-        console.log('[PromptImprover] Invalid response received');
-      }
-    });
-  });
-};
+  // =====================================================
+  // UI HELPERS
+  // =====================================================
 
-const createContextMenu = () => {
-  chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({
-      id: MENU_ID,
-      title: 'Improve prompt',
-      contexts: ['selection'],
-    });
-  });
-};
-
-chrome.runtime.onInstalled.addListener(() => {
-  createContextMenu();
-});
-
-chrome.runtime.onStartup?.addListener(() => {
-  createContextMenu();
-});
-
-chrome.contextMenus.onClicked.addListener((info) => {
-  if (info.menuItemId !== MENU_ID) return;
-  sendToActiveTab({ type: 'OPEN_OVERLAY' });
-});
-
-
-const buildPayload = (text, settings) => {
-  const systemPrompt = settings.systemPrompt || DEFAULT_SYSTEM_PROMPT;
-  return {
-    model: settings.model || DEFAULT_MODEL,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: text },
-    ],
+  /**
+   * Clear badge from extension icon
+   * @param {number} tabId - Tab ID
+   */
+  const clearBadge = (tabId) => {
+    if (!chrome.action || typeof tabId !== 'number') return;
+    chrome.action.setBadgeText({ tabId, text: '' });
+    chrome.action.setTitle({ tabId, title: 'Prompt Improver' });
   };
-};
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  /**
+   * Show error badge
+   * @param {number} tabId - Tab ID
+   * @param {string} message - Error message
+   */
+  const showBadgeError = (tabId, message) => {
+    if (!chrome.action) return;
+    chrome.action.setBadgeBackgroundColor({ tabId, color: '#b73524' });
+    chrome.action.setBadgeText({ tabId, text: '!' });
+    chrome.action.setTitle({ tabId, title: `Prompt Improver: ${message}` });
+    setTimeout(() => clearBadge(tabId), BADGE_ERROR_TIMEOUT_MS);
+  };
 
-const truncateDetail = (detail) => {
-  if (!detail || typeof detail !== 'string') return '';
-  const trimmed = detail.trim();
-  if (trimmed.length <= MAX_ERROR_DETAIL_CHARS) return trimmed;
-  return `${trimmed.slice(0, MAX_ERROR_DETAIL_CHARS)}...`;
-};
+  /**
+   * Show processing badge
+   * @param {number} tabId - Tab ID
+   */
+  const showBadgeProcessing = (tabId) => {
+    if (!chrome.action) return;
+    chrome.action.setBadgeBackgroundColor({ tabId, color: '#4a90e2' });
+    chrome.action.setBadgeText({ tabId, text: '...' });
+    chrome.action.setTitle({ tabId, title: 'Prompt Improver: Processing...' });
+  };
 
-const formatProviderError = (status, detail) => {
-  const suffix = truncateDetail(detail);
-  if (!suffix) {
-    return `API error (${status}). Try again.`;
-  }
-  return `API error (${status}). ${suffix}`;
-};
+  // =====================================================
+  // SETTINGS MANAGEMENT
+  // =====================================================
 
-const validatePrompt = (text) => {
-  const value = typeof text === 'string' ? text.trim() : '';
-  if (!value) {
-    return { error: 'No text selected.' };
-  }
-  if (value.length > MAX_PROMPT_CHARS) {
-    return {
-      error: `Selected text is too long. Max ${MAX_PROMPT_CHARS} characters.`,
-    };
-  }
-  return { value };
-};
+  /**
+   * Get user settings from storage
+   * @returns {Promise<Object>} Settings object
+   */
+  const getSettings = async () => {
+    try {
+      const data = await StorageManager.get(['apiKey', 'model', 'systemPrompt']);
+      return {
+        apiKey: data.apiKey || '',
+        model: data.model || '',
+        systemPrompt: data.systemPrompt || ''
+      };
+    } catch (error) {
+      console.error('[Background] Error loading settings:', error);
+      return { apiKey: '', model: '', systemPrompt: '' };
+    }
+  };
 
-const callProvider = async (text, settings) => {
-  if (!settings.apiKey) {
-    return { error: 'Missing API key. Add it in Settings.' };
-  }
-  const validated = validatePrompt(text);
-  if (validated.error) {
-    return { error: validated.error };
-  }
+  // =====================================================
+  // CONTEXT MENU
+  // =====================================================
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-    let response;
+  /**
+   * Create context menu
+   */
+  const createContextMenu = () => {
+    chrome.contextMenus.removeAll(() => {
+      chrome.contextMenus.create({
+        id: MENU_ID,
+        title: 'Improve prompt',
+        contexts: ['selection']
+      });
+    });
+  };
+
+  // =====================================================
+  // REQUEST HANDLING
+  // =====================================================
+
+  /**
+   * Handle improve prompt request
+   * @param {string} text - Selected text
+   * @param {number} tabId - Tab ID
+   * @returns {Promise<Object>} Result or error
+   */
+  const handleImprovePrompt = async (text, tabId) => {
+    const requestId = EventManager.generateRequestId();
 
     try {
-      response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${settings.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(buildPayload(validated.value, settings)),
-        signal: controller.signal,
-      });
+      // Record request start
+      if (typeof TelemetryManager !== 'undefined') {
+        await TelemetryManager.recordRequestStart(requestId, { tabId });
+      }
+
+      // Show processing badge
+      showBadgeProcessing(tabId);
+
+      // Get settings
+      const settings = await getSettings();
+
+      // Add to queue
+      const result = await RequestQueue.add(async () => {
+        return await APIHandler.call(text, settings, { requestId, tabId });
+      }, { id: requestId, tabId });
+
+      // Record success or error
+      if (typeof TelemetryManager !== 'undefined') {
+        if (result.error) {
+          await TelemetryManager.recordError(requestId, {
+            errorType: result.errorType || 'unknown',
+            errorMessage: result.error
+          });
+        } else {
+          await TelemetryManager.recordSuccess(requestId, {
+            responseTime: result.responseTime,
+            model: settings.model
+          });
+        }
+      }
+
+      // Clear badge
+      clearBadge(tabId);
+
+      return result;
+
     } catch (error) {
-      clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        return { error: 'Request timed out.' };
-      }
-      if (attempt < MAX_RETRIES) {
-        await delay(600);
-        continue;
-      }
-      return { error: 'Network error. Try again.' };
-    }
+      console.error('[Background] Request failed:', error);
 
-    clearTimeout(timeoutId);
+      // Record error
+      if (typeof TelemetryManager !== 'undefined') {
+        await TelemetryManager.recordError(requestId, {
+          errorType: 'exception',
+          errorMessage: error.message
+        });
+      }
 
-    if (!response.ok) {
-      if (RETRYABLE_STATUS.has(response.status) && attempt < MAX_RETRIES) {
-        await delay(600);
-        continue;
-      }
-      let detail = '';
-      try {
-        detail = await response.text();
-      } catch (error) {
-        detail = '';
-      }
+      // Show error badge
+      showBadgeError(tabId, 'Request failed');
+
       return {
-        error: formatProviderError(response.status, detail),
+        error: 'Failed to process request. Please try again.',
+        errorType: 'exception'
       };
     }
+  };
 
-    try {
-      const data = await response.json();
-      const result = data?.choices?.[0]?.message?.content?.trim();
-      if (!result) {
-        return { error: 'No response content returned.' };
-      }
-      return { result };
-    } catch (error) {
-      return { error: 'Failed to parse provider response.' };
+  // =====================================================
+  // MESSAGE HANDLING
+  // =====================================================
+
+  /**
+   * Handle runtime messages
+   */
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Validate message
+    if (!EventManager.validateMessage(message)) {
+      console.warn('[Background] Invalid message received');
+      sendResponse({ error: 'Invalid message' });
+      return true;
     }
-  }
 
-  return { error: 'Request failed.' };
-};
+    const tabId = sender.tab?.id;
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message?.type !== 'IMPROVE_PROMPT') return;
+    // Handle message types
+    switch (message.type) {
+      case 'IMPROVE_PROMPT':
+        if (!tabId) {
+          sendResponse({ error: 'Invalid tab' });
+          return true;
+        }
 
-  (async () => {
-    try {
-      const settings = await getSettings();
-      const outcome = await callProvider(message.text, settings);
-      sendResponse(outcome);
-    } catch (error) {
-      sendResponse({ error: 'Failed to reach provider.' });
+        // Handle async response
+        handleImprovePrompt(message.text, tabId)
+          .then(result => sendResponse(result))
+          .catch(error => sendResponse({ error: error.message }));
+
+        return true; // Keep message channel open
+
+      case 'GET_QUEUE_POSITION':
+        const position = RequestQueue.getPosition(message.requestId);
+        sendResponse({ position });
+        return false;
+
+      case 'CANCEL_REQUEST':
+        const cancelled = RequestQueue.cancel(message.requestId);
+        sendResponse({ cancelled });
+        return false;
+
+      case 'GET_TELEMETRY':
+        if (typeof TelemetryManager !== 'undefined') {
+          TelemetryManager.getData()
+            .then(data => sendResponse({ data }))
+            .catch(error => sendResponse({ error: error.message }));
+          return true;
+        }
+        sendResponse({ data: null });
+        return false;
+
+      case 'CLEAR_CACHE':
+        if (typeof CacheManager !== 'undefined') {
+          CacheManager.clear();
+          sendResponse({ success: true });
+        } else {
+          sendResponse({ success: false });
+        }
+        return false;
+
+      case 'GET_CACHE_STATS':
+        if (typeof CacheManager !== 'undefined') {
+          const stats = CacheManager.getStats();
+          sendResponse({ stats });
+        } else {
+          sendResponse({ stats: null });
+        }
+        return false;
+
+      default:
+        console.warn(`[Background] Unknown message type: ${message.type}`);
+        sendResponse({ error: 'Unknown message type' });
+        return false;
     }
-  })();
+  });
 
-  return true;
-});
+  // =====================================================
+  // CONTEXT MENU HANDLERS
+  // =====================================================
+
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId !== MENU_ID) return;
+    if (!tab?.id) return;
+
+    // Send message to content script
+    EventManager.sendToTab(tab.id, { type: 'OPEN_OVERLAY' })
+      .catch(error => {
+        console.error('[Background] Error opening overlay:', error);
+        showBadgeError(tab.id, 'Cannot run on this page');
+      });
+  });
+
+  // =====================================================
+  // INSTALLATION & STARTUP
+  // =====================================================
+
+  chrome.runtime.onInstalled.addListener(() => {
+    console.log('[Background] Extension installed/updated');
+    createContextMenu();
+
+    // Initialize telemetry
+    if (typeof TelemetryManager !== 'undefined') {
+      TelemetryManager.init().catch(error => {
+        console.error('[Background] Failed to initialize telemetry:', error);
+      });
+    }
+  });
+
+  chrome.runtime.onStartup?.addListener(() => {
+    console.log('[Background] Extension started');
+    createContextMenu();
+  });
+
+  // =====================================================
+  // CLEANUP
+  // =====================================================
+
+  // Clean up old requests periodically
+  setInterval(() => {
+    EventManager.cleanupOldRequests();
+  }, 60000);
+
+  // Log telemetry stats periodically (for debugging)
+  setInterval(async () => {
+    if (typeof TelemetryManager !== 'undefined') {
+      const telemetry = await TelemetryManager.getData();
+      console.log('[Background] Telemetry stats:', {
+        totalRequests: telemetry.totalRequests,
+        successRate: await TelemetryManager.getSuccessRate(),
+        avgResponseTime: await TelemetryManager.getAverageResponseTime()
+      });
+    }
+  }, 300000); // Every 5 minutes
+
+  console.log('[Background] Background service worker initialized');
+
+})();

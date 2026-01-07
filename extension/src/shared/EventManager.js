@@ -1,6 +1,6 @@
 /**
- * EventManager - Centralized event listener management
- * Prevents memory leaks by tracking and cleaning up event listeners
+ * EventManager - Centralized event handling with validation
+ * Provides robust message passing and event management
  */
 
 (() => {
@@ -8,213 +8,186 @@
     return; // Already loaded
   }
 
-  class EventManager {
-    constructor() {
-      this.listeners = new Map(); // element -> Map(event -> [handler, options])
-      this.cleanupCallbacks = [];
-      this.isActive = true;
-    }
+  const EventManager = {
+    // Message type registry
+    messageTypes: new Set([
+      'OPEN_OVERLAY',
+      'IMPROVE_PROMPT',
+      'CLOSE_OVERLAY',
+      'SHOW_ERROR',
+      'SHOW_SUCCESS',
+      'UPDATE_SETTINGS',
+      'GET_QUEUE_POSITION',
+      'CANCEL_REQUEST'
+    ]),
+
+    // Request ID counter
+    requestIdCounter: 0,
+
+    // Pending requests map
+    pendingRequests: new Map(),
 
     /**
-     * Add an event listener with tracking
+     * Generate unique request ID
+     * @returns {string} Unique request identifier
      */
-    add(element, event, handler, options = null) {
-      if (!this.isActive) {
-        console.warn('[EventManager] Attempting to add listener to inactive manager');
-        return;
-      }
-
-      if (!element || !event || typeof handler !== 'function') {
-        console.error('[EventManager] Invalid add() parameters');
-        return;
-      }
-
-      // Store the listener
-      if (!this.listeners.has(element)) {
-        this.listeners.set(element, new Map());
-      }
-
-      const elementListeners = this.listeners.get(element);
-
-      if (!elementListeners.has(event)) {
-        elementListeners.set(event, []);
-      }
-
-      elementListeners.get(event).push({ handler, options });
-
-      // Add the actual listener
-      element.addEventListener(event, handler, options);
-    }
+    generateRequestId() {
+      return `req_${Date.now()}_${++this.requestIdCounter}`;
+    },
 
     /**
-     * Add a one-time event listener
+     * Validate message structure
+     * @param {Object} message - Message to validate
+     * @returns {boolean} Valid status
      */
-    once(element, event, handler) {
-      const wrapper = (...args) => {
-        handler(...args);
-        this.remove(element, event, wrapper);
-      };
+    validateMessage(message) {
+      if (!message || typeof message !== 'object') {
+        console.warn('[EventManager] Invalid message: not an object');
+        return false;
+      }
 
-      this.add(element, event, wrapper, { once: true });
-    }
+      if (!message.type || typeof message.type !== 'string') {
+        console.warn('[EventManager] Invalid message: missing or invalid type');
+        return false;
+      }
+
+      if (!this.messageTypes.has(message.type)) {
+        console.warn(`[EventManager] Unknown message type: ${message.type}`);
+        return false;
+      }
+
+      return true;
+    },
 
     /**
-     * Remove a specific event listener
+     * Validate message with token
+     * @param {Object} message - Message to validate
+     * @param {string} sessionToken - Session token to compare
+     * @returns {boolean} Valid status
      */
-    remove(element, event, handler) {
-      if (!this.listeners.has(element)) {
-        return;
+    validateMessageWithToken(message, sessionToken) {
+      if (!this.validateMessage(message)) {
+        return false;
       }
 
-      const elementListeners = this.listeners.get(element);
-
-      if (!elementListeners.has(event)) {
-        return;
-      }
-
-      const handlers = elementListeners.get(event);
-      const index = handlers.findIndex(h => h.handler === handler);
-
-      if (index !== -1) {
-        const { handler: actualHandler, options } = handlers[index];
-        element.removeEventListener(event, actualHandler, options);
-        handlers.splice(index, 1);
-
-        // Clean up if no more handlers for this event
-        if (handlers.length === 0) {
-          elementListeners.delete(event);
+      // For messages requiring token validation
+      if (message.token !== undefined) {
+        if (!sessionToken || message.token !== sessionToken) {
+          console.warn('[EventManager] Invalid token in message');
+          return false;
         }
       }
 
-      // Clean up if no more events for this element
-      if (elementListeners.size === 0) {
-        this.listeners.delete(element);
-      }
-    }
+      return true;
+    },
 
     /**
-     * Remove all event listeners for a specific element
+     * Send message to content script
+     * @param {number} tabId - Target tab ID
+     * @param {Object} message - Message to send
+     * @returns {Promise<Object>} Response
      */
-    removeElementListeners(element) {
-      if (!this.listeners.has(element)) {
-        return;
-      }
-
-      const elementListeners = this.listeners.get(element);
-
-      for (const [event, handlers] of elementListeners.entries()) {
-        for (const { handler, options } of handlers) {
-          element.removeEventListener(event, handler, options);
+    async sendToTab(tabId, message) {
+      return new Promise((resolve, reject) => {
+        if (!tabId || typeof tabId !== 'number') {
+          reject(new Error('Invalid tab ID'));
+          return;
         }
-      }
 
-      this.listeners.delete(element);
-    }
+        if (!this.validateMessage(message)) {
+          reject(new Error('Invalid message structure'));
+          return;
+        }
 
-    /**
-     * Remove all event listeners for a specific event on an element
-     */
-    removeEventListeners(element, event) {
-      if (!this.listeners.has(element)) {
-        return;
-      }
-
-      const elementListeners = this.listeners.get(element);
-
-      if (!elementListeners.has(event)) {
-        return;
-      }
-
-      const handlers = elementListeners.get(event);
-
-      for (const { handler, options } of handlers) {
-        element.removeEventListener(event, handler, options);
-      }
-
-      elementListeners.delete(event);
-
-      if (elementListeners.size === 0) {
-        this.listeners.delete(element);
-      }
-    }
-
-    /**
-     * Remove all tracked event listeners
-     */
-    removeAll() {
-      for (const [element, elementListeners] of this.listeners.entries()) {
-        for (const [event, handlers] of elementListeners.entries()) {
-          for (const { handler, options } of handlers) {
-            try {
-              element.removeEventListener(event, handler, options);
-            } catch (e) {
-              // Element might be disconnected, ignore
-            }
+        chrome.tabs.sendMessage(tabId, message, (response) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+            return;
           }
+
+          if (!response || typeof response !== 'object') {
+            reject(new Error('Invalid response'));
+            return;
+          }
+
+          resolve(response);
+        });
+      });
+    },
+
+    /**
+     * Send message to active tab
+     * @param {Object} message - Message to send
+     * @returns {Promise<Object>} Response
+     */
+    async sendToActiveTab(message) {
+      return new Promise((resolve, reject) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+            return;
+          }
+
+          const tab = tabs[0];
+          if (!tab?.id) {
+            reject(new Error('No active tab found'));
+            return;
+          }
+
+          this.sendToTab(tab.id, message)
+            .then(resolve)
+            .catch(reject);
+        });
+      });
+    },
+
+    /**
+     * Register pending request
+     * @param {string} requestId - Request ID
+     * @param {Object} metadata - Request metadata
+     */
+    registerRequest(requestId, metadata) {
+      this.pendingRequests.set(requestId, {
+        ...metadata,
+        timestamp: Date.now()
+      });
+    },
+
+    /**
+     * Unregister pending request
+     * @param {string} requestId - Request ID
+     */
+    unregisterRequest(requestId) {
+      this.pendingRequests.delete(requestId);
+    },
+
+    /**
+     * Get pending request
+     * @param {string} requestId - Request ID
+     * @returns {Object|null} Request metadata
+     */
+    getRequest(requestId) {
+      return this.pendingRequests.get(requestId) || null;
+    },
+
+    /**
+     * Clean up old pending requests
+     * @param {number} maxAge - Maximum age in milliseconds
+     */
+    cleanupOldRequests(maxAge = 60000) {
+      const now = Date.now();
+      for (const [id, request] of this.pendingRequests.entries()) {
+        if (now - request.timestamp > maxAge) {
+          this.pendingRequests.delete(id);
         }
       }
-
-      this.listeners.clear();
     }
+  };
 
-    /**
-     * Add a cleanup callback to be called on cleanup()
-     */
-    addCleanupCallback(callback) {
-      if (typeof callback === 'function') {
-        this.cleanupCallbacks.push(callback);
-      }
-    }
-
-    /**
-     * Clean up all listeners and run cleanup callbacks
-     */
-    cleanup() {
-      if (!this.isActive) {
-        return;
-      }
-
-      this.isActive = false;
-
-      // Remove all event listeners
-      this.removeAll();
-
-      // Run cleanup callbacks
-      for (const callback of this.cleanupCallbacks) {
-        try {
-          callback();
-        } catch (error) {
-          console.error('[EventManager] Cleanup callback error:', error);
-        }
-      }
-
-      this.cleanupCallbacks = [];
-    }
-
-    /**
-     * Get count of tracked listeners (for debugging)
-     */
-    getListenerCount() {
-      let count = 0;
-      for (const [, elementListeners] of this.listeners.entries()) {
-        for (const [, handlers] of elementListeners.entries()) {
-          count += handlers.length;
-        }
-      }
-      return count;
-    }
-
-    /**
-     * Check if manager is active
-     */
-    isManagerActive() {
-      return this.isActive;
-    }
-  }
-
-  // Create a singleton instance
-  const eventManager = new EventManager();
+  // Clean up old requests every minute
+  setInterval(() => {
+    EventManager.cleanupOldRequests();
+  }, 60000);
 
   window.EventManager = EventManager;
-  window.eventManager = eventManager;
 })();
