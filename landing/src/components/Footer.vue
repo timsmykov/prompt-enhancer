@@ -54,26 +54,33 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 </template>
 
 <style scoped>
+/* ===================================
+   MOBILE-FIRST FOOTER DESIGN
+   Base: 320px → Progressive enhancement
+   =================================== */
+
 .footer {
   background: var(--color-bg-dark);
   color: var(--color-text-inverse);
-  padding: var(--space-5xl) var(--space-md) var(--space-3xl) var(--space-md);
+  padding: 2rem 1rem;
 }
 
+/* Container with max-width and centered content */
 .container {
-  max-width: 1200px;
+  max-width: 75rem;
   margin: 0 auto;
-  padding: 0 var(--space-md);
+  padding: 0 1rem;
   width: 100%;
 }
 
+/* CSS Grid with auto-fit for responsive columns */
+/* Mobile: 1 column, Tablet: 2 columns, Desktop: 3 columns */
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3xl);
-  margin-bottom: var(--space-3xl);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
   width: 100%;
-  max-width: 100%;
 }
 
 .footer-column {
@@ -81,11 +88,12 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   flex-direction: column;
 }
 
+/* Fluid typography with clamp() */
 .footer-title {
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem);
   font-weight: 600;
   color: var(--color-text-inverse);
-  margin: 0 0 var(--space-xl) 0;
+  margin: 0 0 1rem 0;
 }
 
 .footer-links {
@@ -98,7 +106,7 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
 }
 
 .footer-links li {
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 0.8125rem + 0.3125vw, 0.9375rem);
 }
 
 .footer-link {
@@ -112,20 +120,22 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   color: var(--color-text-inverse);
   text-decoration: underline;
   text-decoration-color: var(--color-primary);
-  text-underline-offset: 4px;
+  text-underline-offset: 0.25rem;
 }
 
 .footer-text {
   color: var(--color-text-light);
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 0.8125rem + 0.3125vw, 0.9375rem);
 }
 
+/* Social links with horizontal layout */
 .social-links {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
-  gap: var(--space-md);
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .social-link {
@@ -135,8 +145,8 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   width: 2.5rem;
   height: 2.5rem;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
   color: var(--color-text-light);
   transition: all var(--transition-fast);
 }
@@ -145,55 +155,80 @@ import { Github, Twitter, Mail } from 'lucide-vue-next'
   background: rgba(59, 130, 246, 0.2);
   border-color: rgba(59, 130, 246, 0.5);
   color: var(--color-text-inverse);
-  transform: translateY(-2px);
+  transform: translateY(-0.125rem);
 }
 
 .social-link:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.6);
-  outline-offset: 2px;
+  outline: 0.1875rem solid rgba(59, 130, 246, 0.6);
+  outline-offset: 0.125rem;
 }
 
+/* Footer bottom section */
 .footer-bottom {
-  padding-top: var(--space-2xl);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.5rem;
+  border-top: 0.0625rem solid rgba(255, 255, 255, 0.1);
   text-align: center;
 }
 
 .footer-bottom p {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: clamp(0.8125rem, 0.75rem + 0.3125vw, 0.875rem);
   color: var(--color-text-muted);
 }
 
-@media (max-width: 768px) {
+/* ===================================
+   RESPONSIVE BREAKPOINTS (min-width)
+   Progressive: stacked → 2 columns → 3 columns
+   =================================== */
+
+/* Tablet: 768px and up */
+@media (min-width: 48rem) {
   .footer {
-    padding: var(--space-4xl) var(--space-md) var(--space-2xl) var(--space-md);
+    padding: 2.5rem 1rem;
   }
 
   .footer-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-2xl);
+    gap: 2.5rem;
+    margin-bottom: 2.5rem;
   }
 
   .footer-title {
-    font-size: 1rem;
-    margin-bottom: var(--space-lg);
+    margin-bottom: 1.25rem;
   }
 
-  .footer-links li {
-    font-size: 0.875rem;
+  .footer-links {
+    gap: 0.875rem;
+  }
+}
+
+/* Desktop: 1024px and up */
+@media (min-width: 64rem) {
+  .footer {
+    padding: 2rem 1rem;
   }
 
-  .social-links {
-    justify-content: flex-start;
+  .footer-grid {
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .footer-title {
+    margin-bottom: 1.5rem;
+  }
+
+  .footer-links {
+    gap: 1rem;
   }
 
   .footer-bottom {
-    padding-top: var(--space-xl);
+    padding-top: 2rem;
   }
+}
 
-  .footer-bottom p {
-    font-size: 0.8125rem;
+/* Large Desktop: 1280px and up */
+@media (min-width: 80rem) {
+  .social-links {
+    gap: 1rem;
   }
 }
 </style>
