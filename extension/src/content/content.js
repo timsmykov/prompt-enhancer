@@ -1,99 +1,426 @@
+/**
+ * Content Script - Improved selection capture and text replacement
+ * Features:
+ * - Enhanced selection capture (inputs, contenteditable, shadow DOM)
+ * - Undo support for replacements
+ * - Caret position preservation
+ * - Large replacement confirmation
+ * - Better error handling
+ * - Memory leak prevention via EventManager
+ */
+
 (() => {
-  // Logger utility with environment-aware logging
-  const DEBUG_MODE = false; // Set via build flag or environment variable
+  'use strict';
+
+  // ============================================
+  // Configuration
+  // ============================================
+
+  const CONFIG = {
+    DEBUG_MODE: false,
+    LARGE_REPLACEMENT_THRESHOLD: 1000,
+    OVERLAY_WIDTH: 360,
+    OVERLAY_HEIGHT: 520,
+    OVERLAY_Z_INDEX: 2147483647,
+    MAX_SELECTION_LENGTH: 4000
+  };
+
+  // ============================================
+  // Logger
+  // ============================================
 
   const logger = {
-    log: (...args) => { if (DEBUG_MODE) console.log('[PromptImprover]', ...args); },
-    warn: (...args) => console.warn('[PromptImprover]', ...args),
-    error: (...args) => console.error('[PromptImprover]', ...args),
+    log: (...args) => {
+      if (CONFIG.DEBUG_MODE) console.log('[PromptImprover Content]', ...args);
+    },
+    warn: (...args) => console.warn('[PromptImprover Content]', ...args),
+    error: (...args) => console.error('[PromptImprover Content]', ...args),
   };
 
-  let overlayFrame = null;
-  let overlayStyle = null;
-  let overlayReady = false;
-  let overlayToken = null;
-  let overlayMetrics = null;
-  let pendingSelectionText = '';
-  let savedRange = null;
-  let savedInput = null;
-  let savedOffsets = null;
-  let resizeHandler = null;
+  // ============================================
+  // State Management
+  // ============================================
 
-  const createToken = () => {
-    if (!crypto?.getRandomValues) {
-      throw new Error('Cryptographically secure random number generation not available. Extension cannot function securely.');
-    }
-    const values = new Uint32Array(8); // 256-bit entropy (increased from 4)
-    crypto.getRandomValues(values);
-    return Array.from(values, (value) => value.toString(16)).join('');
+  const state = {
+    overlayFrame: null,
+    overlayStyle: null,
+    overlayReady: false,
+    overlayToken: null,
+    overlayMetrics: null,
+    pendingSelectionText: '',
+    savedSelectionInfo: null,
+    undoStack: [],
+    eventManager: null,
+    mutationObserver: null,
+    resizeHandler: null,
+    isCleaningUp: false
   };
 
+  // ============================================
+  // Wait for shared utilities to load
+  // ============================================
+
+  const waitForUtils = (callback, maxWait = 1000) => {
+    const startTime = Date.now();
+
+    const check = () => {
+      if (window.ErrorHandler && window.EventManager && window.PromptUtils && window.ExtensionState) {
+        callback();
+        return;
+      }
+
+      if (Date.now() - startTime > maxWait) {
+        logger.error('Shared utilities failed to load');
+        return;
+      }
+
+      setTimeout(check, 50);
+    };
+
+    check();
+  };
+
+  // ============================================
+  // Selection Capture (Enhanced)
+  // ============================================
+
+  /**
+   * Capture the current selection with support for:
+   * - INPUT/TEXTAREA elements
+   * - Contenteditable elements
+   * - Shadow DOM
+   * - Regular DOM selection
+   */
   const captureSelection = () => {
-    savedRange = null;
-    savedInput = null;
-    savedOffsets = null;
+    state.savedSelectionInfo = null;
 
-    const active = document.activeElement;
-    if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
-      savedInput = active;
-      savedOffsets = {
-        start: active.selectionStart ?? 0,
-        end: active.selectionEnd ?? 0,
-      };
-      return;
+    // Validate page first
+    if (ErrorHandler.isRestrictedPage()) {
+      throw ErrorHandler.createError(
+        'Cannot run on this page',
+        ErrorHandler.ErrorCategory.PERMISSION
+      );
     }
 
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      savedRange = selection.getRangeAt(0).cloneRange();
+    // Use PromptUtils to get selection info
+    const selectionInfo = PromptUtils.getSelectionInfo();
+
+    if (!selectionInfo.isValid) {
+      throw ErrorHandler.createError(
+        'No text selected',
+        ErrorHandler.ErrorCategory.VALIDATION
+      );
     }
+
+    // Validate text length
+    const validation = PromptUtils.validateTextLength(
+      selectionInfo.text,
+      CONFIG.MAX_SELECTION_LENGTH
+    );
+
+    if (!validation.valid) {
+      throw ErrorHandler.createError(
+        validation.error,
+        ErrorHandler.ErrorCategory.VALIDATION
+      );
+    }
+
+    state.savedSelectionInfo = selectionInfo;
+
+    // Set up mutation observer for dynamic content (SPAs)
+    setupMutationObserver();
+
+    logger.log('Selection captured:', selectionInfo);
   };
 
+  /**
+   * Get the selected text
+   */
   const getSelectionText = () => {
-    const active = document.activeElement;
-    if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
-      const start = active.selectionStart ?? 0;
-      const end = active.selectionEnd ?? 0;
-      return active.value?.slice(start, end) || '';
+    if (!state.savedSelectionInfo) {
+      return '';
     }
 
-    const selection = window.getSelection();
-    return selection?.toString() || '';
+    return state.savedSelectionInfo.text || '';
   };
 
-  const replaceSelectionText = (text) => {
-    if (savedInput && savedOffsets && savedInput.isConnected) {
-      const value = savedInput.value || '';
-      savedInput.value = `${value.slice(0, savedOffsets.start)}${text}${value.slice(
-        savedOffsets.end
-      )}`;
-      const caret = savedOffsets.start + text.length;
-      savedInput.setSelectionRange(caret, caret);
+  // ============================================
+  // Mutation Observer for Dynamic Content
+  // ============================================
+
+  /**
+   * Set up mutation observer to track DOM changes
+   * This helps maintain selection accuracy in SPAs
+   */
+  const setupMutationObserver = () => {
+    if (state.mutationObserver) {
+      state.mutationObserver.disconnect();
+    }
+
+    // Only observe if we have a DOM selection
+    if (!state.savedSelectionInfo || state.savedSelectionInfo.type !== 'dom') {
       return;
     }
 
-    if (!savedRange || typeof savedRange.deleteContents !== 'function') return;
     try {
-      savedRange.deleteContents();
-      savedRange.insertNode(document.createTextNode(text));
-      savedRange.collapse(false);
+      const targetNode = state.savedSelectionInfo.startContainer?.getRootNode()?.body;
+
+      if (!targetNode) {
+        return;
+      }
+
+      state.mutationObserver = new MutationObserver((mutations) => {
+        // Check if our selection is still valid
+        if (!PromptUtils.isSelectionValid(state.savedSelectionInfo)) {
+          logger.warn('Selection invalidated by DOM mutation');
+          // Don't auto-close, just warn user
+        }
+      });
+
+      state.mutationObserver.observe(targetNode, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+
+      logger.log('Mutation observer set up');
     } catch (error) {
-      // Ignore if the range is no longer valid.
+      logger.error('Failed to set up mutation observer:', error);
     }
   };
 
+  /**
+   * Disconnect mutation observer
+   */
+  const disconnectMutationObserver = () => {
+    if (state.mutationObserver) {
+      state.mutationObserver.disconnect();
+      state.mutationObserver = null;
+      logger.log('Mutation observer disconnected');
+    }
+  };
+
+  // ============================================
+  // Text Replacement with Undo Support
+  // ============================================
+
+  /**
+   * Save current state to undo stack
+   */
+  const saveToUndoStack = () => {
+    if (!state.savedSelectionInfo) {
+      return;
+    }
+
+    const undoState = {
+      selectionInfo: JSON.parse(JSON.stringify(state.savedSelectionInfo)),
+      timestamp: Date.now()
+    };
+
+    // For DOM selections, we need to clone the range
+    if (state.savedSelectionInfo.type === 'dom' && state.savedSelectionInfo.range) {
+      undoState.selectionInfo.range = state.savedSelectionInfo.range.cloneRange();
+    }
+
+    state.undoStack.push(undoState);
+
+    // Limit stack size
+    if (state.undoStack.length > 10) {
+      state.undoStack.shift();
+    }
+
+    logger.log('Saved to undo stack, stack size:', state.undoStack.length);
+  };
+
+  /**
+   * Replace the selected text with new text
+   * Supports undo and preserves caret position
+   */
+  const replaceSelectionText = (text, skipConfirmation = false) => {
+    if (!state.savedSelectionInfo) {
+      logger.warn('No saved selection to replace');
+      return false;
+    }
+
+    // Check for large replacement
+    const isLargeReplacement = text.length > CONFIG.LARGE_REPLACEMENT_THRESHOLD;
+
+    if (isLargeReplacement && !skipConfirmation) {
+      // Send confirmation request to overlay
+      sendToOverlay({
+        type: 'CONFIRM_REPLACEMENT',
+        originalLength: state.savedSelectionInfo.text.length,
+        newLength: text.length,
+        preview: PromptUtils.truncate(text, 200)
+      });
+      return false;
+    }
+
+    // Save current state for undo
+    saveToUndoStack();
+
+    // Perform replacement
+    try {
+      if (state.savedSelectionInfo.type === 'input') {
+        return replaceInputText(text);
+      } else if (state.savedSelectionInfo.type === 'dom') {
+        return replaceDOMText(text);
+      }
+    } catch (error) {
+      logger.error('Replacement failed:', error);
+      sendToOverlay({
+        type: 'SHOW_ERROR',
+        message: ErrorHandler.getUserMessage(error)
+      });
+      return false;
+    }
+
+    return false;
+  };
+
+  /**
+   * Replace text in input/textarea element
+   */
+  const replaceInputText = (text) => {
+    const { element, start, end } = state.savedSelectionInfo;
+
+    if (!element?.isConnected) {
+      throw ErrorHandler.createError(
+        'Input element no longer available',
+        ErrorHandler.ErrorCategory.DOM
+      );
+    }
+
+    const value = element.value || '';
+    element.value = `${value.slice(0, start)}${text}${value.slice(end)}`;
+
+    // Set caret position at end of replacement
+    const caret = start + text.length;
+    element.setSelectionRange(caret, caret);
+
+    // Focus the element
+    element.focus();
+
+    // Dispatch input event for any listeners
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+
+    logger.log('Input text replaced');
+    return true;
+  };
+
+  /**
+   * Replace text in DOM (contenteditable or regular selection)
+   */
+  const replaceDOMText = (text) => {
+    const { range } = state.savedSelectionInfo;
+
+    if (!range) {
+      throw ErrorHandler.createError(
+        'No valid range for replacement',
+        ErrorHandler.ErrorCategory.DOM
+      );
+    }
+
+    // Check if range is still valid
+    try {
+      range.deleteContents();
+    } catch (error) {
+      throw ErrorHandler.createError(
+        'Selection is no longer valid',
+        ErrorHandler.ErrorCategory.DOM
+      );
+    }
+
+    // Insert new text
+    const textNode = document.createTextNode(text);
+    range.insertNode(textNode);
+
+    // Collapse range to end and set selection
+    range.collapse(false);
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    // For contenteditable, try to enable undo with execCommand
+    if (PromptUtils.isContentEditable(range.startContainer?.parentElement)) {
+      try {
+        // Note: execCommand is deprecated but still widely supported
+        // This enables browser's native undo (Ctrl+Z)
+        document.execCommand('insertText', false, text);
+      } catch (e) {
+        logger.warn('execCommand failed, using manual replacement');
+      }
+    }
+
+    logger.log('DOM text replaced');
+    return true;
+  };
+
+  /**
+   * Undo the last replacement
+   */
+  const undoReplacement = () => {
+    if (state.undoStack.length === 0) {
+      logger.warn('Nothing to undo');
+      return false;
+    }
+
+    const lastState = state.undoStack.pop();
+
+    try {
+      // Restore the original selection
+      if (lastState.selectionInfo.range) {
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(lastState.selectionInfo.range);
+      } else if (lastState.selectionInfo.element) {
+        const { element, start, end } = lastState.selectionInfo;
+        if (element?.isConnected) {
+          element.focus();
+          element.setSelectionRange(start, end);
+        }
+      }
+
+      logger.log('Undo successful');
+      return true;
+    } catch (error) {
+      logger.error('Undo failed:', error);
+      return false;
+    }
+  };
+
+  // ============================================
+  // Overlay Management
+  // ============================================
+
+  /**
+   * Send a message to the overlay
+   */
   const sendToOverlay = (payload) => {
-    if (!overlayFrame?.contentWindow) return;
+    if (!state.overlayFrame?.contentWindow) {
+      logger.warn('Overlay frame not available');
+      return;
+    }
+
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
-    overlayFrame.contentWindow.postMessage(
-      { ...payload, token: overlayToken },
+
+    state.overlayFrame.contentWindow.postMessage(
+      { ...payload, token: state.overlayToken },
       extensionOrigin
     );
+
+    logger.log('Sent to overlay:', payload.type);
   };
 
+  /**
+   * Get overlay frame dimensions
+   */
   const getOverlayMetrics = () => {
-    if (!overlayFrame) return null;
-    const rect = overlayFrame.getBoundingClientRect();
+    if (!state.overlayFrame) return null;
+
+    const rect = state.overlayFrame.getBoundingClientRect();
+
     return {
       left: rect.left,
       top: rect.top,
@@ -102,67 +429,82 @@
     };
   };
 
+  /**
+   * Ensure overlay metrics exist
+   */
   const ensureOverlayMetrics = () => {
-    if (overlayMetrics) return overlayMetrics;
-    overlayMetrics = getOverlayMetrics();
-    return overlayMetrics;
+    if (state.overlayMetrics) return state.overlayMetrics;
+    state.overlayMetrics = getOverlayMetrics();
+    return state.overlayMetrics;
   };
 
+  /**
+   * Apply overlay metrics to frame
+   */
   const applyOverlayMetrics = () => {
-    if (!overlayFrame || !overlayMetrics) return;
-    overlayFrame.style.left = `${overlayMetrics.left}px`;
-    overlayFrame.style.top = `${overlayMetrics.top}px`;
-    overlayFrame.style.width = `${overlayMetrics.width}px`;
-    overlayFrame.style.height = `${overlayMetrics.height}px`;
-    overlayFrame.style.right = 'auto';
-    overlayFrame.style.bottom = 'auto';
+    if (!state.overlayFrame || !state.overlayMetrics) return;
+
+    state.overlayFrame.style.left = `${state.overlayMetrics.left}px`;
+    state.overlayFrame.style.top = `${state.overlayMetrics.top}px`;
+    state.overlayFrame.style.width = `${state.overlayMetrics.width}px`;
+    state.overlayFrame.style.height = `${state.overlayMetrics.height}px`;
+    state.overlayFrame.style.right = 'auto';
+    state.overlayFrame.style.bottom = 'auto';
   };
 
-  // Resize handler - added only when overlay is created
-  const createResizeHandler = () => {
-    if (resizeHandler) {
-      window.removeEventListener('resize', resizeHandler);
+  /**
+   * Handle window resize (debounced)
+   */
+  const handleWindowResize = PromptUtils.debounce(() => {
+    if (!state.overlayFrame || !state.overlayReady) return;
+
+    state.overlayMetrics = getOverlayMetrics();
+
+    if (state.overlayMetrics) {
+      sendToOverlay({ type: 'OVERLAY_FRAME', frame: state.overlayMetrics });
     }
-    resizeHandler = () => {
-      if (!overlayFrame || !overlayReady) return;
-      overlayMetrics = getOverlayMetrics();
-      if (overlayMetrics) {
-        sendToOverlay({ type: 'OVERLAY_FRAME', frame: overlayMetrics });
-      }
-    };
-    window.addEventListener('resize', resizeHandler);
-  };
+  }, 150);
 
+  /**
+   * Create and inject the overlay iframe
+   */
   const ensureOverlay = () => {
-    if (overlayFrame) {
+    if (state.overlayFrame) {
       logger.log('Overlay already exists');
       return;
     }
+
     if (!document.body || !document.head) {
       logger.log('DOM not ready, waiting for DOMContentLoaded');
-      document.addEventListener('DOMContentLoaded', ensureOverlay, {
-        once: true,
-      });
+
+      state.eventManager?.add(document, 'DOMContentLoaded', ensureOverlay, { once: true });
+
       return;
     }
-    logger.log('Creating overlay iframe');
-    overlayFrame = document.createElement('iframe');
-    overlayFrame.src = chrome.runtime.getURL('src/ui/overlay/overlay.html');
-    overlayFrame.className = 'prompt-improver-frame';
-    overlayFrame.setAttribute('title', 'Prompt improver');
-    overlayFrame.setAttribute('aria-label', 'Prompt improver');
 
-    overlayStyle = document.createElement('style');
-    overlayStyle.textContent = `
+    logger.log('Creating overlay iframe');
+
+    // Create iframe
+    state.overlayFrame = document.createElement('iframe');
+    state.overlayFrame.src = chrome.runtime.getURL('src/ui/overlay/overlay.html');
+    state.overlayFrame.className = 'prompt-improver-frame';
+    state.overlayFrame.setAttribute('title', 'Prompt Improver');
+    state.overlayFrame.setAttribute('aria-label', 'Prompt Improver Overlay');
+
+    // Create styles
+    state.overlayStyle = document.createElement('style');
+
+    state.overlayStyle.textContent = `
       .prompt-improver-frame {
         position: fixed;
         inset: auto 24px 24px auto;
-        width: 360px;
-        height: 520px;
+        width: ${CONFIG.OVERLAY_WIDTH}px;
+        height: ${CONFIG.OVERLAY_HEIGHT}px;
         border: none;
-        z-index: 2147483647;
+        z-index: ${CONFIG.OVERLAY_Z_INDEX};
         border-radius: 20px;
         box-shadow: 0 24px 60px rgba(24, 16, 12, 0.3);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       @media (max-width: 600px) {
@@ -172,122 +514,272 @@
           height: calc(100% - 24px);
         }
       }
+
+      .prompt-improver-frame.slide-over {
+        transform: translateX(100%);
+      }
     `;
 
-    // Add load listener BEFORE appendChild to avoid race condition
-    overlayFrame.addEventListener('load', () => {
+    // Add load listener before appendChild
+    state.eventManager?.add(state.overlayFrame, 'load', () => {
       logger.log('Overlay iframe loaded successfully');
-      overlayReady = true;
-      overlayMetrics = getOverlayMetrics();
+      state.overlayReady = true;
+      state.overlayMetrics = getOverlayMetrics();
+
       sendToOverlay({
         type: 'OVERLAY_INIT',
-        text: pendingSelectionText,
-        frame: overlayMetrics,
+        text: state.pendingSelectionText,
+        frame: state.overlayMetrics,
       });
     });
 
-    overlayFrame.onerror = (err) => {
+    // Add error handler
+    state.eventManager?.add(state.overlayFrame, 'error', (err) => {
       logger.error('Overlay iframe error:', err);
-    };
+      ErrorHandler.log('Overlay Load', err, ErrorHandler.ErrorCategory.DOM);
+    });
 
-    // Create and add resize handler when overlay is created
-    createResizeHandler();
+    // Add resize handler using EventManager
+    state.eventManager?.add(window, 'resize', handleWindowResize);
 
-    document.head.appendChild(overlayStyle);
-    document.body.appendChild(overlayFrame);
+    // Inject into DOM
+    document.head.appendChild(state.overlayStyle);
+    document.body.appendChild(state.overlayFrame);
+
+    logger.log('Overlay injected');
   };
 
+  /**
+   * Close and clean up the overlay
+   */
   const closeOverlay = () => {
-    overlayFrame?.remove();
-    overlayStyle?.remove();
-    overlayFrame = null;
-    overlayStyle = null;
-    overlayReady = false;
-    overlayToken = null;
-    overlayMetrics = null;
-    savedRange = null;
-    savedInput = null;
-    savedOffsets = null;
-    pendingSelectionText = '';
-
-    // Remove resize listener to prevent memory leak
-    if (resizeHandler) {
-      window.removeEventListener('resize', resizeHandler);
-      resizeHandler = null;
+    if (state.isCleaningUp) {
+      logger.warn('Already cleaning up');
+      return;
     }
+
+    state.isCleaningUp = true;
+
+    logger.log('Closing overlay');
+
+    // Disconnect mutation observer
+    disconnectMutationObserver();
+
+    // Remove iframe and style
+    state.overlayFrame?.remove();
+    state.overlayStyle?.remove();
+
+    // Clean up event manager
+    if (state.eventManager) {
+      state.eventManager.cleanup();
+      state.eventManager = null;
+    }
+
+    // Reset state
+    state.overlayFrame = null;
+    state.overlayStyle = null;
+    state.overlayReady = false;
+    state.overlayToken = null;
+    state.overlayMetrics = null;
+    state.savedSelectionInfo = null;
+    state.pendingSelectionText = '';
+    state.resizeHandler = null;
+    state.isCleaningUp = false;
+
+    // Keep undoStack for potential undo operations
+
+    logger.log('Overlay closed and cleaned up');
   };
 
-  window.addEventListener('message', (event) => {
+  // ============================================
+  // Message Handling
+  // ============================================
+
+  /**
+   * Handle messages from overlay and extension
+   */
+  const handleWindowMessage = (event) => {
     const extensionOrigin = chrome.runtime.getURL('').replace(/\/$/, '');
 
-    // For messages from our overlay iframe, event.origin is the page's origin (not extension)
-    // So we use event.source verification instead for iframe messages
-    const isFromOurOverlay = overlayFrame?.contentWindow && event.source === overlayFrame.contentWindow;
-
-    // Accept messages from our overlay (iframe) OR from extension pages
+    // Verify source
+    const isFromOurOverlay = state.overlayFrame?.contentWindow &&
+                              event.source === state.overlayFrame.contentWindow;
     const isValidSource = isFromOurOverlay || event.origin === extensionOrigin;
+
     if (!isValidSource) {
       return;
     }
 
-    // ADDITIONAL GUARD: If we have an overlay and message is from postMessage, check source more carefully
-    if (overlayFrame && event.source === window) {
+    // Additional security check
+    if (state.overlayFrame && event.source === window) {
       return;
     }
 
-    if (event.data?.type === 'OVERLAY_INIT' && event.data.token) {
-      // Verify this is our token echoed back
-      if (!overlayToken) {
-        overlayToken = event.data.token;
+    const data = event.data;
+
+    if (!data) return;
+
+    // Handle token echo
+    if (data.type === 'OVERLAY_INIT' && data.token) {
+      if (!state.overlayToken) {
+        state.overlayToken = data.token;
+        logger.log('Token initialized');
       }
       return;
     }
-    if (event.data?.type !== 'OVERLAY_ACTION') return;
 
-    if (!event.data.token || event.data.token !== overlayToken) {
-      logger.error('Token validation failed');
-      return;
-    }
+    // Handle overlay actions
+    if (data.type === 'OVERLAY_ACTION') {
+      // Validate token
+      if (!data.token || data.token !== state.overlayToken) {
+        logger.error('Token validation failed');
+        return;
+      }
 
-    if (event.data.action === 'replace') {
-      replaceSelectionText(event.data.text || '');
-    }
-    if (event.data.action === 'close') {
-      closeOverlay();
-    }
-    if (event.data.action === 'position' && overlayFrame) {
-      const metrics = ensureOverlayMetrics();
-      if (!metrics) return;
-      if (Number.isFinite(event.data.left)) {
-        metrics.left = event.data.left;
-      }
-      if (Number.isFinite(event.data.top)) {
-        metrics.top = event.data.top;
-      }
-      applyOverlayMetrics();
-    }
-    if (event.data.action === 'resize' && overlayFrame) {
-      const metrics = ensureOverlayMetrics();
-      if (!metrics) return;
-      if (Number.isFinite(event.data.width)) {
-        metrics.width = event.data.width;
-      }
-      if (Number.isFinite(event.data.height)) {
-        metrics.height = event.data.height;
-      }
-      applyOverlayMetrics();
-    }
-  });
+      switch (data.action) {
+        case 'replace':
+          replaceSelectionText(data.text || '');
+          break;
 
-  chrome.runtime.onMessage.addListener((message) => {
+        case 'replaceConfirmed':
+          // User confirmed large replacement
+          replaceSelectionText(data.text || '', true);
+          break;
+
+        case 'undo':
+          undoReplacement();
+          break;
+
+        case 'close':
+          closeOverlay();
+          break;
+
+        case 'position':
+          if (state.overlayFrame) {
+            const metrics = ensureOverlayMetrics();
+            if (!metrics) return;
+
+            if (Number.isFinite(data.left)) {
+              metrics.left = data.left;
+            }
+            if (Number.isFinite(data.top)) {
+              metrics.top = data.top;
+            }
+
+            applyOverlayMetrics();
+          }
+          break;
+
+        case 'resize':
+          if (state.overlayFrame) {
+            const metrics = ensureOverlayMetrics();
+            if (!metrics) return;
+
+            if (Number.isFinite(data.width)) {
+              metrics.width = data.width;
+            }
+            if (Number.isFinite(data.height)) {
+              metrics.height = data.height;
+            }
+
+            applyOverlayMetrics();
+          }
+          break;
+      }
+    }
+  };
+
+  /**
+   * Handle messages from background script
+   */
+  const handleRuntimeMessage = (message) => {
     if (message?.type !== 'OPEN_OVERLAY') return;
-    captureSelection();
-    pendingSelectionText = getSelectionText();
-    // Always generate new token to prevent race conditions with old messages
-    overlayToken = createToken();
-    ensureOverlay();
-    if (overlayReady) {
-      sendToOverlay({ type: 'SELECTION_TEXT', text: pendingSelectionText });
+
+    try {
+      // Validate page
+      ErrorHandler.validatePage();
+
+      // Capture selection
+      captureSelection();
+
+      // Get selected text
+      state.pendingSelectionText = getSelectionText();
+
+      // Generate new token for security
+      state.overlayToken = ExtensionState.createToken();
+
+      // Create overlay
+      ensureOverlay();
+
+      // Send text if overlay is ready
+      if (state.overlayReady) {
+        sendToOverlay({ type: 'SELECTION_TEXT', text: state.pendingSelectionText });
+      }
+    } catch (error) {
+      // Handle error gracefully
+      const errorInfo = ErrorHandler.log('Open Overlay', error);
+
+      // Show error to user (if possible)
+      if (state.overlayReady) {
+        sendToOverlay({
+          type: 'SHOW_ERROR',
+          message: errorInfo.userMessage
+        });
+      } else {
+        // Fallback to badge error
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          const tab = tabs[0];
+          if (tab?.id && chrome.action) {
+            chrome.action.setBadgeBackgroundColor({ tabId: tab.id, color: '#b73524' });
+            chrome.action.setBadgeText({ tabId: tab.id, text: '!' });
+            chrome.action.setTitle({
+              tabId: tab.id,
+              title: `Prompt Improver: ${errorInfo.userMessage}`
+            });
+
+            setTimeout(() => {
+              chrome.action.setBadgeText({ tabId: tab.id, text: '' });
+            }, 4500);
+          }
+        });
+      }
     }
+  };
+
+  // ============================================
+  // Initialization
+  // ============================================
+
+  /**
+   * Initialize the content script
+   */
+  const initialize = () => {
+    logger.log('Initializing content script');
+
+    // Check for restricted pages
+    if (ErrorHandler.isRestrictedPage()) {
+      logger.log('Restricted page detected, skipping initialization');
+      return;
+    }
+
+    // Create event manager
+    state.eventManager = new EventManager();
+
+    // Add message listeners
+    state.eventManager.add(window, 'message', handleWindowMessage);
+    chrome.runtime.onMessage.addListener(handleRuntimeMessage);
+
+    // Add cleanup on page unload
+    state.eventManager.add(window, 'beforeunload', () => {
+      closeOverlay();
+    });
+
+    logger.log('Content script initialized');
+  };
+
+  // Wait for shared utilities and initialize
+  waitForUtils(() => {
+    initialize();
   });
+
 })();

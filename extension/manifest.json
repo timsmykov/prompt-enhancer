@@ -15,7 +15,13 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/content/content.js"]
+      "js": [
+        "src/shared/ExtensionState.js",
+        "src/shared/ErrorHandler.js",
+        "src/shared/EventManager.js",
+        "src/shared/utils.js",
+        "src/content/content.js"
+      ]
     }
   ],
   "web_accessible_resources": [
