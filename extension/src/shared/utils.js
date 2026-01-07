@@ -1,471 +1,386 @@
 /**
- * Utility Functions - Prompt Improver Extension
- * Common helper functions used across the extension
- * @version 1.0.0
+ * Utils - Shared utility functions for the extension
+ * DOM helpers, validation, text processing, etc.
  */
 
 (() => {
-  'use strict';
-
-  /**
-   * Debounce function calls
-   * Delays function execution until after delay has elapsed since last call
-   * @param {Function} func - Function to debounce
-   * @param {number} delay - Delay in milliseconds
-   * @returns {Function} Debounced function
-   */
-  function debounce(func, delay) {
-    if (typeof func !== 'function') {
-      throw new TypeError('First argument must be a function');
-    }
-
-    if (typeof delay !== 'number' || delay < 0) {
-      throw new TypeError('Delay must be a positive number');
-    }
-
-    let timeoutId = null;
-
-    return function debounced(...args) {
-      const context = this;
-
-      clearTimeout(timeoutId);
-
-      timeoutId = setTimeout(() => {
-        func.apply(context, args);
-      }, delay);
-    };
+  if (window.PromptUtils) {
+    return; // Already loaded
   }
 
-  /**
-   * Throttle function calls
-   * Limits function execution to once per limit period
-   * @param {Function} func - Function to throttle
-   * @param {number} limit - Time limit in milliseconds
-   * @returns {Function} Throttled function
-   */
-  function throttle(func, limit) {
-    if (typeof func !== 'function') {
-      throw new TypeError('First argument must be a function');
-    }
+  const PromptUtils = {
+    /**
+     * DOM Helpers
+     */
 
-    if (typeof limit !== 'number' || limit < 0) {
-      throw new TypeError('Limit must be a positive number');
-    }
+    /**
+     * Check if element is contenteditable
+     */
+    isContentEditable(element) {
+      if (!element) return false;
+      return element.isContentEditable || element.getAttribute('contenteditable') === 'true';
+    },
 
-    let inThrottle = false;
-    let lastResult = null;
+    /**
+     * Check if element is in a shadow DOM
+     */
+    isInShadowDOM(element) {
+      if (!element) return false;
+      return !!element.getRootNode()?.host;
+    },
 
-    return function throttled(...args) {
-      const context = this;
+    /**
+     * Get the active element, traversing shadow DOM if necessary
+     */
+    getActiveElement() {
+      let active = document.activeElement;
 
-      if (!inThrottle) {
-        inThrottle = true;
-        lastResult = func.apply(context, args);
-
-        setTimeout(() => {
-          inThrottle = false;
-        }, limit);
+      // Traverse into shadow DOMs
+      while (active?.shadowRoot?.activeElement) {
+        active = active.shadowRoot.activeElement;
       }
 
-      return lastResult;
-    };
-  }
+      return active;
+    },
 
-  /**
-   * Generate unique identifier
-   * @returns {string} UUID-like identifier
-   */
-  function generateId() {
-    // Use crypto API for secure random values
-    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-      const array = new Uint8Array(16);
-      crypto.getRandomValues(array);
+    /**
+     * Check if element is an input or textarea
+     */
+    isInputOrTextarea(element) {
+      if (!element) return false;
+      const tagName = element.tagName?.toUpperCase();
+      return tagName === 'INPUT' || tagName === 'TEXTAREA';
+    },
 
-      // Convert to hex string
-      const hex = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    /**
+     * Check if element is valid for text selection
+     */
+    isValidElementType(element) {
+      if (!element) return false;
 
-      // Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      return [
-        hex.slice(0, 8),
-        hex.slice(8, 12),
-        hex.slice(12, 16),
-        hex.slice(16, 20),
-        hex.slice(20, 32),
-      ].join('-');
-    }
-
-    // Fallback: timestamp + random
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  /**
-   * Generate short identifier
-   * @returns {string} Short ID (8 characters)
-   */
-  function generateShortId() {
-    // Use crypto API for secure random values
-    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-      const array = new Uint8Array(4);
-      crypto.getRandomValues(array);
-      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-    }
-
-    // Fallback: random string
-    return Math.random().toString(36).substr(2, 8);
-  }
-
-  /**
-   * Format timestamp as human-readable relative time
-   * @param {number} timestamp - Unix timestamp in milliseconds
-   * @returns {string} Relative time string (e.g., "2 minutes ago")
-   */
-  function timeago(timestamp) {
-    if (typeof timestamp !== 'number' || timestamp < 0) {
-      throw new TypeError('Timestamp must be a positive number');
-    }
-
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-
-    // Future timestamps
-    if (seconds < 0) {
-      return 'just now';
-    }
-
-    // Less than a minute
-    if (seconds < 60) {
-      return 'just now';
-    }
-
-    // Minutes
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) {
-      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-    }
-
-    // Hours
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) {
-      return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-    }
-
-    // Days
-    const days = Math.floor(hours / 24);
-    if (days < 7) {
-      return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-    }
-
-    // Weeks
-    const weeks = Math.floor(days / 7);
-    if (weeks < 4) {
-      return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-    }
-
-    // Months (approximate)
-    const months = Math.floor(days / 30);
-    if (months < 12) {
-      return `${months} ${months === 1 ? 'month' : 'months'} ago`;
-    }
-
-    // Years
-    const years = Math.floor(days / 365);
-    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
-  }
-
-  /**
-   * Format timestamp as localized date/time string
-   * @param {number} timestamp - Unix timestamp in milliseconds
-   * @param {Object} options - Intl.DateTimeFormat options
-   * @returns {string} Formatted date/time string
-   */
-  function formatDateTime(timestamp, options = {}) {
-    if (typeof timestamp !== 'number' || timestamp < 0) {
-      throw new TypeError('Timestamp must be a positive number');
-    }
-
-    const defaultOptions = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    };
-
-    const mergedOptions = { ...defaultOptions, ...options };
-
-    try {
-      return new Intl.DateTimeFormat(undefined, mergedOptions).format(new Date(timestamp));
-    } catch (error) {
-      console.error('[Utils] Date format error:', error);
-      return new Date(timestamp).toLocaleString();
-    }
-  }
-
-  /**
-   * Truncate text to specified length
-   * @param {string} text - Text to truncate
-   * @param {number} maxLength - Maximum length
-   * @param {string} suffix - Suffix to add (default: "...")
-   * @returns {string} Truncated text
-   */
-  function truncate(text, maxLength, suffix = '...') {
-    if (typeof text !== 'string') {
-      throw new TypeError('First argument must be a string');
-    }
-
-    if (typeof maxLength !== 'number' || maxLength < 0) {
-      throw new TypeError('Max length must be a positive number');
-    }
-
-    if (text.length <= maxLength) {
-      return text;
-    }
-
-    return text.slice(0, maxLength - suffix.length) + suffix;
-  }
-
-  /**
-   * Escape HTML to prevent XSS
-   * @param {string} html - HTML string to escape
-   * @returns {string} Escaped HTML
-   */
-  function escapeHtml(html) {
-    if (typeof html !== 'string') {
-      throw new TypeError('First argument must be a string');
-    }
-
-    const div = document.createElement('div');
-    div.textContent = html;
-    return div.innerHTML;
-  }
-
-  /**
-   * Deep clone object
-   * @param {*} obj - Object to clone
-   * @returns {*} Cloned object
-   */
-  function deepClone(obj) {
-    if (obj === null || typeof obj !== 'object') {
-      return obj;
-    }
-
-    if (obj instanceof Date) {
-      return new Date(obj.getTime());
-    }
-
-    if (obj instanceof Array) {
-      return obj.map(item => deepClone(item));
-    }
-
-    if (obj instanceof Object) {
-      const clonedObj = {};
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          clonedObj[key] = deepClone(obj[key]);
-        }
-      }
-      return clonedObj;
-    }
-  }
-
-  /**
-   * Check if object is empty
-   * @param {Object} obj - Object to check
-   * @returns {boolean} True if empty
-   */
-  function isEmpty(obj) {
-    if (obj === null || obj === undefined) {
-      return true;
-    }
-
-    if (Array.isArray(obj) || typeof obj === 'string') {
-      return obj.length === 0;
-    }
-
-    if (typeof obj === 'object') {
-      return Object.keys(obj).length === 0;
-    }
-
-    return false;
-  }
-
-  /**
-   * Sleep/delay for specified time
-   * @param {number} ms - Milliseconds to sleep
-   * @returns {Promise<void>}
-   */
-  function sleep(ms) {
-    if (typeof ms !== 'number' || ms < 0) {
-      throw new TypeError('Delay must be a positive number');
-    }
-
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * Retry async function with exponential backoff
-   * @param {Function} fn - Async function to retry
-   * @param {Object} options - Retry options
-   * @returns {Promise<*>} Function result
-   */
-  async function retry(fn, options = {}) {
-    const {
-      maxRetries = 3,
-      initialDelay = 1000,
-      backoffMultiplier = 2,
-      maxDelay = 10000,
-    } = options;
-
-    let lastError;
-    let delay = initialDelay;
-
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        return await fn();
-      } catch (error) {
-        lastError = error;
-
-        if (attempt >= maxRetries) {
-          throw error;
-        }
-
-        // Wait before retry
-        await sleep(Math.min(delay, maxDelay));
-        delay *= backoffMultiplier;
-      }
-    }
-
-    throw lastError;
-  }
-
-  /**
-   * Copy text to clipboard
-   * @param {string} text - Text to copy
-   * @returns {Promise<boolean>} True if successful
-   */
-  async function copyToClipboard(text) {
-    if (typeof text !== 'string') {
-      throw new TypeError('First argument must be a string');
-    }
-
-    try {
-      // Try modern Clipboard API first
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
+      // Input/textarea elements
+      if (this.isInputOrTextarea(element)) {
         return true;
       }
 
-      // Fallback: execCommand (deprecated but widely supported)
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      textArea.style.top = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        document.body.removeChild(textArea);
-        return successful;
-      } catch (error) {
-        document.body.removeChild(textArea);
-        throw error;
+      // Contenteditable elements
+      if (this.isContentEditable(element)) {
+        return true;
       }
-    } catch (error) {
-      console.error('[Utils] Copy error:', error);
+
+      // Regular body elements (for Selection API)
+      return true;
+    },
+
+    /**
+     * Find the shadow root containing an element
+     */
+    getShadowRoot(element) {
+      if (!element) return null;
+
+      const root = element.getRootNode();
+
+      // Check if it's a shadow root (has a host property)
+      if (root?.host) {
+        return root;
+      }
+
+      return null;
+    },
+
+    /**
+     * Selection Helpers
+     */
+
+    /**
+     * Get detailed selection information
+     */
+    getSelectionInfo() {
+      const active = this.getActiveElement();
+
+      // Input/textarea selection
+      if (this.isInputOrTextarea(active)) {
+        return {
+          type: 'input',
+          element: active,
+          text: active.value.slice(active.selectionStart, active.selectionEnd),
+          start: active.selectionStart,
+          end: active.selectionEnd,
+          isValid: active.selectionStart !== active.selectionEnd
+        };
+      }
+
+      // DOM selection
+      const selection = window.getSelection();
+
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const text = selection.toString();
+
+        return {
+          type: 'dom',
+          selection,
+          range: range.cloneRange(),
+          text,
+          startOffset: range.startOffset,
+          endOffset: range.endOffset,
+          startContainer: range.startContainer,
+          endContainer: range.endContainer,
+          isValid: text.length > 0
+        };
+      }
+
+      return {
+        type: 'none',
+        isValid: false
+      };
+    },
+
+    /**
+     * Check if selection is still valid (element still connected)
+     */
+    isSelectionValid(selectionInfo) {
+      if (!selectionInfo) return false;
+
+      if (selectionInfo.type === 'input') {
+        return selectionInfo.element?.isConnected;
+      }
+
+      if (selectionInfo.type === 'dom') {
+        if (!selectionInfo.range) return false;
+
+        try {
+          // Check if range is still valid
+          const testRange = selectionInfo.range.cloneRange();
+          return testRange.startContainer?.isConnected || false;
+        } catch (e) {
+          return false;
+        }
+      }
+
       return false;
-    }
-  }
+    },
 
-  /**
-   * Parse URL query parameters
-   * @param {string} url - URL to parse
-   * @returns {Object} Query parameters object
-   */
-  function parseQueryParams(url) {
-    if (typeof url !== 'string') {
-      throw new TypeError('First argument must be a string');
-    }
+    /**
+     * Restore a selection
+     */
+    restoreSelection(selectionInfo) {
+      if (!selectionInfo) return false;
 
-    const params = {};
-    const queryString = url.split('?')[1];
+      if (selectionInfo.type === 'input') {
+        const { element, start, end } = selectionInfo;
 
-    if (!queryString) {
-      return params;
-    }
+        if (!element?.isConnected) return false;
 
-    queryString.split('&').forEach(param => {
-      const [key, value] = param.split('=');
-      if (key) {
-        params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        try {
+          element.focus();
+          element.setSelectionRange(start, end);
+          return true;
+        } catch (e) {
+          console.error('[PromptUtils] Failed to restore input selection:', e);
+          return false;
+        }
       }
-    });
 
-    return params;
-  }
+      if (selectionInfo.type === 'dom') {
+        const { range } = selectionInfo;
 
-  /**
-   * Build URL query string
-   * @param {Object} params - Query parameters object
-   * @returns {string} Query string
-   */
-  function buildQueryString(params) {
-    if (typeof params !== 'object' || params === null) {
-      throw new TypeError('First argument must be an object');
-    }
+        if (!range) return false;
 
-    const queryParts = Object.entries(params)
-      .filter(([key, value]) => value !== undefined && value !== null)
-      .map(([key, value]) => {
-        const encodedKey = encodeURIComponent(key);
-        const encodedValue = encodeURIComponent(String(value));
-        return `${encodedKey}=${encodedValue}`;
+        try {
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          return true;
+        } catch (e) {
+          console.error('[PromptUtils] Failed to restore DOM selection:', e);
+          return false;
+        }
+      }
+
+      return false;
+    },
+
+    /**
+     * Text Helpers
+     */
+
+    /**
+     * Truncate text to max length with ellipsis
+     */
+    truncate(text, maxLength, suffix = '...') {
+      if (!text || typeof text !== 'string') return '';
+
+      if (text.length <= maxLength) return text;
+
+      return text.slice(0, maxLength - suffix.length) + suffix;
+    },
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHTML(text) {
+      if (!text || typeof text !== 'string') return '';
+
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    },
+
+    /**
+     * Strip markdown formatting (bold, italic)
+     */
+    stripMarkdown(text) {
+      if (!text || typeof text !== 'string') return '';
+
+      return text
+        .replace(/\*\*([^*]+?)\*\*/g, '$1')   // Remove **bold**
+        .replace(/__([^_]+?)__/g, '$1')       // Remove __bold__
+        .replace(/\*([^*]+?)\*/g, '$1')       // Remove *italic*
+        .replace(/_([^_]+?)_/g, '$1')         // Remove _italic_
+        .trim();
+    },
+
+    /**
+     * Count words in text
+     */
+    countWords(text) {
+      if (!text || typeof text !== 'string') return 0;
+
+      const trimmed = text.trim();
+      if (!trimmed) return 0;
+
+      return trimmed.split(/\s+/).length;
+    },
+
+    /**
+     * Validation Helpers
+     */
+
+    /**
+     * Check if current page is restricted
+     */
+    isRestrictedPage() {
+      const protocol = window.location.protocol;
+      const restrictedProtocols = ['chrome:', 'chrome-extension:', 'about:', 'edge:', 'opera:'];
+      return restrictedProtocols.includes(protocol);
+    },
+
+    /**
+     * Validate text length
+     */
+    validateTextLength(text, maxLength = 4000) {
+      if (!text || typeof text !== 'string') {
+        return { valid: false, error: 'No text provided' };
+      }
+
+      const trimmed = text.trim();
+
+      if (!trimmed) {
+        return { valid: false, error: 'No text selected' };
+      }
+
+      if (trimmed.length > maxLength) {
+        return {
+          valid: false,
+          error: `Text is too long. Maximum ${maxLength} characters.`
+        };
+      }
+
+      return { valid: true, text: trimmed };
+    },
+
+    /**
+     * Performance Helpers
+     */
+
+    /**
+     * Debounce function execution
+     */
+    debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    },
+
+    /**
+     * Throttle function execution
+     */
+    throttle(func, limit) {
+      let inThrottle;
+      return function executedFunction(...args) {
+        if (!inThrottle) {
+          func(...args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    },
+
+    /**
+     * Request animation frame with timeout
+     */
+    rafTimeout(callback, timeoutMs = 1000) {
+      return new Promise((resolve, reject) => {
+        const rafId = requestAnimationFrame(() => {
+          try {
+            resolve(callback());
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+        setTimeout(() => {
+          cancelAnimationFrame(rafId);
+          reject(new Error('RAF timeout'));
+        }, timeoutMs);
       });
+    },
 
-    return queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-  }
+    /**
+     * Math Helpers
+     */
 
-  /**
-   * Measure function execution time
-   * @param {Function} fn - Function to measure
-   * @param {string} label - Label for logging
-   * @returns {*} Function result
-   */
-  async function measureTime(fn, label = 'Execution') {
-    const start = performance.now();
+    /**
+     * Clamp a number between min and max
+     */
+    clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    },
 
-    try {
-      const result = await fn();
-      const duration = performance.now() - start;
-      console.log(`[Utils] ${label}: ${duration.toFixed(2)}ms`);
-      return result;
-    } catch (error) {
-      const duration = performance.now() - start;
-      console.error(`[Utils] ${label} failed after ${duration.toFixed(2)}ms:`, error);
-      throw error;
+    /**
+     * Linear interpolation
+     */
+    lerp(start, end, t) {
+      return start * (1 - t) + end * t;
+    },
+
+    /**
+     * Generate a unique ID
+     */
+    generateId() {
+      return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    },
+
+    /**
+     * Format bytes to human readable string
+     */
+    formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
     }
-  }
-
-  // Export all utilities
-  window.Utils = {
-    debounce,
-    throttle,
-    generateId,
-    generateShortId,
-    timeago,
-    formatDateTime,
-    truncate,
-    escapeHtml,
-    deepClone,
-    isEmpty,
-    sleep,
-    retry,
-    copyToClipboard,
-    parseQueryParams,
-    buildQueryString,
-    measureTime,
   };
 
-  console.log('[Utils] Module loaded');
+  window.PromptUtils = PromptUtils;
 })();

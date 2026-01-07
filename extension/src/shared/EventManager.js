@@ -1,374 +1,220 @@
 /**
- * EventManager - Cross-Context Event Bus
- * Enables communication between background, content scripts, and popup
- * @version 1.0.0
+ * EventManager - Centralized event listener management
+ * Prevents memory leaks by tracking and cleaning up event listeners
  */
 
 (() => {
-  'use strict';
+  if (window.EventManager) {
+    return; // Already loaded
+  }
 
-  /**
-   * Event types for cross-context communication
-   */
-  const EventTypes = {
-    // State events
-    STATE_CHANGED: 'state:changed',
-
-    // UI events
-    OVERLAY_OPEN: 'ui:overlay:open',
-    OVERLAY_CLOSE: 'ui:overlay:close',
-    OVERLAY_RESIZE: 'ui:overlay:resize',
-    POPUP_OPEN: 'ui:popup:open',
-    POPUP_CLOSE: 'ui:popup:close',
-
-    // Settings events
-    SETTINGS_CHANGED: 'settings:changed',
-    SETTINGS_RESET: 'settings:reset',
-    API_KEY_UPDATED: 'settings:apikey:updated',
-
-    // API events
-    API_REQUEST_START: 'api:request:start',
-    API_REQUEST_SUCCESS: 'api:request:success',
-    API_REQUEST_ERROR: 'api:request:error',
-
-    // Content events
-    TEXT_SELECTED: 'content:text:selected',
-    TEXT_REPLACED: 'content:text:replaced',
-    TEXT_COPIED: 'content:text:copied',
-
-    // History events
-    HISTORY_ADDED: 'history:added',
-    HISTORY_CLEARED: 'history:cleared',
-
-    // Extension lifecycle
-    EXTENSION_INSTALLED: 'extension:installed',
-    EXTENSION_UPDATED: 'extension:updated',
-    EXTENSION_READY: 'extension:ready',
-  };
-
-  /**
-   * EventManager Class
-   */
   class EventManager {
     constructor() {
-      // Local event listeners: Map<eventType, Set<listener>>
-      this._listeners = new Map();
-      // Message listeners for cross-context communication
-      this._messageListeners = new Map();
-      // Event log for debugging
-      this._eventLog = [];
-      this._maxLogSize = 100;
-      // Initialize message handling
-      this._initMessageHandling();
+      this.listeners = new Map(); // element -> Map(event -> [handler, options])
+      this.cleanupCallbacks = [];
+      this.isActive = true;
     }
 
     /**
-     * Initialize chrome.runtime message handling
-     * @private
+     * Add an event listener with tracking
      */
-    _initMessageHandling() {
-      // Only listen if chrome.runtime is available
-      if (typeof chrome === 'undefined' || !chrome.runtime) {
+    add(element, event, handler, options = null) {
+      if (!this.isActive) {
+        console.warn('[EventManager] Attempting to add listener to inactive manager');
         return;
       }
 
-      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (!message || !message.type || !message.type.startsWith('event:')) {
-          return false;
+      if (!element || !event || typeof handler !== 'function') {
+        console.error('[EventManager] Invalid add() parameters');
+        return;
+      }
+
+      // Store the listener
+      if (!this.listeners.has(element)) {
+        this.listeners.set(element, new Map());
+      }
+
+      const elementListeners = this.listeners.get(element);
+
+      if (!elementListeners.has(event)) {
+        elementListeners.set(event, []);
+      }
+
+      elementListeners.get(event).push({ handler, options });
+
+      // Add the actual listener
+      element.addEventListener(event, handler, options);
+    }
+
+    /**
+     * Add a one-time event listener
+     */
+    once(element, event, handler) {
+      const wrapper = (...args) => {
+        handler(...args);
+        this.remove(element, event, wrapper);
+      };
+
+      this.add(element, event, wrapper, { once: true });
+    }
+
+    /**
+     * Remove a specific event listener
+     */
+    remove(element, event, handler) {
+      if (!this.listeners.has(element)) {
+        return;
+      }
+
+      const elementListeners = this.listeners.get(element);
+
+      if (!elementListeners.has(event)) {
+        return;
+      }
+
+      const handlers = elementListeners.get(event);
+      const index = handlers.findIndex(h => h.handler === handler);
+
+      if (index !== -1) {
+        const { handler: actualHandler, options } = handlers[index];
+        element.removeEventListener(event, actualHandler, options);
+        handlers.splice(index, 1);
+
+        // Clean up if no more handlers for this event
+        if (handlers.length === 0) {
+          elementListeners.delete(event);
         }
+      }
 
-        const eventType = message.type.replace('event:', '');
-        const eventData = message.data || {};
-
-        // Emit locally
-        this.emit(eventType, eventData, sender);
-
-        // Return true to support async response
-        return true;
-      });
+      // Clean up if no more events for this element
+      if (elementListeners.size === 0) {
+        this.listeners.delete(element);
+      }
     }
 
     /**
-     * Subscribe to local event
-     * @param {string} eventType - Event type
-     * @param {Function} callback - Callback function (data, sender) => void
-     * @returns {Function} Unsubscribe function
+     * Remove all event listeners for a specific element
      */
-    on(eventType, callback) {
-      if (typeof callback !== 'function') {
-        throw new TypeError('Callback must be a function');
+    removeElementListeners(element) {
+      if (!this.listeners.has(element)) {
+        return;
       }
 
-      if (!this._listeners.has(eventType)) {
-        this._listeners.set(eventType, new Set());
+      const elementListeners = this.listeners.get(element);
+
+      for (const [event, handlers] of elementListeners.entries()) {
+        for (const { handler, options } of handlers) {
+          element.removeEventListener(event, handler, options);
+        }
       }
 
-      this._listeners.get(eventType).add(callback);
+      this.listeners.delete(element);
+    }
 
-      // Return unsubscribe function
-      return () => {
-        const listeners = this._listeners.get(eventType);
-        if (listeners) {
-          listeners.delete(callback);
-          if (listeners.size === 0) {
-            this._listeners.delete(eventType);
+    /**
+     * Remove all event listeners for a specific event on an element
+     */
+    removeEventListeners(element, event) {
+      if (!this.listeners.has(element)) {
+        return;
+      }
+
+      const elementListeners = this.listeners.get(element);
+
+      if (!elementListeners.has(event)) {
+        return;
+      }
+
+      const handlers = elementListeners.get(event);
+
+      for (const { handler, options } of handlers) {
+        element.removeEventListener(event, handler, options);
+      }
+
+      elementListeners.delete(event);
+
+      if (elementListeners.size === 0) {
+        this.listeners.delete(element);
+      }
+    }
+
+    /**
+     * Remove all tracked event listeners
+     */
+    removeAll() {
+      for (const [element, elementListeners] of this.listeners.entries()) {
+        for (const [event, handlers] of elementListeners.entries()) {
+          for (const { handler, options } of handlers) {
+            try {
+              element.removeEventListener(event, handler, options);
+            } catch (e) {
+              // Element might be disconnected, ignore
+            }
           }
         }
-      };
+      }
+
+      this.listeners.clear();
     }
 
     /**
-     * Subscribe to event (one-time)
-     * @param {string} eventType - Event type
-     * @param {Function} callback - Callback function (data, sender) => void
-     * @returns {Function} Unsubscribe function
+     * Add a cleanup callback to be called on cleanup()
      */
-    once(eventType, callback) {
-      const wrappedCallback = (data, sender) => {
-        callback(data, sender);
-        unsubscribe();
-      };
-
-      const unsubscribe = this.on(eventType, wrappedCallback);
-      return unsubscribe;
-    }
-
-    /**
-     * Emit local event
-     * @param {string} eventType - Event type
-     * @param {*} data - Event data
-     * @param {Object} sender - Event sender (optional)
-     */
-    emit(eventType, data = null, sender = null) {
-      // Log event
-      this._logEvent(eventType, data, sender);
-
-      const listeners = this._listeners.get(eventType);
-      if (listeners) {
-        listeners.forEach(listener => {
-          try {
-            listener(data, sender);
-          } catch (error) {
-            console.error(`[EventManager] Listener error for ${eventType}:`, error);
-          }
-        });
+    addCleanupCallback(callback) {
+      if (typeof callback === 'function') {
+        this.cleanupCallbacks.push(callback);
       }
     }
 
     /**
-     * Broadcast event to all contexts
-     * @param {string} eventType - Event type
-     * @param {*} data - Event data
+     * Clean up all listeners and run cleanup callbacks
      */
-    broadcast(eventType, data = null) {
-      // Emit locally
-      this.emit(eventType, data);
-
-      // Broadcast to other contexts via chrome.runtime
-      if (typeof chrome !== 'undefined' && chrome.runtime) {
-        chrome.runtime.sendMessage({
-          type: `event:${eventType}`,
-          data,
-        }).catch(error => {
-          // Ignore errors when no recipients
-          if (error.message !== 'Could not establish connection') {
-            console.error('[EventManager] Broadcast error:', error);
-          }
-        });
-      }
-    }
-
-    /**
-     * Send event to specific tab
-     * @param {number} tabId - Tab ID
-     * @param {string} eventType - Event type
-     * @param {*} data - Event data
-     * @returns {Promise<void>}
-     */
-    async sendToTab(tabId, eventType, data = null) {
-      if (typeof chrome === 'undefined' || !chrome.tabs) {
-        throw new Error('chrome.tabs API not available');
+    cleanup() {
+      if (!this.isActive) {
+        return;
       }
 
-      return new Promise((resolve, reject) => {
-        chrome.tabs.sendMessage(tabId, {
-          type: `event:${eventType}`,
-          data,
-        }, (response) => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
-          } else {
-            resolve(response);
-          }
-        });
-      });
-    }
+      this.isActive = false;
 
-    /**
-     * Send event to active tab
-     * @param {string} eventType - Event type
-     * @param {*} data - Event data
-     * @returns {Promise<void>}
-     */
-    async sendToActiveTab(eventType, data = null) {
-      if (typeof chrome === 'undefined' || !chrome.tabs) {
-        throw new Error('chrome.tabs API not available');
+      // Remove all event listeners
+      this.removeAll();
+
+      // Run cleanup callbacks
+      for (const callback of this.cleanupCallbacks) {
+        try {
+          callback();
+        } catch (error) {
+          console.error('[EventManager] Cleanup callback error:', error);
+        }
       }
 
-      return new Promise((resolve, reject) => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
-            return;
-          }
-
-          const tab = tabs[0];
-          if (!tab) {
-            reject(new Error('No active tab found'));
-            return;
-          }
-
-          this.sendToTab(tab.id, eventType, data)
-            .then(resolve)
-            .catch(reject);
-        });
-      });
+      this.cleanupCallbacks = [];
     }
 
     /**
-     * Send event to background script
-     * @param {string} eventType - Event type
-     * @param {*} data - Event data
-     * @returns {Promise<*>} Response from background
+     * Get count of tracked listeners (for debugging)
      */
-    async sendToBackground(eventType, data = null) {
-      if (typeof chrome === 'undefined' || !chrome.runtime) {
-        throw new Error('chrome.runtime API not available');
+    getListenerCount() {
+      let count = 0;
+      for (const [, elementListeners] of this.listeners.entries()) {
+        for (const [, handlers] of elementListeners.entries()) {
+          count += handlers.length;
+        }
       }
-
-      return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({
-          type: `event:${eventType}`,
-          data,
-        }, (response) => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
-          } else {
-            resolve(response);
-          }
-        });
-      });
+      return count;
     }
 
     /**
-     * Remove all listeners for event type
-     * @param {string} eventType - Event type
+     * Check if manager is active
      */
-    off(eventType) {
-      this._listeners.delete(eventType);
-    }
-
-    /**
-     * Remove all listeners
-     */
-    removeAllListeners() {
-      this._listeners.clear();
-    }
-
-    /**
-     * Get listener count for event type
-     * @param {string} eventType - Event type
-     * @returns {number} Listener count
-     */
-    listenerCount(eventType) {
-      const listeners = this._listeners.get(eventType);
-      return listeners ? listeners.size : 0;
-    }
-
-    /**
-     * Check if event has listeners
-     * @param {string} eventType - Event type
-     * @returns {boolean} True if has listeners
-     */
-    hasListeners(eventType) {
-      return this.listenerCount(eventType) > 0;
-    }
-
-    /**
-     * Create event channel for specific feature
-     * @param {string} namespace - Feature namespace
-     * @returns {Object} Event channel API
-     */
-    createChannel(namespace) {
-      const prefix = `${namespace}:`;
-
-      return {
-        on: (eventType, callback) => this.on(prefix + eventType, callback),
-        once: (eventType, callback) => this.once(prefix + eventType, callback),
-        emit: (eventType, data) => this.emit(prefix + eventType, data),
-        broadcast: (eventType, data) => this.broadcast(prefix + eventType, data),
-        off: (eventType) => this.off(prefix + eventType),
-      };
-    }
-
-    /**
-     * Log event for debugging
-     * @private
-     * @param {string} eventType - Event type
-     * @param {*} data - Event data
-     * @param {Object} sender - Event sender
-     */
-    _logEvent(eventType, data, sender) {
-      this._eventLog.push({
-        type: eventType,
-        data,
-        sender: sender ? { tab: sender.tab, id: sender.id } : null,
-        timestamp: Date.now(),
-      });
-
-      // Trim log if too large
-      if (this._eventLog.length > this._maxLogSize) {
-        this._eventLog = this._eventLog.slice(-this._maxLogSize);
-      }
-    }
-
-    /**
-     * Get event log
-     * @param {Object} options - Filter options
-     * @returns {Array} Filtered event log
-     */
-    getEventLog(options = {}) {
-      let log = [...this._eventLog];
-
-      if (options.type) {
-        log = log.filter(event => event.type === options.type);
-      }
-
-      if (options.since) {
-        log = log.filter(event => event.timestamp >= options.since);
-      }
-
-      if (options.limit) {
-        log = log.slice(-options.limit);
-      }
-
-      return log;
-    }
-
-    /**
-     * Clear event log
-     */
-    clearEventLog() {
-      this._eventLog = [];
+    isManagerActive() {
+      return this.isActive;
     }
   }
 
-  // Create singleton instance
+  // Create a singleton instance
   const eventManager = new EventManager();
 
-  // Export to global scope
-  window.EventManager = eventManager;
-  window.EventTypes = EventTypes;
-
-  console.log('[EventManager] Module loaded');
+  window.EventManager = EventManager;
+  window.eventManager = eventManager;
 })();
