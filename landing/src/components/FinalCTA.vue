@@ -82,9 +82,14 @@ import { Download, Sparkles } from 'lucide-vue-next'
 </template>
 
 <style scoped>
+/* ============================================
+   MOBILE-FIRST CSS - FINAL CTA COMPONENT
+   ============================================ */
+
+/* Base styles - Mobile (320px+) */
 .final-cta {
   position: relative;
-  padding: var(--space-5xl) var(--space-md);
+  padding: 3rem 1rem;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   overflow: hidden;
 }
@@ -115,70 +120,70 @@ import { Download, Sparkles } from 'lucide-vue-next'
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
+  background-size: 3.75rem 3.75rem;
   pointer-events: none;
 }
 
 .container {
-  max-width: var(--container-xl);
+  max-width: 80rem;
   margin: 0 auto;
-  padding: 0 var(--space-md);
+  padding: 0 1rem;
   position: relative;
   z-index: 1;
 }
 
 .cta-content {
   text-align: center;
-  max-width: 900px;
-  margin: 0 auto var(--space-3xl) auto;
-  padding: 0 var(--space-md);
+  max-width: 56.25rem;
+  margin: 0 auto 2rem auto;
+  padding: 0 1rem;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   background: rgba(59, 130, 246, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
   color: #60a5fa;
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  margin-bottom: var(--space-xl);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  border: 0.0625rem solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 1.25rem rgba(59, 130, 246, 0.2);
   animation: badgeGlow 2s ease-in-out infinite alternate;
 }
 
 @keyframes badgeGlow {
-  0% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
-  100% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.4); }
+  0% { box-shadow: 0 0 1.25rem rgba(59, 130, 246, 0.2); }
+  100% { box-shadow: 0 0 1.875rem rgba(59, 130, 246, 0.4); }
 }
 
 .cta-title {
-  font-size: var(--text-5xl);
-  font-weight: var(--font-extrabold);
+  font-size: clamp(1.875rem, 5vw, 3rem);
+  font-weight: 800;
   color: white;
-  margin: 0 0 var(--space-lg) 0;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  text-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.3);
 }
 
 .cta-description {
-  font-size: var(--text-xl);
+  font-size: clamp(1rem, 2vw, 1.25rem);
   color: rgba(255, 255, 255, 0.9);
-  line-height: var(--leading-relaxed);
-  margin: 0 0 var(--space-2xl) 0;
-  letter-spacing: var(--tracking-wide);
+  line-height: 1.75;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.025em;
 }
 
 .cta-buttons {
   display: flex;
   justify-content: center;
-  margin-bottom: var(--space-2xl);
+  margin-bottom: 1.5rem;
 }
 
 .btn {
@@ -186,25 +191,26 @@ import { Download, Sparkles } from 'lucide-vue-next'
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
-  padding: var(--space-lg) var(--space-2xl);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 700;
   text-decoration: none;
-  transition: all var(--transition-base);
+  transition: all 0.3s ease;
   border: none;
   cursor: pointer;
   overflow: hidden;
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: 0.025em;
 }
 
 .btn-primary {
-  background: var(--gradient-blue-purple);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   background-size: 200% 200%;
   color: white;
-  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.4),
-              0 0 0 0 rgba(59, 130, 246, 0.7);
+  box-shadow:
+    0 0.625rem 2.5rem rgba(59, 130, 246, 0.4),
+    0 0 0 0 rgba(59, 130, 246, 0.7);
   animation: gradientMove 6s ease infinite, pulse 2s infinite;
 }
 
@@ -235,52 +241,53 @@ import { Download, Sparkles } from 'lucide-vue-next'
 }
 
 .btn-primary:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 15px 50px rgba(59, 130, 246, 0.5),
-              0 0 30px rgba(59, 130, 246, 0.3);
+  transform: translateY(-0.25rem) scale(1.05);
+  box-shadow:
+    0 0.938rem 3.125rem rgba(59, 130, 246, 0.5),
+    0 0 1.875rem rgba(59, 130, 246, 0.3);
 }
 
 .btn-primary:active {
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-0.125rem) scale(1.02);
 }
 
 .cta-features {
   display: flex;
   justify-content: center;
-  gap: var(--space-xl);
+  gap: 1.25rem;
   flex-wrap: wrap;
 }
 
 .feature {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 0.75rem;
   color: rgba(255, 255, 255, 0.9);
-  font-size: var(--text-base);
-  font-weight: var(--font-medium);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .checkmark {
   width: 2rem;
   height: 2rem;
-  background: var(--gradient-success);
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: var(--font-bold);
-  font-size: var(--text-sm);
+  font-weight: 700;
+  font-size: 0.875rem;
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0.25rem 0.75rem rgba(16, 185, 129, 0.3);
   flex-shrink: 0;
 }
 
 .cta-visual {
-  max-width: 800px;
+  max-width: 50rem;
   margin: 0 auto;
   position: relative;
   width: 100%;
-  padding: 0 var(--space-md);
+  padding: 0 1rem;
 }
 
 /* Glow effect behind browser */
@@ -298,43 +305,44 @@ import { Download, Sparkles } from 'lucide-vue-next'
 }
 
 @keyframes glowPulse {
-  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05); }
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
 }
 
 .browser-mockup {
   background: white;
-  border-radius: var(--radius-2xl);
+  border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: transform var(--transition-slow), box-shadow var(--transition-slow);
-}
-
-.browser-mockup:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 1.875rem 3.75rem -1.25rem rgba(0, 0, 0, 0.6);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
 }
 
 .browser-header {
-  background: var(--color-bg-alt);
-  padding: var(--space-md);
+  background: #f8fafc;
+  padding: 0.75rem;
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
+  gap: 0.75rem;
+  border-bottom: 0.0625rem solid #e2e8f0;
 }
 
 .browser-dots {
   display: flex;
-  gap: var(--space-sm);
+  gap: 0.5rem;
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 50%;
-  transition: transform var(--transition-fast);
+  transition: transform 0.2s ease;
 }
 
 .dot:hover {
@@ -343,44 +351,46 @@ import { Download, Sparkles } from 'lucide-vue-next'
 
 .dot.red {
   background: #ef4444;
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0.625rem rgba(239, 68, 68, 0.5);
 }
 
 .dot.yellow {
   background: #f59e0b;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 0.625rem rgba(245, 158, 11, 0.5);
 }
 
 .dot.green {
   background: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 0.625rem rgba(16, 185, 129, 0.5);
 }
 
 .browser-title {
   flex: 1;
   text-align: center;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  font-weight: var(--font-semibold);
-  letter-spacing: var(--tracking-wide);
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.025em;
 }
 
 .browser-body {
-  padding: var(--space-2xl);
-  background: var(--color-bg-alt);
+  padding: 1.25rem;
+  background: #f8fafc;
 }
 
 .extension-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-lg);
-  padding: var(--space-lg);
+  gap: 1rem;
+  padding: 1rem;
   background: white;
-  border-radius: var(--radius-xl);
-  border: 2px solid var(--color-border);
-  transition: all var(--transition-base);
+  border-radius: 0.75rem;
+  border: 0.125rem solid #e2e8f0;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 
 /* Glow effect on card hover */
@@ -390,7 +400,7 @@ import { Download, Sparkles } from 'lucide-vue-next'
   inset: 0;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
   opacity: 0;
-  transition: opacity var(--transition-base);
+  transition: opacity 0.3s ease;
 }
 
 .extension-card:hover::before {
@@ -398,22 +408,26 @@ import { Download, Sparkles } from 'lucide-vue-next'
 }
 
 .extension-card:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-2xl);
+  border-color: #3b82f6;
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 0.625rem 1.25rem -0.375rem rgba(0, 0, 0, 0.1),
+    0 0.25rem 0.5rem -0.25rem rgba(0, 0, 0, 0.06);
 }
 
 .extension-icon {
   width: 5rem;
   height: 5rem;
-  background: var(--gradient-blue-purple);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   flex-shrink: 0;
-  box-shadow: var(--shadow-primary);
+  box-shadow:
+    0 0.25rem 0.5rem -0.125rem rgba(0, 0, 0, 0.1),
+    0 0.125rem 0.25rem -0.125rem rgba(0, 0, 0, 0.06);
   position: relative;
   z-index: 1;
 }
@@ -425,51 +439,55 @@ import { Download, Sparkles } from 'lucide-vue-next'
 }
 
 .extension-info h3 {
-  margin: 0 0 var(--space-xs) 0;
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
-  color: var(--color-text);
-  letter-spacing: var(--tracking-tight);
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.025em;
 }
 
 .extension-rating {
-  margin: var(--space-xs) 0;
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  font-weight: var(--font-medium);
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  justify-content: center;
+  gap: 0.25rem;
 }
 
 .stars {
   color: #fbbf24;
-  font-size: var(--text-base);
-  letter-spacing: var(--spacing-tight);
+  font-size: 1rem;
+  letter-spacing: 0.025em;
 }
 
 .extension-users {
-  margin: var(--space-xs) 0 0 0;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  font-weight: var(--font-semibold);
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 600;
 }
 
 .add-button {
-  padding: var(--space-md) var(--space-xl);
-  background: var(--gradient-blue-purple);
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   color: white;
   border: none;
-  border-radius: var(--radius-lg);
-  font-weight: var(--font-bold);
-  font-size: var(--text-base);
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-primary);
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0.25rem 0.5rem -0.125rem rgba(0, 0, 0, 0.1),
+    0 0.125rem 0.25rem -0.125rem rgba(0, 0, 0, 0.06);
   position: relative;
   z-index: 1;
   overflow: hidden;
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: 0.025em;
 }
 
 .add-button::before {
@@ -493,77 +511,87 @@ import { Download, Sparkles } from 'lucide-vue-next'
 }
 
 .add-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1.25rem rgba(59, 130, 246, 0.4);
 }
 
 .add-button:active {
   transform: translateY(0);
 }
 
-@media (max-width: 768px) {
+/* Tablet (48rem = 768px) */
+@media (min-width: 48rem) {
   .final-cta {
-    padding: var(--space-4xl) var(--space-md);
+    padding: 3rem 1.5rem;
   }
 
-  .container,
-  .cta-content,
+  .container {
+    padding: 0 1.5rem;
+  }
+
+  .cta-content {
+    padding: 0 1.5rem;
+  }
+
   .cta-visual {
-    padding-left: var(--space-sm);
-    padding-right: var(--space-sm);
-  }
-
-  .cta-title {
-    font-size: var(--text-4xl);
-  }
-
-  .cta-description {
-    font-size: var(--text-lg);
-  }
-
-  .btn {
-    width: 100%;
-    justify-content: center;
-    padding: var(--space-md) var(--space-xl);
-    font-size: var(--text-lg);
+    padding: 0 1.5rem;
   }
 
   .cta-features {
-    flex-direction: column;
-    gap: var(--space-md);
+    gap: 1.5rem;
   }
 
   .extension-card {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-md);
+    flex-direction: row;
+    text-align: left;
+    padding: 1rem;
+  }
+
+  .extension-rating {
+    justify-content: flex-start;
   }
 
   .add-button {
-    width: 100%;
-  }
-
-  .browser-mockup:hover {
-    transform: none;
+    width: auto;
   }
 }
 
-@media (max-width: 480px) {
-  .cta-title {
-    font-size: var(--text-3xl);
+/* Desktop (64rem = 1024px) */
+@media (min-width: 64rem) {
+  .final-cta {
+    padding: 3rem 2rem;
   }
 
-  .browser-body {
-    padding: var(--space-md);
+  .container {
+    padding: 0 2rem;
   }
 
-  .extension-icon {
-    width: 4rem;
-    height: 4rem;
+  .cta-content {
+    padding: 0 2rem;
   }
 
-  .extension-info h3 {
-    font-size: var(--text-lg);
+  .cta-visual {
+    padding: 0 2rem;
+  }
+
+  .browser-mockup:hover {
+    transform: translateY(-0.5rem) scale(1.02);
+    box-shadow: 0 2.5rem 5rem -1.25rem rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Large Desktop (80rem = 1280px) */
+@media (min-width: 80rem) {
+  .final-cta {
+    padding: 3rem 0;
+  }
+
+  .cta-content {
+    padding: 0;
+  }
+
+  .cta-visual {
+    padding: 0;
   }
 }
 </style>
