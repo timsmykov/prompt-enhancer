@@ -1,35 +1,31 @@
 {
-  "name": "extention-for-prompts",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "name": "prompt-improver-extension",
+  "version": "0.1.0",
+  "description": "Prompt Improver Chrome Extension - Test Suite",
   "scripts": {
-    "test": "jest",
-    "test:unit": "jest",
-    "test:coverage": "jest --coverage",
+    "test": "vitest",
+    "test:unit": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "test:popup": "playwright test --project=popup",
-    "test:overlay": "playwright test --project=overlay"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:accessibility": "playwright test tests/accessibility",
+    "test:performance": "playwright test tests/performance",
+    "test:security": "playwright test tests/security",
+    "test:all": "npm run test:unit && npm run test:e2e",
+    "lint": "eslint tests/",
+    "report": "playwright show-report"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/timsmykov/prompt-enhancer.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/timsmykov/prompt-enhancer/issues"
-  },
-  "homepage": "https://github.com/timsmykov/prompt-enhancer#readme",
   "devDependencies": {
-    "@jest/globals": "^30.2.0",
-    "@playwright/test": "^1.57.0",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0"
+    "@playwright/test": "^1.40.0",
+    "@axe-core/playwright": "^4.8.0",
+    "axe-core": "^4.8.0",
+    "vitest": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.55.0",
+    "chromedriver": "^120.0.0",
+    "webdriverio": "^8.27.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

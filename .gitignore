@@ -20,7 +20,27 @@ coverage/
 playwright/.cache/
 playwright/.auth/
 
-# Build artifacts
+# Test pages (auto-generated)
+test-pages/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Vitest cache
+.vitest/
+
+# Development tooling
+# playright.config.ts - needed for testing
+# package.json - needed for dependencies
+# package-lock.json - needed for dependency locking
+
+# Claude Code agents and configuration
+.claude/
+claude_code_zai_env.sh
+CLAUDE.md
+
+# Build artifacts (if added in future)
 dist/
 build/
 *.log
